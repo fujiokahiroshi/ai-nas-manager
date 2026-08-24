@@ -1,0 +1,4 @@
+from virtual_tuner.server import main
+
+if __name__ == "__main__":
+    main()
