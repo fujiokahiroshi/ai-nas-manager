@@ -7,3 +7,4 @@ __pycache__/
 .claude/
 ai-nas-manager/media/*.mp4
 ai-nas-manager/media/semantic_samples/*.mp4
+ai-nas-manager/media/pictogram_samples/*.png
