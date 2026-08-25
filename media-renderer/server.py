@@ -83,7 +83,7 @@ def _player_html() -> str:
     font-size:14px; opacity:0.7; z-index:5; text-shadow:0 0 4px #000;
   }}
   #tag {{
-    position:fixed; left:8px; right:8px; bottom:8px; color:#fff;
+    position:fixed; left:8px; right:8px; top:32px; color:#fff;
     font-family:sans-serif; font-size:13px; line-height:1.5; z-index:5;
     background:rgba(0,0,0,0.55); padding:8px 12px; border-radius:6px;
     display:none;
