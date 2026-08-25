@@ -9,6 +9,7 @@ import anyio
 
 from mcp.server.mcpserver import MCPServer
 
+import media_catalog
 import tuner_client as _tuner_client
 from discovery import TunerInfo, discover_tuners as _discover_tuners
 
@@ -25,6 +26,28 @@ def ping() -> str:
 def list_media(path: str = ".") -> str:
     """指定パス配下のメディアファイル一覧を返す(未実装のダミー応答)。"""
     return f"TODO: 未実装。{path} 配下のメディア一覧をここに実装する。"
+
+
+@mcp.tool()
+def list_media_channels() -> list[dict]:
+    """仮想メディアチャンネル(CH1〜CH12)の一覧を返す。"""
+    return [{"channel": c.channel, "title": c.title} for c in media_catalog.list_channels()]
+
+
+@mcp.tool()
+def get_media_location(channel: int) -> dict:
+    """指定したチャンネルのメディアの場所を返す。存在しないチャンネル番号はエラー。
+
+    戻り値のsourceは{"type": "file", "path": <WSL絶対パス>}の形。
+    Windows側のmedia_rendererへ渡す際はUNCパスへの変換が必要
+    (ai-nas-manager/docs/media-renderer-design.md 3.3節・6節)。
+    """
+    c = media_catalog.get_channel(channel)
+    return {
+        "channel": c.channel,
+        "title": c.title,
+        "source": {"type": "file", "path": str(c.path)},
+    }
 
 
 @mcp.tool()
