@@ -74,15 +74,39 @@ venvは `C:\Users\yukik\epg-renderer-venv\.venv` (UNC上に置くとpip install�
   チャンネル×時間の格子HTMLを生成し既定ブラウザで開く。現在時刻の赤線表示、
   番組クリックでの詳細パネル表示に対応。
 
+### 5. media-renderer (`media-renderer/`, Python, **Windowsネイティブ**)
+picture/movie再生専用のMCPサーバー。WSLに一切依存しない。epg-rendererと同じ構成。
+venvは `C:\Users\yukik\media-renderer-venv\.venv` (ローカルパス)。
+設計: `ai-nas-manager/docs/media-renderer-design.md`(詳細な検証結果・設計判断はこちら参照)。
+
+- `play_channel(source_type, source_value, channel, title)` — 現状`source_type="file"`
+  (UNCパス)のみ実装。ブラウザでプレイヤーページを開き/切り替える。初回のみユーザーが
+  画面をクリックする必要あり(Chromeの自動再生ポリシー対応)。
+- `stop_media()` — 再生停止。
+- `render_picture(path)` — 画像を新規タブで表示。
+- 制御はfile://で開いた固定のプレイヤーページ(`%TEMP%\media-renderer\player.html`)が
+  ローカル制御HTTPサーバー(既定ポート39231、`127.0.0.1`限定)を1秒間隔でポーリングする方式。
+  複数MCPクライアント対策として`windows-message-mcp`と同じリーダー/フォロワー方式を実装。
+  **Windows固有の注意点**: `http.server.HTTPServer`は既定で`allow_reuse_address=1`のため、
+  Windowsでは2つ目のプロセスもポートbindに成功してしまいリーダー/フォロワー判定が
+  壊れる。`allow_reuse_address = False`を明示的に指定して回避している(`server.py`)。
+
+ai-nas-manager側は`media_catalog.py`でCH1〜CH12の仮想メディアチャンネル(virtual_tunerの
+ダミーEPGと同じ位置づけ)を持ち、`list_media_channels`/`get_media_location`ツールで
+Claudeに場所(WSL絶対パス)を伝える。ダミー動画本体は`ai-nas-manager/scripts/generate_dummy_media.sh`
+(ffmpeg依存、要`apt install ffmpeg`)で生成する`ai-nas-manager/media/ch{01..12}.mp4`
+(H.264+AAC/MP4、gitignore対象・都度再生成する想定)。
+
 ## MCP登録状況
 
 Claude Code (`~/.claude.json` の user scope) とClaude Desktop
 (`%LOCALAPPDATA%\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude_desktop_config.json`)
-の**両方**に、以下4サーバーを個別登録済み(登録先が違うので新サーバー追加時は両方への追加が必要):
+の**両方**に、以下5サーバーを個別登録済み(登録先が違うので新サーバー追加時は両方への追加が必要):
 
 - `windows-message-mcp` — `node.exe` + `dist/index.js`
 - `ai-nas-manager` — `wsl.exe -e .../ai-nas-manager/.venv/bin/python .../server.py`
 - `epg-renderer` — `C:\Users\yukik\epg-renderer-venv\.venv\Scripts\python.exe` + `epg-renderer/server.py`
+- `media-renderer` — `C:\Users\yukik\media-renderer-venv\.venv\Scripts\python.exe` + `media-renderer/server.py`
 
 いずれも新しいセッション/ウィンドウで自動起動される。**このセッション内で
 ツールを追加した場合、実行中のセッションはツール一覧をキャッシュしているので
@@ -111,15 +135,21 @@ Claude Code (`~/.claude.json` の user scope) とClaude Desktop
 - [x] 単体・結合テスト全パス(9件)
 - [x] Claude Code/Desktopへの登録・疎通確認
 - [x] (指示書スコープ外だが追加実装) 番組表機能、Windows側レンダラー連携
+- [x] `ai-nas-manager/docs/v-01-instructions.md` として元指示書を保存済み
+- [x] (指示書スコープ外だが追加実装) media-renderer: CH1〜12のダミー動画再生・停止・
+  画像表示、Claude Code/Desktop両方への登録・疎通確認(設計:
+  `ai-nas-manager/docs/media-renderer-design.md`)
 
 未実施:
-- [ ] `ai-nas-manager/docs/v-01-instructions.md` として元指示書を保存
-  (この会話には全文があるので、次回保存できる)
+- [ ] 本セッション自身でのmedia-rendererツール利用確認(要セッション再起動。
+  別ウィンドウでのツール一覧表示・CH1再生・停止は確認済み)
+- [ ] CH2〜12の切り替え・停止の一通り確認(CH1のみ実地確認済み)
 - [ ] 実機Tunerとの差し替え、録画予約などの実操作コマンド、NAS連携、Web UI (v-02以降)
+- [ ] `hls`/`url`のメディアソース対応(将来、実機Tunerの出力方式判明後)
 
 ## 次にできそうなこと
 
 - 録画予約など「書き込み系」操作をTunerに追加し、同じ中継パターンで実装
 - 複数Tuner対応(discover_tunersが複数返す場合のUX)
 - epg-rendererをtkinter/PyQt等でネイティブGUI化(検討したが今回はブラウザ版を選択)
-- v-01指示書自体をリポジトリに保存
+- media-rendererのCH2〜12切り替え・停止の一通り確認、セッション再起動後の最終疎通確認
