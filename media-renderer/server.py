@@ -96,6 +96,14 @@ def _player_html() -> str:
   let lastSeq = -1;
   let currentState = null;
 
+  function reportBrowserState(command) {{
+    fetch(STATE_URL, {{
+      method: 'POST',
+      headers: {{'Content-Type': 'application/json'}},
+      body: JSON.stringify({{command}})
+    }}).catch(() => {{}});
+  }}
+
   function applyState(data) {{
     titleEl.textContent = data.title || '';
     if (data.command === 'play' && data.source_value) {{
@@ -103,9 +111,13 @@ def _player_html() -> str:
         video.src = data.source_value;
         video.dataset.src = data.source_value;
       }}
+      video.dataset.ignorePause = '1';
       video.play().catch(() => {{}});
+      setTimeout(() => {{ video.dataset.ignorePause = '0'; }}, 0);
     }} else if (data.command === 'stop') {{
+      video.dataset.ignorePause = '1';
       video.pause();
+      setTimeout(() => {{ video.dataset.ignorePause = '0'; }}, 0);
     }}
   }}
 
@@ -116,6 +128,11 @@ def _player_html() -> str:
       lastSeq = currentState.seq;
       applyState(currentState);
     }}
+  }});
+
+  video.addEventListener('pause', () => {{
+    if (video.dataset.ignorePause === '1') return;
+    reportBrowserState('stop');
   }});
 
   async function poll() {{
@@ -181,6 +198,18 @@ def _apply_stop() -> str:
     return "停止を指示しました。"
 
 
+def _apply_browser_report(command: str) -> str:
+    """ブラウザ側のユーザー操作で状態が変化したときに内部状態を同期する。"""
+    if command not in {"play", "stop"}:
+        return f"未対応のコマンド: {command}"
+    with _state_lock:
+        _state["command"] = command
+        _state["seq"] += 1
+    if command == "stop":
+        return "ブラウザ側で再生停止が検出されました。"
+    return "ブラウザ側で再生再開が検出されました。"
+
+
 def _forward(path: str, body: dict[str, Any]) -> str:
     data = json.dumps(body).encode("utf-8")
     req = urllib.request.Request(
@@ -223,6 +252,16 @@ class _Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self) -> None:  # noqa: N802
+        if self.path == "/state":
+            try:
+                body = self._read_json_body()
+            except Exception:
+                self._send_json({"error": "invalid JSON body"}, 400)
+                return
+            command = str(body.get("command", "")).strip()
+            message = _apply_browser_report(command)
+            self._send_json({"message": message})
+            return
         if self.path == "/internal/play":
             try:
                 body = self._read_json_body()
