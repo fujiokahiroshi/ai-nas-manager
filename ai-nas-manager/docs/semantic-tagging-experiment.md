@@ -1,7 +1,27 @@
 # 映像セマンティックタグ付けの予備実験
 
-ステータス: 予備実験・PoC段階。MCPツールとしては未公開(server.pyから未参照)。
-2026-08-25、実写映像でのエンドツーエンド検証に成功(6節)。
+ステータス: 予備実験・PoC段階。2026-08-25、実写映像でのエンドツーエンド検証に成功
+(6節)し、`get_media_location`/`media_renderer.play_channel`経由でMCPツールとして
+公開・統合済み(8節)。
+
+## 8. media_catalog/media_rendererへの統合(2026-08-25)
+
+CH1〜12(色バー+チャンネル番号だけのダミー映像)にtagを付けても「色バーにCH1と
+表示されている」という同じくらい単調な結果にしかならず、パイプラインの実力を
+活かせなかった。そのため`ai-nas-manager/media_catalog.py`のCH1〜12ダミーを、
+実際に意味のある内容を持つLEGO Mindstorms EV3のロボットデモ映像4本
+(GyroBoy/ColorSorter/Puppy/RobotArmH25、ユーザーのOneDrive上、このマシン固有の
+パス)に差し替え、CH1〜4として割り付けた。各チャンネルのtagは、4本それぞれに
+段階1(`video_fragmentation.fragment_video`)を実行し、代表フレームをClaudeが
+実際に見て言語化・統合したもの(APIキーなし、このセッション内で手動実施)。
+
+- `get_media_location`/`list_media_channels`が`tag`フィールドを返すようになった
+- `media_renderer.play_channel`に`tag`引数を追加。指定するとプレイヤー画面下部に
+  表示される(タブ生存確認・リーダー/フォロワー転送にも対応)
+- Claude経由の橋渡しフロー: `get_media_location(channel)`でtagを取得
+  →UNC変換した`source`と一緒に`play_channel`へtagも渡す
+  →チャンネル選択時に映像とtagが同時に表示される、という「tuner選択時にtagを表示する」
+  機能が実現した。
 
 ## 目的
 
