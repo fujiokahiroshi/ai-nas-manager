@@ -1,6 +1,9 @@
 # media_renderer 設計 (v-01拡張案)
 
-ステータス: 設計のみ。実装は未着手(指示待ち)。
+ステータス: 実装済み・実機確認済み(2026-08-25)。
+CH1〜CH12のダミー動画再生・停止・画像表示・リーダー/フォロワー方式・
+Claude Code/Desktop両方への登録まで一通り動作確認済み。
+残タスクは8節参照。
 
 ## 1. ゴール
 
@@ -332,12 +335,21 @@ ai-nas-manager/media_rendererのどちらにも相手側のパス形式の知識
 (`~/.claude.json`)とClaude Desktop(`claude_desktop_config.json`)の両方に
 `media_renderer`を個別登録する必要がある。
 
-## 8. 実装ステップ案(指示待ち)
+## 8. 実装ステップ(実績)
 
-1. WSL側に`ffmpeg`をインストール(`apt install ffmpeg`。3.1節)
-2. ai-nas-manager: `media_catalog.py` + ダミー動画12本(H.264+AAC/MP4、ffmpeg生成) + `list_media_channels`/`get_media_location`ツール追加 + テスト
-3. media_renderer: プロジェクト雛形(venv、requirements、server.py) + `render_picture`実装(epg-renderer方式そのまま流用、低リスク)
-4. media_renderer: 制御HTTPサーバーをリーダー/フォロワー方式で実装(4.3節。`windows-message-mcp`の`src/index.ts`を移植のベースにする)
-5. media_renderer: `play_channel`/`stop_media`実装(タブ生存確認は4.4節、自動再生ポリシー対応は4.5節の確定方式通りに実装。追加の実地検証は不要、方式は決定済み)
-6. Claude Code/Desktop両方への登録。**登録後、両方を同時起動してリーダー/フォロワー切り替えが実際に機能するか確認する(必須の受け入れ基準)**
-7. 疎通確認: CH1〜12の再生・切り替え・停止(初回クリック案内含む)、画像表示
+1. [x] WSL側に`ffmpeg`をインストール(3.1節)
+2. [x] ai-nas-manager: `media_catalog.py` + `list_media_channels`/`get_media_location`ツール追加 + テスト3件(既存9件と合わせ計12件パス)
+3. [x] media_renderer: プロジェクト雛形(venv、requirements、server.py) + `render_picture`実装。ブラウザで目視確認済み
+4. [x] media_renderer: 制御HTTPサーバーをリーダー/フォロワー方式で実装(4.3節)。
+   2プロセス同時起動での実機テストで検証。**この過程でWindows固有のバグを発見・修正**:
+   `http.server.HTTPServer`は既定`allow_reuse_address=1`のため、Windowsでは
+   2つ目のプロセスもポートbindに成功してしまい、リーダー/フォロワー判定が機能しない
+   不具合があった(4.3節の実装に`allow_reuse_address = False`の明示指定を追記済み)。
+5. [x] media_renderer: `play_channel`/`stop_media`実装。オーバーレイクリック→実際の
+   ダミー動画(H.264+AAC/MP4)再生までブラウザで目視確認済み
+6. [x] Claude Code/Desktop両方への登録。別ウィンドウのツール一覧に表示されることを確認済み
+7. [x] 疎通確認: `generate_dummy_media.sh`でCH1〜12のダミー動画生成、CH1の実再生を確認
+8. [ ] このセッション(本セッション)自体はツール一覧キャッシュのため未反映。
+   再起動後、`play_channel`/`stop_media`をMCPツール経由(直接のPython呼び出しではなく)で
+   呼び出す最終確認が残っている
+9. [ ] CH2〜12の再生・チャンネル切り替え・停止の一通り確認(CH1のみ確認済み)
