@@ -49,6 +49,7 @@ _state: dict[str, Any] = {
     "seq": 0,
     "channel": None,
     "title": None,
+    "tag": None,
 }
 _last_seen: float | None = None
 
@@ -81,17 +82,26 @@ def _player_html() -> str:
     position:fixed; top:8px; left:8px; color:#fff; font-family:sans-serif;
     font-size:14px; opacity:0.7; z-index:5; text-shadow:0 0 4px #000;
   }}
+  #tag {{
+    position:fixed; left:8px; right:8px; bottom:8px; color:#fff;
+    font-family:sans-serif; font-size:13px; line-height:1.5; z-index:5;
+    background:rgba(0,0,0,0.55); padding:8px 12px; border-radius:6px;
+    display:none;
+  }}
+  #tag:not(:empty) {{ display:block; }}
 </style>
 </head>
 <body>
   <div id="overlay">&#9654; クリックして開始</div>
   <video id="player" controls></video>
   <div id="title"></div>
+  <div id="tag"></div>
 <script>
   const STATE_URL = {state_url};
   const video = document.getElementById('player');
   const overlay = document.getElementById('overlay');
   const titleEl = document.getElementById('title');
+  const tagEl = document.getElementById('tag');
   let started = false;
   let lastSeq = -1;
   let currentState = null;
@@ -106,6 +116,7 @@ def _player_html() -> str:
 
   function applyState(data) {{
     titleEl.textContent = data.title || '';
+    tagEl.textContent = data.tag || '';
     if (data.command === 'play' && data.source_value) {{
       if (video.dataset.src !== data.source_value) {{
         video.src = data.source_value;
@@ -141,6 +152,7 @@ def _player_html() -> str:
       const data = await res.json();
       currentState = data;
       titleEl.textContent = data.title || '';
+      tagEl.textContent = data.tag || '';
       if (started && data.seq !== lastSeq) {{
         lastSeq = data.seq;
         applyState(data);
@@ -164,7 +176,11 @@ def _open_player_page() -> None:
 
 
 def _apply_play(
-    source_type: str, source_value: str, channel: int | None, title: str | None
+    source_type: str,
+    source_value: str,
+    channel: int | None,
+    title: str | None,
+    tag: str | None = None,
 ) -> str:
     if source_type != "file":
         return f"未対応のsource_type: '{source_type}' (v-01は'file'のみ対応)"
@@ -178,6 +194,7 @@ def _apply_play(
         _state["source_value"] = file_uri
         _state["channel"] = channel
         _state["title"] = title
+        _state["tag"] = tag
         _state["command"] = "play"
         _state["seq"] += 1
 
@@ -273,6 +290,7 @@ class _Handler(BaseHTTPRequestHandler):
                 str(body.get("source_value", "")),
                 body.get("channel"),
                 body.get("title"),
+                body.get("tag"),
             )
             self._send_json({"message": message})
             return
@@ -317,6 +335,7 @@ def play_channel(
     source_value: str,
     channel: int | None = None,
     title: str | None = None,
+    tag: str | None = None,
 ) -> str:
     """指定したメディアソースを再生する。
 
@@ -325,9 +344,11 @@ def play_channel(
     'hls'/'url'は将来対応予定で、v-01では未対応エラーを返す。
     プレイヤーページが未起動(または閉じられている)なら新規に開き、
     既に開いていればチャンネル切り替え(同じタブ内で動画を差し替え)。
+    tagは映像の内容を意味理解した説明文(get_media_locationのtagをそのまま
+    渡す想定)。指定するとプレイヤー画面下部に表示される。
     """
     if is_leader:
-        return _apply_play(source_type, source_value, channel, title)
+        return _apply_play(source_type, source_value, channel, title, tag)
     return _forward(
         "/internal/play",
         {
@@ -335,6 +356,7 @@ def play_channel(
             "source_value": source_value,
             "channel": channel,
             "title": title,
+            "tag": tag,
         },
     )
 

@@ -30,8 +30,11 @@ def list_media(path: str = ".") -> str:
 
 @mcp.tool()
 def list_media_channels() -> list[dict]:
-    """仮想メディアチャンネル(CH1〜CH12)の一覧を返す。"""
-    return [{"channel": c.channel, "title": c.title} for c in media_catalog.list_channels()]
+    """仮想メディアチャンネル(CH1〜CH4)の一覧を返す。"""
+    return [
+        {"channel": c.channel, "title": c.title, "tag": c.tag}
+        for c in media_catalog.list_channels()
+    ]
 
 
 @mcp.tool()
@@ -41,11 +44,15 @@ def get_media_location(channel: int) -> dict:
     戻り値のsourceは{"type": "file", "path": <WSL絶対パス>}の形。
     Windows側のmedia_rendererへ渡す際はUNCパスへの変換が必要
     (ai-nas-manager/docs/media-renderer-design.md 3.3節・6節)。
+    tagは、映像を意味理解して生成した内容の説明文
+    (ai-nas-manager/docs/semantic-tagging-experiment.md 6節)。
+    チャンネル選択時にユーザーへ提示することを想定している。
     """
     c = media_catalog.get_channel(channel)
     return {
         "channel": c.channel,
         "title": c.title,
+        "tag": c.tag,
         "source": {"type": "file", "path": str(c.path)},
     }
 
