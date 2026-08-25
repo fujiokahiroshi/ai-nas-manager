@@ -29,6 +29,26 @@ media_rendererが「movieを再生する」機能なのに対し、こちらは*
 - テスト(`tests/test_segment_alignment.py`, `tests/test_semantic_fragments.py`)は
   いずれも「3人の子供が野球をしている」という単一のサンプルシーンで動作確認。
 
+## サンプル映像データ
+
+`ai-nas-manager/scripts/generate_semantic_sample_media.sh`(ffmpeg依存、要
+`apt install ffmpeg fonts-noto-cjk`)で、パイプライン第1段階「単純な映像を用意する」
+のためのサンプルを5本生成できる(`ai-nas-manager/media/semantic_samples/`、
+gitignore対象・都度再生成する想定)。あえて野球以外のシーンも混ぜているのは、
+現状の`semantic_fragments.py`が野球専用に近いハードコードのため、他のシーンで
+どこまで汎用的に動くかを検証しやすくするため。
+
+- `sample01_cooking.mp4` — 台所で大人が料理をしている
+- `sample02_dog_walk.mp4` — 公園で子供が犬の散歩をしている
+- `sample03_reading.mp4` — 子供が静かに絵本を読んでいる
+- `sample04_soccer.mp4` — 子供たちが公園でサッカーをしている
+- `sample05_baseball.mp4` — 子供たちが公園で野球をしている(既存デモと同系統)
+
+各10秒、H.264+AAC/MP4。シーン説明文を映像内にテキストとして焼き込んでいるだけの
+プレースホルダーで、実際の映像認識で生成したものではない
+(「既知の制約」参照)。日本語テキストの表示には`fonts-noto-cjk`が必要
+(DejaVu等の欧文フォントだと文字化け(豆腐)になる)。
+
 ## 既知の制約(2026-08-25時点)
 
 - 実際の動画ファイルからVideoFragment/AudioFragmentを生成する仕組みは未実装

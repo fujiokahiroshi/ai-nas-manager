@@ -6,3 +6,4 @@ __pycache__/
 .pytest_cache/
 .claude/
 ai-nas-manager/media/*.mp4
+ai-nas-manager/media/semantic_samples/*.mp4
