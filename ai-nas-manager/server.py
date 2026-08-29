@@ -14,6 +14,7 @@ import anyio
 from mcp.server.mcpserver import MCPServer
 
 import media_catalog
+import media_index
 import tuner_client as _tuner_client
 import video_fragmentation
 from discovery import TunerInfo, discover_tuners as _discover_tuners
@@ -64,17 +65,72 @@ def get_media_location(channel: int) -> dict:
 
 @mcp.tool()
 def search_media(keyword: str) -> list[dict]:
-    """タイトル・tag・fragmentの説明文にkeywordを含むチャンネルを検索する。
+    """タイトル・tag・fragmentの説明文にkeywordを含むメディアを検索する。
+
+    CH1〜4(media_catalog、決め打ち)と、register_mediaで登録されたライブラリの
+    両方が対象。originフィールドで"channel"/"library"を区別する。channel由来は
+    get_fragment_details(channel)でfragment内訳を追加取得できる。library由来は
+    fragmentsをこの結果に直接含める。
 
     ai-nas-manager/docs/semantic-tagging-experiment.md 9節のNASインデックス構想の
     最小実装。将来的には大規模なライブラリに対する高速検索(SQLite等)に
     置き換わる想定だが、呼び出し側から見たインターフェースはそのまま使える
     よう設計している。
     """
-    return [
-        {"channel": c.channel, "title": c.title, "tag": c.tag}
+    channel_results = [
+        {"origin": "channel", "channel": c.channel, "title": c.title, "tag": c.tag}
         for c in media_catalog.search_channels(keyword)
     ]
+    library_results = [
+        {
+            "origin": "library",
+            "path": e.path,
+            "title": e.title,
+            "tag": e.tag,
+            "fragments": [
+                {"start": f.start, "end": f.end, "description": f.description}
+                for f in e.fragments
+            ],
+        }
+        for e in media_index.search(keyword)
+    ]
+    return channel_results + library_results
+
+
+@mcp.tool()
+def register_media(path: str, title: str, tag: str, fragments: list[dict]) -> dict:
+    """任意の映像をライブラリインデックスに登録する(同じpathがあれば上書き)。
+
+    段階1(video_fragmentation.fragment_video/analyze_video)と、それに続く
+    Claude自身による言語化・統合の結果をここに書き込む。fragmentsは
+    [{"start": float, "end": float, "description": str}, ...]の形。
+    一度登録すればsearch_mediaで検索でき、list_pending_mediaの対象からも外れる。
+    Claudeが自律的に「発見→解析→登録」の一連を行うための書き込み口。
+    """
+    entry = media_index.register(path, title, tag, fragments)
+    return {
+        "path": entry.path,
+        "title": entry.title,
+        "tag": entry.tag,
+        "fragments": [
+            {"start": f.start, "end": f.end, "description": f.description}
+            for f in entry.fragments
+        ],
+    }
+
+
+@mcp.tool()
+def list_pending_media(scan_dir: str) -> list[str]:
+    """指定ディレクトリ(WSL絶対パス)直下で、まだregister_mediaされていない
+    映像ファイルの一覧を返す。
+
+    Claudeが自律的に「何を処理すべきか」を自分で見つけるための入り口。
+    見つけたパスはanalyze_video→(Claude自身による言語化・統合)→register_media
+    という流れで処理する想定(semantic-tagging-experiment.md 11節)。
+    media_catalog(CH1〜4)に既に登録済みのパスも「処理済み」として除外する。
+    """
+    catalog_paths = {str(c.path) for c in media_catalog.list_channels()}
+    return [p for p in media_index.list_pending(scan_dir) if p not in catalog_paths]
 
 
 @mcp.tool()
