@@ -225,8 +225,32 @@ Claudeとの対話で行う運用とし、将来的にAPI呼び出しでの完�
 
 ### 現状のスコープ
 
-これは設計方針の合意のみで、実装は未着手。ユーザーが実験用の映像を
-探している最中のため、具体的なスキーマ・DB選定は次のステップ。
+設計方針の合意時点では実装は未着手だったが、2026-08-25中に最小実装まで
+到達した(11節)。具体的なスキーマ・DB選定(SQLite化等)は依然次のステップ。
+
+## 11. Claude連携強化のためのMCPツール追加(2026-08-25、実装済み)
+
+9節の構想を受けて、以下5つのMCPツールを実装した(詳細:
+`media-renderer-design.md` 4.1節、テスト29件+6件全パス):
+
+- `ai-nas-manager.search_media(keyword)` — title/tag/fragment説明文への
+  キーワード検索。9節のインデックス構想の最小実装(まだメモリ上の
+  線形探索、SQLite化は将来)。
+- `ai-nas-manager.get_fragment_details(channel)` — fragment単位の内訳
+  (時刻+説明文)を返す。`media_catalog.MediaChannel`に`fragments`
+  フィールドを追加し、CH1〜4それぞれについて、このセッション内で
+  実際にフレームを見て言語化した内容を構造化して格納した。
+- `ai-nas-manager.analyze_video(path, scene_threshold)` — 任意の映像に
+  段階1(`video_fragmentation.fragment_video`)を実行するMCPツール。
+  CH1〜4以外の映像にもその場でfragment化を適用できる。
+- `media_renderer.seek(position_seconds)` — ソースを切り替えずに再生位置を
+  変更する。`play_channel`にも`seek_seconds`引数を追加し、fragment検索結果
+  から直接該当箇所を再生できるようにした。
+- `media_renderer.get_playback_status()` — 現在の再生状態を問い合わせる。
+  Claudeが一方的に指示するだけでなく状態を確認できるようにした。
+
+これで、9節で議論した「Claudeがキーワードで検索し、該当fragmentの時刻に
+直接ジャンプする」という一連の流れが、ツールレベルでは揃った状態になった。
 
 ## 10. 構想のまとめ(2026-08-25、次回はここから再開する)
 

@@ -206,6 +206,18 @@ epg-rendererと同じ構成を踏襲: Python, Windowsネイティブ, venvはロ
   指定パス(UNC)の画像を表示する。epg-rendererの`render_epg`と同じ「都度新規タブ」方式で十分
   (静止画は「停止」概念が不要なため)。
 
+- `seek(position_seconds: float) -> str`(2026-08-25追加)
+  ソースを切り替えずに、再生中の位置だけを変更する。
+  `ai-nas-manager.get_fragment_details`のstartをそのまま渡せる。
+
+- `get_playback_status() -> dict`(2026-08-25追加)
+  現在の再生状態(source/channel/title/tag/command)を返す。ユーザーがブラウザ側で
+  直接操作した場合の状態変化も反映される。Claudeが一方的に指示を送るだけでなく、
+  状態を問い合わせられるようにするための追加(詳細: semantic-tagging-experiment.md)。
+
+`play_channel`は`seek_seconds: float | None = None`引数も追加(2026-08-25)。
+指定するとその秒数の位置から再生を開始する。
+
 ### 4.2 実装方式: play/stopの制御をどう実現するか(検証済み)
 
 `webbrowser.open()`は「新しいタブを開く」ことしかできず、既に開いているタブの内容を
