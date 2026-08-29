@@ -326,6 +326,32 @@ USB接続、exFAT、約1TB)を確認したところ中身は空だった。WSL�
 WSLではない)ではこの制約はなく、通常のUSBストレージとして素直に
 マウントできるはず。
 
+### 10.6 Linux NASマネージャの採用先: OpenMediaVault(2026-08-25、決定)
+
+「Linux NASマネージャ」をゼロから自作するのではなく、オープンソースの
+既存実装に任せることにした。**OpenMediaVault(OMV)を採用する**。
+
+選定理由(2026-08時点でWeb検索により確認):
+
+- Debian系(Ubuntuと近い)、OMV8「Synchrony」からAMD64/ARM64のみ正式サポート
+  ([CNX Software](https://www.cnx-software.com/2025/12/26/openmediavault-8-omv8-synchrony-released-for-64-bit-x86-amd64-and-arm-arm64-platforms-only/))
+- RK3588での動作実績あり(FriendlyELEC wikiのインストールガイド、Radxa ROCK 5B
+  でのフォーラム報告 — [openmediavault forum](https://forum.openmediavault.org/index.php?thread%2F47085-anyone-installed-omv-on-this-arm64-radxa-rock-5b-rockchip-rk3588%2F=))
+- ディスク管理・ファイルシステム管理・ユーザー権限・Samba/NFS共有・
+  プラグインエコシステムを備えた成熟したNAS管理ソフト
+
+比較検討したCasaOS(ARM/SBCでの実績豊富、REST APIあり)は、厳密には
+「NASマネージャ」ではなく既存ストレージの上に乗るDockerアプリ管理
+プラットフォームのため、今回の「ディスク・共有・権限を管理する」という
+要件には合わないと判断し、不採用とした。
+
+**ai-nas-managerとの接続方式**: OMVのRPC APIを直接叩くのではなく、
+10.5節で述べた「案A(決まったディレクトリ構造の約束事)」を採用する。
+OMVがExtreme Pro上に管理する共有フォルダのパスを、ai-nas-managerは
+ただのファイルシステムとして直接読む。ディスク・権限・共有設定は
+OMVに完全に任せ、ai-nas-managerはその結果(マウント済みのディレクトリ)
+だけを見る。
+
 ## 経緯についての補足
 
 このコードはClaude Desktopの別セッション(Cowork)で作成されたもので、
