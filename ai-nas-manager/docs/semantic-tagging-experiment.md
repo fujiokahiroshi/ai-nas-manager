@@ -352,6 +352,41 @@ OMVがExtreme Pro上に管理する共有フォルダのパスを、ai-nas-manag
 OMVに完全に任せ、ai-nas-managerはその結果(マウント済みのディレクトリ)
 だけを見る。
 
+## 12. Claudeの自律性の正体、そのための最後のピース(2026-08-25)
+
+「Claudeが自律的に動けるためのMCP APIを設計して」という問いへの結論:
+**自律性のための専用APIを新設する必要はなかった**。11節までの小さく原子的な
+ツール(`search_media`/`get_fragment_details`/`get_media_location`/
+`analyze_video`/`play_channel`/`seek`/`get_playback_status`)を、Claude自身が
+その場の自然言語の意図に応じて組み立てて呼ぶこと自体が、既に自律的な振る舞い
+だった(実例: 「ch3を表示して」「黄色いパーツの場面を見せて」に対し、
+人が個々の呼び出しを指示せずともClaudeが一連のツールを組み立てて実行した)。
+
+見直した結果、道具箱に欠けていたのは2つだけだった:
+
+- **発見する手段がない**: 「まだtagが付いていない映像はどれか」を、人に
+  言われずにClaude自身が見つける方法がなかった
+- **書き込む手段がない**: `media_catalog.py`が決め打ちのPythonコードのため、
+  解析結果をその場で永続化できなかった
+
+これを埋めるため`ai-nas-manager/media_index.py`(JSONベースの書き込み可能な
+ライブラリインデックス、9節のインデックス構想の実装)と、2つの新規MCPツール
+`list_pending_media(scan_dir)`/`register_media(path, title, tag, fragments)`
+を実装した。`search_media`もmedia_catalog(CH1〜4)とmedia_index(登録済み
+ライブラリ)の両方を対象にするよう拡張し、`origin`フィールド("channel"/
+"library")で区別する。
+
+**実機のLEGOフォルダで一気通貫の検証に成功**: `list_pending_media`で
+CH1〜4以外の11本(BT-Enable.webm等)を自分で発見 → `analyze_video`で
+`BT-Enable.webm`を段階1にかけ → Claudeがフレームを見て言語化(Bluetoothの
+有効化手順を説明するCGアニメーション映像と判明) → `register_media`で登録
+→ `search_media("Bluetooth")`でヒット、`list_pending_media`からは除外、
+という「発見→解析→言語化→登録→検索可能」のループが実際に動作した。
+
+これで、9節で描いたNASインデックス構想(検索可能なインデックスへの
+書き込み)が、CH1〜4の決め打ちデータだけでなく、Claude自身が発見した
+任意の映像に対しても機能するようになった。テストは全39件パス。
+
 ## 経緯についての補足
 
 このコードはClaude Desktopの別セッション(Cowork)で作成されたもので、
