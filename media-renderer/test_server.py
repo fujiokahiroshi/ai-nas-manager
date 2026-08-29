@@ -28,3 +28,40 @@ def test_play_and_stop_updates_state_sequence() -> None:
     module._apply_stop()
     assert module._state["command"] == "stop"
     assert module._state["seq"] == 7
+
+
+def test_play_with_seek_seconds_sets_seek_to() -> None:
+    module._apply_play(
+        "file", "\\\\wsl.localhost\\Ubuntu\\tmp\\demo.mp4", 3, "CH3", tag=None, seek_seconds=12.5
+    )
+    assert module._state["seek_to"] == 12.5
+
+
+def test_stop_clears_seek_to() -> None:
+    module._state["seek_to"] = 12.5
+    module._apply_stop()
+    assert module._state["seek_to"] is None
+
+
+def test_apply_seek_updates_state_without_changing_command() -> None:
+    module._state["command"] = "play"
+    module._state["seq"] = 0
+
+    module._apply_seek(30.0)
+
+    assert module._state["seek_to"] == 30.0
+    assert module._state["command"] == "play"
+    assert module._state["seq"] == 1
+
+
+def test_get_status_returns_current_state() -> None:
+    module._apply_play(
+        "file", "\\\\wsl.localhost\\Ubuntu\\tmp\\demo.mp4", 2, "CH2", tag="ダミーtag"
+    )
+
+    status = module._get_status()
+
+    assert status["channel"] == 2
+    assert status["title"] == "CH2"
+    assert status["tag"] == "ダミーtag"
+    assert status["command"] == "play"

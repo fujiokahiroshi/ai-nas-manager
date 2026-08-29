@@ -50,6 +50,7 @@ _state: dict[str, Any] = {
     "channel": None,
     "title": None,
     "tag": None,
+    "seek_to": None,
 }
 _last_seen: float | None = None
 
@@ -114,6 +115,15 @@ def _player_html() -> str:
     }}).catch(() => {{}});
   }}
 
+  function applySeek(target) {{
+    if (typeof target !== 'number') return;
+    if (video.readyState >= 1) {{
+      video.currentTime = target;
+    }} else {{
+      video.addEventListener('loadedmetadata', () => {{ video.currentTime = target; }}, {{ once: true }});
+    }}
+  }}
+
   function applyState(data) {{
     titleEl.textContent = data.title || '';
     tagEl.textContent = data.tag || '';
@@ -130,6 +140,7 @@ def _player_html() -> str:
       video.pause();
       setTimeout(() => {{ video.dataset.ignorePause = '0'; }}, 0);
     }}
+    applySeek(data.seek_to);
   }}
 
   overlay.addEventListener('click', () => {{
@@ -181,6 +192,7 @@ def _apply_play(
     channel: int | None,
     title: str | None,
     tag: str | None = None,
+    seek_seconds: float | None = None,
 ) -> str:
     if source_type != "file":
         return f"未対応のsource_type: '{source_type}' (v-01は'file'のみ対応)"
@@ -195,24 +207,40 @@ def _apply_play(
         _state["channel"] = channel
         _state["title"] = title
         _state["tag"] = tag
+        _state["seek_to"] = seek_seconds
         _state["command"] = "play"
         _state["seq"] += 1
 
     label = title or (f"CH{channel}" if channel is not None else source_value)
+    seek_note = f"({seek_seconds:.1f}秒の位置から)" if seek_seconds is not None else ""
     if need_new_tab:
         _open_player_page()
         return (
-            f"プレイヤーをブラウザで開き、{label}の再生を指示しました。"
+            f"プレイヤーをブラウザで開き、{label}{seek_note}の再生を指示しました。"
             "初回のみ画面の「クリックして開始」を押してください。"
         )
-    return f"{label}の再生に切り替えました。"
+    return f"{label}{seek_note}の再生に切り替えました。"
 
 
 def _apply_stop() -> str:
     with _state_lock:
         _state["command"] = "stop"
+        _state["seek_to"] = None
         _state["seq"] += 1
     return "停止を指示しました。"
+
+
+def _apply_seek(seconds: float) -> str:
+    """再生中のソースを切り替えずに、指定秒数の位置にシークする。"""
+    with _state_lock:
+        _state["seek_to"] = seconds
+        _state["seq"] += 1
+    return f"{seconds:.1f}秒の位置にシークしました。"
+
+
+def _get_status() -> dict[str, Any]:
+    with _state_lock:
+        return dict(_state)
 
 
 def _apply_browser_report(command: str) -> str:
@@ -291,11 +319,21 @@ class _Handler(BaseHTTPRequestHandler):
                 body.get("channel"),
                 body.get("title"),
                 body.get("tag"),
+                body.get("seek_seconds"),
             )
             self._send_json({"message": message})
             return
         if self.path == "/internal/stop":
             message = _apply_stop()
+            self._send_json({"message": message})
+            return
+        if self.path == "/internal/seek":
+            try:
+                body = self._read_json_body()
+            except Exception:
+                self._send_json({"error": "invalid JSON body"}, 400)
+                return
+            message = _apply_seek(float(body.get("seconds", 0.0)))
             self._send_json({"message": message})
             return
         self.send_response(404)
@@ -336,6 +374,7 @@ def play_channel(
     channel: int | None = None,
     title: str | None = None,
     tag: str | None = None,
+    seek_seconds: float | None = None,
 ) -> str:
     """指定したメディアソースを再生する。
 
@@ -346,9 +385,11 @@ def play_channel(
     既に開いていればチャンネル切り替え(同じタブ内で動画を差し替え)。
     tagは映像の内容を意味理解した説明文(get_media_locationのtagをそのまま
     渡す想定)。指定するとプレイヤー画面下部に表示される。
+    seek_secondsを指定すると、その秒数の位置から再生を開始する
+    (ai-nas-manager.get_fragment_detailsのstartをそのまま渡せる)。
     """
     if is_leader:
-        return _apply_play(source_type, source_value, channel, title, tag)
+        return _apply_play(source_type, source_value, channel, title, tag, seek_seconds)
     return _forward(
         "/internal/play",
         {
@@ -357,6 +398,7 @@ def play_channel(
             "channel": channel,
             "title": title,
             "tag": tag,
+            "seek_seconds": seek_seconds,
         },
     )
 
@@ -367,6 +409,35 @@ def stop_media() -> str:
     if is_leader:
         return _apply_stop()
     return _forward("/internal/stop", {})
+
+
+@mcp.tool()
+def seek(position_seconds: float) -> str:
+    """再生中のソースを切り替えずに、指定秒数の位置にシークする。
+
+    未再生の状態で呼んでも、再生指示が来た時点で反映される(状態としては
+    保持される)。ソース自体を切り替えたい場合はplay_channelのseek_seconds
+    引数を使うこと。
+    """
+    if is_leader:
+        return _apply_seek(position_seconds)
+    return _forward("/internal/seek", {"seconds": position_seconds})
+
+
+@mcp.tool()
+def get_playback_status() -> dict:
+    """現在の再生状態(ソース・チャンネル・タイトル・tag・再生中かどうか)を返す。
+
+    ユーザーがブラウザ側で直接操作した場合(一時停止ボタン等)の状態変化も
+    反映される。Claudeが「今何が再生されているか」を確認するためのツール。
+    """
+    if is_leader:
+        return _get_status()
+    try:
+        with urllib.request.urlopen(LEADER_BASE_URL + "/state", timeout=5) as resp:
+            return dict(json.loads(resp.read()))
+    except Exception as e:  # noqa: BLE001 - リーダー未応答等をユーザー向けに要約する
+        return {"error": f"リーダープロセスへの問い合わせに失敗しました: {e}"}
 
 
 @mcp.tool()

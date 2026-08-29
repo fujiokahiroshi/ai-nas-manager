@@ -5,12 +5,17 @@
 v-01ではTuner(仮想Tuner)発見・状態取得・番組表取得のMCP連携パターンを追加した。
 """
 
+import hashlib
+import tempfile
+from pathlib import Path
+
 import anyio
 
 from mcp.server.mcpserver import MCPServer
 
 import media_catalog
 import tuner_client as _tuner_client
+import video_fragmentation
 from discovery import TunerInfo, discover_tuners as _discover_tuners
 
 mcp = MCPServer("ai-nas-manager")
@@ -54,6 +59,67 @@ def get_media_location(channel: int) -> dict:
         "title": c.title,
         "tag": c.tag,
         "source": {"type": "file", "path": str(c.path)},
+    }
+
+
+@mcp.tool()
+def search_media(keyword: str) -> list[dict]:
+    """タイトル・tag・fragmentの説明文にkeywordを含むチャンネルを検索する。
+
+    ai-nas-manager/docs/semantic-tagging-experiment.md 9節のNASインデックス構想の
+    最小実装。将来的には大規模なライブラリに対する高速検索(SQLite等)に
+    置き換わる想定だが、呼び出し側から見たインターフェースはそのまま使える
+    よう設計している。
+    """
+    return [
+        {"channel": c.channel, "title": c.title, "tag": c.tag}
+        for c in media_catalog.search_channels(keyword)
+    ]
+
+
+@mcp.tool()
+def get_fragment_details(channel: int) -> dict:
+    """指定チャンネルのfragment単位の内訳(時間区間+説明文)を返す。
+
+    映像全体のtagだけでは薄まってしまう、短時間だけ映る内容を検索・特定する
+    ために使う(semantic-tagging-experiment.md 9節)。返るstartの秒数は、
+    media_renderer.play_channelのseek_secondsにそのまま渡せる。
+    """
+    c = media_catalog.get_channel(channel)
+    return {
+        "channel": c.channel,
+        "title": c.title,
+        "fragments": [
+            {"start": f.start, "end": f.end, "description": f.description}
+            for f in c.fragments
+        ],
+    }
+
+
+@mcp.tool()
+def analyze_video(path: str, scene_threshold: float = 0.3) -> dict:
+    """任意の映像ファイル(WSL絶対パス)に段階1(境界検出)を実行し、fragment候補を返す。
+
+    media_catalogに登録済みのCH1〜4以外の映像に対しても、その場でfragment化
+    できるようにする(semantic-tagging-experiment.md 8節)。段階2(言語化)・
+    段階3(統合)はこのツールの範囲外で、返されたframe_pathの画像をClaudeが
+    見て行う想定(video_fragmentation.pyの設計方針をそのまま踏襲)。
+    """
+    video_path = Path(path)
+    if not video_path.exists():
+        raise ValueError(f"ファイルが見つかりません: {path}")
+
+    digest = hashlib.sha1(str(video_path.resolve()).encode()).hexdigest()[:10]
+    out_dir = Path(tempfile.gettempdir()) / "ai-nas-manager-analysis" / f"{video_path.stem}_{digest}"
+
+    fragments = video_fragmentation.fragment_video(video_path, out_dir, scene_threshold=scene_threshold)
+    return {
+        "path": str(video_path),
+        "duration": video_fragmentation.get_duration(video_path),
+        "fragments": [
+            {"index": f.index, "start": f.start, "end": f.end, "frame_path": str(f.frame_path)}
+            for f in fragments
+        ],
     }
 
 
