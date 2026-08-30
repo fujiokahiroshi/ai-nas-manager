@@ -215,6 +215,24 @@ epg-rendererと同じ構成を踏襲: Python, Windowsネイティブ, venvはロ
   直接操作した場合の状態変化も反映される。Claudeが一方的に指示を送るだけでなく、
   状態を問い合わせられるようにするための追加(詳細: semantic-tagging-experiment.md)。
 
+- `render_choices(options: list[dict]) -> str`(2026-08-30追加)
+  再生する前に候補をユーザーに選ばせたい場合に使う。各要素は
+  `{thumbnail_path, label, source_value, tag?, seek_seconds?, channel?}`。
+  呼ぶ度に新しいタブ(`chooser.html`、`player.html`とは別ページ)でサムネイル
+  グリッドを表示し、ユーザーがクリックした候補をハイライトする。
+
+- `get_selection() -> dict`(2026-08-30追加)
+  `render_choices`でユーザーがクリックした結果を取得する。未選択なら
+  `{"selected": None}`、選択済みなら`{"selected": {index, thumbnail_path, label,
+  source_value, tag, seek_seconds, channel}}`を返す。そのまま`play_channel`に
+  渡せる形にしてある。
+
+`render_choices`/`get_selection`のポーリング方式は`play_channel`の`/state`と同じ
+発想だが、状態と内部エンドポイントは別系統(`/choices`, `/internal/render_choices`)
+にした。プレイヤーのタブ生存判定(4.4節)とは独立で、`render_choices`は常に
+新規タブを開く(`render_picture`と同じ「都度新規タブ」方式。選択操作は毎回単発の
+やり取りで、タブを使い回す必要性が薄いため)。
+
 `play_channel`は`seek_seconds: float | None = None`引数も追加(2026-08-25)。
 指定するとその秒数の位置から再生を開始する。
 

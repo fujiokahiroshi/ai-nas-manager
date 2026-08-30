@@ -71,6 +71,74 @@ def test_play_without_thumbnail_path_clears_thumbnail() -> None:
     assert module._state["thumbnail"] is None
 
 
+def test_render_choices_then_get_selection_before_click() -> None:
+    module._apply_render_choices(
+        [
+            {
+                "thumbnail_path": "\\\\wsl.localhost\\Ubuntu\\tmp\\a.png",
+                "label": "候補A",
+                "source_value": "\\\\wsl.localhost\\Ubuntu\\tmp\\a.mp4",
+            },
+            {
+                "thumbnail_path": "\\\\wsl.localhost\\Ubuntu\\tmp\\b.png",
+                "label": "候補B",
+                "source_value": "\\\\wsl.localhost\\Ubuntu\\tmp\\b.mp4",
+                "tag": "説明B",
+                "seek_seconds": 4.0,
+            },
+        ]
+    )
+    assert module._get_selection() == {"selected": None}
+    assert len(module._choice_state["options"]) == 2
+    assert module._choice_state["options"][0]["thumbnail_uri"] == "file://wsl.localhost/Ubuntu/tmp/a.png"
+
+
+def test_apply_choice_sets_selection() -> None:
+    module._apply_render_choices(
+        [
+            {
+                "thumbnail_path": "\\\\wsl.localhost\\Ubuntu\\tmp\\a.png",
+                "label": "候補A",
+                "source_value": "\\\\wsl.localhost\\Ubuntu\\tmp\\a.mp4",
+            },
+            {
+                "thumbnail_path": "\\\\wsl.localhost\\Ubuntu\\tmp\\b.png",
+                "label": "候補B",
+                "source_value": "\\\\wsl.localhost\\Ubuntu\\tmp\\b.mp4",
+                "tag": "説明B",
+                "seek_seconds": 4.0,
+            },
+        ]
+    )
+    module._apply_choice(1)
+    result = module._get_selection()
+    assert result["selected"]["index"] == 1
+    assert result["selected"]["label"] == "候補B"
+    assert result["selected"]["source_value"] == "\\\\wsl.localhost\\Ubuntu\\tmp\\b.mp4"
+    assert result["selected"]["seek_seconds"] == 4.0
+    assert "thumbnail_uri" not in result["selected"]
+
+
+def test_apply_choice_rejects_out_of_range_index() -> None:
+    module._apply_render_choices(
+        [
+            {
+                "thumbnail_path": "\\\\wsl.localhost\\Ubuntu\\tmp\\a.png",
+                "label": "候補A",
+                "source_value": "\\\\wsl.localhost\\Ubuntu\\tmp\\a.mp4",
+            }
+        ]
+    )
+    message = module._apply_choice(5)
+    assert "無効" in message
+    assert module._get_selection() == {"selected": None}
+
+
+def test_render_choices_requires_thumbnail_and_source() -> None:
+    message = module._apply_render_choices([{"label": "抜けあり"}])
+    assert "thumbnail_path" in message
+
+
 def test_get_status_returns_current_state() -> None:
     module._apply_play(
         "file", "\\\\wsl.localhost\\Ubuntu\\tmp\\demo.mp4", 2, "CH2", tag="ダミーtag"

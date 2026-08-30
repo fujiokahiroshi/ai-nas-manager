@@ -30,6 +30,7 @@
 | 「今何が再生されてる?」 | `get_playback_status()`。現在のchannel/title/tag/commandが返る |
 | 「止めて」 | `stop_media()`。再生が停止する |
 | 「黄色いパーツの場面を見せて」(検索+シーク複合) | `search_media`→`get_fragment_details`→`get_media_location`→`play_channel(seek_seconds=25.0)`。該当場面から再生開始 |
+| 「自転車の男性が映っている場面、どっちか選ばせて」 | `search_media`等で候補を絞り込み→`render_choices([...])`でサムネイル2件をブラウザに並べて表示。ユーザーがクリック後、`get_selection()`で選択結果を取得し`play_channel(...)`で再生 |
 
 ## 3. 自律的な発見・登録(list_pending_media / analyze_video / register_media)
 

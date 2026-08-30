@@ -34,6 +34,7 @@ TAB_ALIVE_TIMEOUT_SEC = 5.0
 
 _PLAYER_DIR = Path(tempfile.gettempdir()) / "media-renderer"
 _PLAYER_HTML_PATH = _PLAYER_DIR / "player.html"
+_CHOICES_HTML_PATH = _PLAYER_DIR / "chooser.html"
 
 # Claude CodeとClaude Desktopなど、同じMCPサーバー定義から複数プロセスが同時に
 # 起動されることがある(windows-message-mcpで経験済みの問題)。固定ポートを
@@ -54,6 +55,13 @@ _state: dict[str, Any] = {
     "seek_to": None,
 }
 _last_seen: float | None = None
+
+_choice_lock = threading.Lock()
+_choice_state: dict[str, Any] = {
+    "options": [],
+    "seq": 0,
+    "selected_index": None,
+}
 
 
 def _unc_to_file_uri(unc_path: str) -> str:
@@ -208,6 +216,96 @@ def _open_player_page() -> None:
     webbrowser.open(_PLAYER_HTML_PATH.as_uri())
 
 
+def _choices_html() -> str:
+    choices_url = json.dumps(LEADER_BASE_URL + "/choices")
+    return f"""<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>media_renderer chooser</title>
+<style>
+  html, body {{ margin:0; min-height:100%; background:#111; color:#eee; font-family:sans-serif; }}
+  #grid {{ display:flex; flex-wrap:wrap; gap:16px; padding:20px; }}
+  .card {{
+    width:240px; cursor:pointer; border:3px solid transparent; border-radius:8px;
+    padding:8px; background:#1c1c1c; transition:border-color .15s;
+  }}
+  .card:hover {{ border-color:#5b9dff; }}
+  .card.selected {{ border-color:#4caf50; background:#123018; }}
+  .card img {{ width:100%; height:160px; object-fit:cover; border-radius:4px; background:#000; display:block; }}
+  .card .label {{ margin-top:8px; font-size:14px; line-height:1.4; }}
+  #empty {{ padding:20px; opacity:0.7; }}
+  #status {{ padding:0 20px 20px; font-size:13px; opacity:0.8; }}
+</style>
+</head>
+<body>
+  <div id="empty">候補が指定されていません。</div>
+  <div id="grid"></div>
+  <div id="status"></div>
+<script>
+  const CHOICES_URL = {choices_url};
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+  const status = document.getElementById('status');
+  let lastSeq = -1;
+
+  function render(data) {{
+    const options = data.options || [];
+    empty.style.display = options.length ? 'none' : 'block';
+    grid.innerHTML = '';
+    options.forEach((opt, i) => {{
+      const card = document.createElement('div');
+      card.className = 'card' + (data.selected_index === i ? ' selected' : '');
+      const img = document.createElement('img');
+      img.src = opt.thumbnail_uri;
+      img.alt = opt.label || '';
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = opt.label || ('候補' + (i + 1));
+      card.appendChild(img);
+      card.appendChild(label);
+      card.addEventListener('click', () => choose(i));
+      grid.appendChild(card);
+    }});
+    status.textContent = (data.selected_index !== null && data.selected_index !== undefined)
+      ? '選択済み: ' + (options[data.selected_index] ? options[data.selected_index].label : '')
+      : 'クリックして選んでください。';
+  }}
+
+  function choose(index) {{
+    fetch(CHOICES_URL, {{
+      method: 'POST',
+      headers: {{'Content-Type': 'application/json'}},
+      body: JSON.stringify({{index}})
+    }}).catch(() => {{}});
+  }}
+
+  async function poll() {{
+    try {{
+      const res = await fetch(CHOICES_URL, {{cache: 'no-store'}});
+      const data = await res.json();
+      if (data.seq !== lastSeq) {{
+        lastSeq = data.seq;
+        render(data);
+      }}
+    }} catch (e) {{
+      /* リーダー未応答。次回ポーリングで再試行する */
+    }}
+  }}
+
+  setInterval(poll, 800);
+  poll();
+</script>
+</body>
+</html>"""
+
+
+def _open_choices_page() -> None:
+    _PLAYER_DIR.mkdir(exist_ok=True)
+    _CHOICES_HTML_PATH.write_text(_choices_html(), encoding="utf-8")
+    webbrowser.open(_CHOICES_HTML_PATH.as_uri())
+
+
 def _apply_play(
     source_type: str,
     source_value: str,
@@ -268,6 +366,55 @@ def _get_status() -> dict[str, Any]:
         return dict(_state)
 
 
+def _apply_render_choices(options: list[dict[str, Any]]) -> str:
+    processed: list[dict[str, Any]] = []
+    for i, opt in enumerate(options):
+        thumbnail_path = opt.get("thumbnail_path")
+        source_value = opt.get("source_value")
+        if not thumbnail_path:
+            return f"{i}番目の候補にthumbnail_pathがありません。"
+        if not source_value:
+            return f"{i}番目の候補にsource_valueがありません。"
+        processed.append(
+            {
+                "thumbnail_path": thumbnail_path,
+                "thumbnail_uri": _unc_to_file_uri(thumbnail_path),
+                "label": opt.get("label") or f"候補{i + 1}",
+                "source_value": source_value,
+                "tag": opt.get("tag"),
+                "seek_seconds": opt.get("seek_seconds"),
+                "channel": opt.get("channel"),
+            }
+        )
+    with _choice_lock:
+        _choice_state["options"] = processed
+        _choice_state["selected_index"] = None
+        _choice_state["seq"] += 1
+    _open_choices_page()
+    return f"{len(processed)}件の候補をブラウザに表示しました。選択されたらget_selectionで取得できます。"
+
+
+def _apply_choice(index: int) -> str:
+    with _choice_lock:
+        options = _choice_state["options"]
+        if not (0 <= index < len(options)):
+            return f"無効な選択indexです: {index}"
+        _choice_state["selected_index"] = index
+        _choice_state["seq"] += 1
+        label = options[index]["label"]
+    return f"「{label}」が選択されました。"
+
+
+def _get_selection() -> dict[str, Any]:
+    with _choice_lock:
+        idx = _choice_state["selected_index"]
+        if idx is None:
+            return {"selected": None}
+        opt = dict(_choice_state["options"][idx])
+        opt.pop("thumbnail_uri", None)
+        return {"selected": {"index": idx, **opt}}
+
+
 def _apply_browser_report(command: str) -> str:
     """ブラウザ側のユーザー操作で状態が変化したときに内部状態を同期する。"""
     if command not in {"play", "stop"}:
@@ -318,6 +465,10 @@ class _Handler(BaseHTTPRequestHandler):
             with _state_lock:
                 self._send_json(dict(_state))
             return
+        if self.path == "/choices":
+            with _choice_lock:
+                self._send_json(dict(_choice_state))
+            return
         self.send_response(404)
         self.end_headers()
 
@@ -360,6 +511,24 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send_json({"error": "invalid JSON body"}, 400)
                 return
             message = _apply_seek(float(body.get("seconds", 0.0)))
+            self._send_json({"message": message})
+            return
+        if self.path == "/internal/render_choices":
+            try:
+                body = self._read_json_body()
+            except Exception:
+                self._send_json({"error": "invalid JSON body"}, 400)
+                return
+            message = _apply_render_choices(list(body.get("options", [])))
+            self._send_json({"message": message})
+            return
+        if self.path == "/choices":
+            try:
+                body = self._read_json_body()
+            except Exception:
+                self._send_json({"error": "invalid JSON body"}, 400)
+                return
+            message = _apply_choice(int(body.get("index", -1)))
             self._send_json({"message": message})
             return
         self.send_response(404)
@@ -470,6 +639,52 @@ def get_playback_status() -> dict:
             return dict(json.loads(resp.read()))
     except Exception as e:  # noqa: BLE001 - リーダー未応答等をユーザー向けに要約する
         return {"error": f"リーダープロセスへの問い合わせに失敗しました: {e}"}
+
+
+@mcp.tool()
+def render_choices(options: list[dict]) -> str:
+    """複数の候補をサムネイル付きでブラウザに並べて表示し、ユーザーにクリックで選ばせる。
+
+    再生する前に「これでいいか」をユーザーに確認させたい場合に使う。
+    optionsの各要素は以下のキーを持つdict:
+    - thumbnail_path (必須): 代表フレーム画像のUNCパス
+    - label (必須): 候補の見出し(例: シーンの説明)
+    - source_value (必須): 選択された場合に再生する動画のUNCパス
+    - tag (省略可): 補足説明
+    - seek_seconds (省略可): 選択時にその秒数から再生を開始する
+    - channel (省略可): チャンネル番号
+
+    呼び出す度に新しいタブでブラウザに一覧を表示する。ユーザーが選んだ結果は
+    get_selection()で取得できる(まだ選ばれていなければ{"selected": None})。
+    選択されたら、その内容をそのままplay_channelに渡して再生を開始する想定。
+    """
+    if is_leader:
+        return _apply_render_choices(options)
+    return _forward("/internal/render_choices", {"options": options})
+
+
+@mcp.tool()
+def get_selection() -> dict:
+    """render_choicesで表示した候補のうち、ユーザーがクリックしたものを返す。
+
+    まだ選択されていない場合は{"selected": None}を返す。選択済みなら
+    {"selected": {"index":..., "thumbnail_path":..., "label":..., "source_value":...,
+    "tag":..., "seek_seconds":..., "channel":...}}を返す。source_value/tag/
+    seek_seconds/channelはそのままplay_channelの引数に渡せる。
+    """
+    if is_leader:
+        return _get_selection()
+    try:
+        with urllib.request.urlopen(LEADER_BASE_URL + "/choices", timeout=5) as resp:
+            data = dict(json.loads(resp.read()))
+    except Exception as e:  # noqa: BLE001 - リーダー未応答等をユーザー向けに要約する
+        return {"error": f"リーダープロセスへの問い合わせに失敗しました: {e}"}
+    idx = data.get("selected_index")
+    if idx is None:
+        return {"selected": None}
+    opt = dict(data["options"][idx])
+    opt.pop("thumbnail_uri", None)
+    return {"selected": {"index": idx, **opt}}
 
 
 @mcp.tool()
