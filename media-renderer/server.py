@@ -50,6 +50,7 @@ _state: dict[str, Any] = {
     "channel": None,
     "title": None,
     "tag": None,
+    "thumbnail": None,
     "seek_to": None,
 }
 _last_seen: float | None = None
@@ -90,6 +91,11 @@ def _player_html() -> str:
     display:none;
   }}
   #tag:not(:empty) {{ display:block; }}
+  #thumbnail {{
+    position:fixed; right:12px; bottom:12px; width:220px; height:160px;
+    object-fit:contain; border:2px solid rgba(255,255,255,0.85); border-radius:6px;
+    z-index:6; box-shadow:0 2px 10px rgba(0,0,0,0.6); display:none; background:#000;
+  }}
 </style>
 </head>
 <body>
@@ -97,12 +103,14 @@ def _player_html() -> str:
   <video id="player" controls></video>
   <div id="title"></div>
   <div id="tag"></div>
+  <img id="thumbnail" alt="thumbnail">
 <script>
   const STATE_URL = {state_url};
   const video = document.getElementById('player');
   const overlay = document.getElementById('overlay');
   const titleEl = document.getElementById('title');
   const tagEl = document.getElementById('tag');
+  const thumbEl = document.getElementById('thumbnail');
   let started = false;
   let lastSeq = -1;
   let currentState = null;
@@ -124,9 +132,22 @@ def _player_html() -> str:
     }}
   }}
 
+  function applyThumbnail(data) {{
+    if (data.thumbnail) {{
+      if (thumbEl.src !== data.thumbnail) {{
+        thumbEl.src = data.thumbnail;
+      }}
+      thumbEl.style.display = 'block';
+    }} else {{
+      thumbEl.style.display = 'none';
+      thumbEl.removeAttribute('src');
+    }}
+  }}
+
   function applyState(data) {{
     titleEl.textContent = data.title || '';
     tagEl.textContent = data.tag || '';
+    applyThumbnail(data);
     if (data.command === 'play' && data.source_value) {{
       if (video.dataset.src !== data.source_value) {{
         video.src = data.source_value;
@@ -164,6 +185,7 @@ def _player_html() -> str:
       currentState = data;
       titleEl.textContent = data.title || '';
       tagEl.textContent = data.tag || '';
+      applyThumbnail(data);
       if (started && data.seq !== lastSeq) {{
         lastSeq = data.seq;
         applyState(data);
@@ -193,6 +215,7 @@ def _apply_play(
     title: str | None,
     tag: str | None = None,
     seek_seconds: float | None = None,
+    thumbnail_path: str | None = None,
 ) -> str:
     if source_type != "file":
         return f"未対応のsource_type: '{source_type}' (v-01は'file'のみ対応)"
@@ -201,12 +224,14 @@ def _apply_play(
         _last_seen is None or (time.time() - _last_seen) > TAB_ALIVE_TIMEOUT_SEC
     )
     file_uri = _unc_to_file_uri(source_value)
+    thumbnail_uri = _unc_to_file_uri(thumbnail_path) if thumbnail_path else None
     with _state_lock:
         _state["source_type"] = source_type
         _state["source_value"] = file_uri
         _state["channel"] = channel
         _state["title"] = title
         _state["tag"] = tag
+        _state["thumbnail"] = thumbnail_uri
         _state["seek_to"] = seek_seconds
         _state["command"] = "play"
         _state["seq"] += 1
@@ -320,6 +345,7 @@ class _Handler(BaseHTTPRequestHandler):
                 body.get("title"),
                 body.get("tag"),
                 body.get("seek_seconds"),
+                body.get("thumbnail_path"),
             )
             self._send_json({"message": message})
             return
@@ -375,6 +401,7 @@ def play_channel(
     title: str | None = None,
     tag: str | None = None,
     seek_seconds: float | None = None,
+    thumbnail_path: str | None = None,
 ) -> str:
     """指定したメディアソースを再生する。
 
@@ -387,9 +414,13 @@ def play_channel(
     渡す想定)。指定するとプレイヤー画面下部に表示される。
     seek_secondsを指定すると、その秒数の位置から再生を開始する
     (ai-nas-manager.get_fragment_detailsのstartをそのまま渡せる)。
+    thumbnail_pathを指定すると、代表フレーム画像(UNCパス)を画面右下に
+    小さく重ねて表示する。
     """
     if is_leader:
-        return _apply_play(source_type, source_value, channel, title, tag, seek_seconds)
+        return _apply_play(
+            source_type, source_value, channel, title, tag, seek_seconds, thumbnail_path
+        )
     return _forward(
         "/internal/play",
         {
@@ -399,6 +430,7 @@ def play_channel(
             "title": title,
             "tag": tag,
             "seek_seconds": seek_seconds,
+            "thumbnail_path": thumbnail_path,
         },
     )
 

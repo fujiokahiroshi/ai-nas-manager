@@ -218,6 +218,18 @@ epg-rendererと同じ構成を踏襲: Python, Windowsネイティブ, venvはロ
 `play_channel`は`seek_seconds: float | None = None`引数も追加(2026-08-25)。
 指定するとその秒数の位置から再生を開始する。
 
+`play_channel`は`thumbnail_path: str | None = None`引数も追加(2026-08-30)。
+指定すると代表フレーム画像(UNCパス)を画面右下に220x160の枠で重ねて表示する
+(タブ生存判定・リーダー/フォロワー転送は既存の`tag`と同じ経路に相乗り)。
+
+実装時のハマりどころ: `<img>`をCSSの`max-width`/`max-height`のみでサイズ指定すると、
+`getBoundingClientRect()`は正しい非ゼロサイズを返し`display:block`/`visibility:visible`も
+正しいのに、実際の画面には一切描画されない(Edge/Chromium、position:fixedの`<video>`と
+共存する場合に再現)。`width`/`height`を明示し`object-fit:contain`を使う実装に変更したところ
+描画された。原因はサイズが不定形(max-*のみ)な`<img>`の実際のペイントに関する
+Chromium側の癖と推測されるが未特定。今後`<img>`をposition:fixedで重ねる際は
+`width`/`height`を明示すること。
+
 ### 4.2 実装方式: play/stopの制御をどう実現するか(検証済み)
 
 `webbrowser.open()`は「新しいタブを開く」ことしかできず、既に開いているタブの内容を

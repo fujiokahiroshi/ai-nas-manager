@@ -54,6 +54,23 @@ def test_apply_seek_updates_state_without_changing_command() -> None:
     assert module._state["seq"] == 1
 
 
+def test_play_with_thumbnail_path_sets_thumbnail_uri() -> None:
+    module._apply_play(
+        "file",
+        "\\\\wsl.localhost\\Ubuntu\\tmp\\demo.mp4",
+        3,
+        "CH3",
+        thumbnail_path="\\\\wsl.localhost\\Ubuntu\\tmp\\thumb.png",
+    )
+    assert module._state["thumbnail"] == "file://wsl.localhost/Ubuntu/tmp/thumb.png"
+
+
+def test_play_without_thumbnail_path_clears_thumbnail() -> None:
+    module._state["thumbnail"] = "file://wsl.localhost/Ubuntu/tmp/old.png"
+    module._apply_play("file", "\\\\wsl.localhost\\Ubuntu\\tmp\\demo.mp4", 3, "CH3")
+    assert module._state["thumbnail"] is None
+
+
 def test_get_status_returns_current_state() -> None:
     module._apply_play(
         "file", "\\\\wsl.localhost\\Ubuntu\\tmp\\demo.mp4", 2, "CH2", tag="ダミーtag"
