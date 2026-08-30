@@ -203,8 +203,9 @@ epg-rendererと同じ構成を踏襲: Python, Windowsネイティブ, venvはロ
   再生を停止する。
 
 - `render_picture(path: str) -> str`
-  指定パス(UNC)の画像を表示する。epg-rendererの`render_epg`と同じ「都度新規タブ」方式で十分
-  (静止画は「停止」概念が不要なため)。
+  指定パス(UNC)の画像を表示する。2026-08-30に`play_channel`と同じタブ生存判定
+  (4.4節)方式へ変更(下記「タブ増殖問題」参照)。直近5秒以内にタブがポーリング
+  していれば同じタブの画像を差し替え、そうでなければ新規タブを開く。
 
 - `seek(position_seconds: float) -> str`(2026-08-25追加)
   ソースを切り替えずに、再生中の位置だけを変更する。
@@ -229,9 +230,28 @@ epg-rendererと同じ構成を踏襲: Python, Windowsネイティブ, venvはロ
 
 `render_choices`/`get_selection`のポーリング方式は`play_channel`の`/state`と同じ
 発想だが、状態と内部エンドポイントは別系統(`/choices`, `/internal/render_choices`)
-にした。プレイヤーのタブ生存判定(4.4節)とは独立で、`render_choices`は常に
-新規タブを開く(`render_picture`と同じ「都度新規タブ」方式。選択操作は毎回単発の
-やり取りで、タブを使い回す必要性が薄いため)。
+にした。
+
+### 4.1.1 タブ増殖問題(2026-08-30)
+
+「ウィンドウがたくさん出すぎる」という指摘を受けて調査。原因は2つ:
+
+1. `render_picture`と`render_choices`が**常に**新規タブを開く実装だった
+   (当初は「選択操作は単発なので使い回す必要性が薄い」と判断していたが、
+   実際には検証や通常利用で繰り返し呼ぶ場面が多く、タブが際限なく増える)。
+   → `play_channel`と同じタブ生存判定(4.4節、`_last_seen`/`TAB_ALIVE_TIMEOUT_SEC`)
+   方式に統一。それぞれ独立した生存タイマー(`_choice_last_seen`/`_picture_last_seen`)
+   を持ち、対応するポーリングエンドポイント(`/choices`・`/picture`)へのGETで
+   更新される。`render_picture`/`render_choices`ともpicture.html/chooser.htmlを
+   ポーリングするページに変更し(以前のpicture.htmlは静的な使い捨てページだった)、
+   タブを開いたままでも画像・候補一覧の差し替えを検知できるようにした。
+2. **より大きな原因**: `test_server.py`の単体テストが`_apply_play`/
+   `_apply_render_choices`を直接呼んでおり、テスト実行のたびに`_last_seen`系が
+   `None`(未ポーリング)のため`need_new_tab`判定が常に真になり、`webbrowser.open()`
+   が実際に呼ばれてブラウザタブが開いていた。本セッション中に何度もテストを
+   再実行したことが、タブ増殖の主因だったと判明。
+   → `test_server.py`冒頭で`module.webbrowser.open`をno-opに差し替えて解決。
+   単体テストが実ブラウザを操作すべきではない、という一般的な教訓でもある。
 
 `play_channel`は`seek_seconds: float | None = None`引数も追加(2026-08-25)。
 指定するとその秒数の位置から再生を開始する。

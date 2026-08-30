@@ -8,7 +8,6 @@ WSLには一切依存しない。Claudeがai-nas-manager(WSL側)から取得し�
 
 from __future__ import annotations
 
-import html
 import json
 import os
 import tempfile
@@ -35,6 +34,7 @@ TAB_ALIVE_TIMEOUT_SEC = 5.0
 _PLAYER_DIR = Path(tempfile.gettempdir()) / "media-renderer"
 _PLAYER_HTML_PATH = _PLAYER_DIR / "player.html"
 _CHOICES_HTML_PATH = _PLAYER_DIR / "chooser.html"
+_PICTURE_HTML_PATH = _PLAYER_DIR / "picture.html"
 
 # Claude CodeとClaude Desktopなど、同じMCPサーバー定義から複数プロセスが同時に
 # 起動されることがある(windows-message-mcpで経験済みの問題)。固定ポートを
@@ -62,6 +62,14 @@ _choice_state: dict[str, Any] = {
     "seq": 0,
     "selected_index": None,
 }
+_choice_last_seen: float | None = None
+
+_picture_lock = threading.Lock()
+_picture_state: dict[str, Any] = {
+    "picture_uri": None,
+    "seq": 0,
+}
+_picture_last_seen: float | None = None
 
 
 def _unc_to_file_uri(unc_path: str) -> str:
@@ -306,6 +314,71 @@ def _open_choices_page() -> None:
     webbrowser.open(_CHOICES_HTML_PATH.as_uri())
 
 
+def _picture_html() -> str:
+    picture_url = json.dumps(LEADER_BASE_URL + "/picture")
+    return f"""<!doctype html>
+<html lang="ja">
+<head><meta charset="utf-8"><title>picture</title>
+<style>
+  html, body {{ margin:0; height:100%; background:#111; }}
+  body {{ display:flex; align-items:center; justify-content:center; }}
+  img {{ max-width:100vw; max-height:100vh; object-fit:contain; display:none; }}
+</style>
+</head>
+<body>
+<img id="picture" alt="picture">
+<script>
+  const PICTURE_URL = {picture_url};
+  const img = document.getElementById('picture');
+  let lastSeq = -1;
+
+  async function poll() {{
+    try {{
+      const res = await fetch(PICTURE_URL, {{cache: 'no-store'}});
+      const data = await res.json();
+      if (data.seq !== lastSeq) {{
+        lastSeq = data.seq;
+        if (data.picture_uri) {{
+          img.src = data.picture_uri;
+          img.style.display = 'block';
+        }} else {{
+          img.style.display = 'none';
+          img.removeAttribute('src');
+        }}
+      }}
+    }} catch (e) {{
+      /* リーダー未応答。次回ポーリングで再試行する */
+    }}
+  }}
+
+  setInterval(poll, 1000);
+  poll();
+</script>
+</body>
+</html>"""
+
+
+def _open_picture_page() -> None:
+    _PLAYER_DIR.mkdir(exist_ok=True)
+    _PICTURE_HTML_PATH.write_text(_picture_html(), encoding="utf-8")
+    webbrowser.open(_PICTURE_HTML_PATH.as_uri())
+
+
+def _apply_render_picture(path: str) -> str:
+    file_uri = _unc_to_file_uri(path)
+    need_new_tab = (
+        _picture_last_seen is None
+        or (time.time() - _picture_last_seen) > TAB_ALIVE_TIMEOUT_SEC
+    )
+    with _picture_lock:
+        _picture_state["picture_uri"] = file_uri
+        _picture_state["seq"] += 1
+    if need_new_tab:
+        _open_picture_page()
+        return f"画像を表示しました: {path}"
+    return f"表示中の画像を切り替えました: {path}"
+
+
 def _apply_play(
     source_type: str,
     source_value: str,
@@ -386,12 +459,18 @@ def _apply_render_choices(options: list[dict[str, Any]]) -> str:
                 "channel": opt.get("channel"),
             }
         )
+    need_new_tab = (
+        _choice_last_seen is None
+        or (time.time() - _choice_last_seen) > TAB_ALIVE_TIMEOUT_SEC
+    )
     with _choice_lock:
         _choice_state["options"] = processed
         _choice_state["selected_index"] = None
         _choice_state["seq"] += 1
-    _open_choices_page()
-    return f"{len(processed)}件の候補をブラウザに表示しました。選択されたらget_selectionで取得できます。"
+    if need_new_tab:
+        _open_choices_page()
+        return f"{len(processed)}件の候補をブラウザに表示しました。選択されたらget_selectionで取得できます。"
+    return f"{len(processed)}件の候補に更新しました(既存のタブに反映されます)。"
 
 
 def _apply_choice(index: int) -> str:
@@ -459,15 +538,21 @@ class _Handler(BaseHTTPRequestHandler):
         return dict(json.loads(raw or b"{}"))
 
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandlerの命名規則
-        global _last_seen
+        global _last_seen, _choice_last_seen, _picture_last_seen
         if self.path == "/state":
             _last_seen = time.time()
             with _state_lock:
                 self._send_json(dict(_state))
             return
         if self.path == "/choices":
+            _choice_last_seen = time.time()
             with _choice_lock:
                 self._send_json(dict(_choice_state))
+            return
+        if self.path == "/picture":
+            _picture_last_seen = time.time()
+            with _picture_lock:
+                self._send_json(dict(_picture_state))
             return
         self.send_response(404)
         self.end_headers()
@@ -529,6 +614,15 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send_json({"error": "invalid JSON body"}, 400)
                 return
             message = _apply_choice(int(body.get("index", -1)))
+            self._send_json({"message": message})
+            return
+        if self.path == "/internal/render_picture":
+            try:
+                body = self._read_json_body()
+            except Exception:
+                self._send_json({"error": "invalid JSON body"}, 400)
+                return
+            message = _apply_render_picture(str(body.get("path", "")))
             self._send_json({"message": message})
             return
         self.send_response(404)
@@ -689,25 +783,15 @@ def get_selection() -> dict:
 
 @mcp.tool()
 def render_picture(path: str) -> str:
-    """指定パス(UNC)の画像を既定ブラウザで表示する。呼び出す度に新しいタブで開く。"""
-    file_uri = _unc_to_file_uri(path)
-    html_content = f"""<!doctype html>
-<html lang="ja">
-<head><meta charset="utf-8"><title>picture</title>
-<style>
-  html, body {{ margin:0; height:100%; background:#111; }}
-  body {{ display:flex; align-items:center; justify-content:center; }}
-  img {{ max-width:100vw; max-height:100vh; object-fit:contain; }}
-</style>
-</head>
-<body><img src="{html.escape(file_uri, quote=True)}"></body>
-</html>"""
-    tmp_dir = Path(tempfile.gettempdir()) / "media-renderer"
-    tmp_dir.mkdir(exist_ok=True)
-    out_path = tmp_dir / "picture.html"
-    out_path.write_text(html_content, encoding="utf-8")
-    webbrowser.open(out_path.as_uri())
-    return f"画像を表示しました: {path}"
+    """指定パス(UNC)の画像を既定ブラウザで表示する。
+
+    直近5秒以内にタブがポーリングで生存確認できていれば同じタブの画像を
+    差し替え、そうでなければ(未起動・タブを閉じた等)新規タブを開く
+    (play_channelと同じタブ生存判定。4.4節)。
+    """
+    if is_leader:
+        return _apply_render_picture(path)
+    return _forward("/internal/render_picture", {"path": path})
 
 
 if __name__ == "__main__":

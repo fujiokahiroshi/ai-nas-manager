@@ -6,6 +6,11 @@ module = importlib.util.module_from_spec(spec)
 assert spec and spec.loader
 spec.loader.exec_module(module)
 
+# _apply_play/_apply_render_choices/_apply_render_picture open a real browser tab when
+# no tab has polled recently (need_new_tab判定)。単体テストではブラウザを実際に
+# 開かせたくないので無効化する(でないとテスト実行の度にタブが増殖してしまう)。
+module.webbrowser.open = lambda *args, **kwargs: None
+
 
 def test_browser_pause_reports_stop_state() -> None:
     module._state["command"] = "play"
@@ -137,6 +142,62 @@ def test_apply_choice_rejects_out_of_range_index() -> None:
 def test_render_choices_requires_thumbnail_and_source() -> None:
     message = module._apply_render_choices([{"label": "抜けあり"}])
     assert "thumbnail_path" in message
+
+
+def test_render_choices_reuses_tab_when_recently_polled() -> None:
+    opts = [
+        {
+            "thumbnail_path": "\\\\wsl.localhost\\Ubuntu\\tmp\\a.png",
+            "label": "候補A",
+            "source_value": "\\\\wsl.localhost\\Ubuntu\\tmp\\a.mp4",
+        }
+    ]
+    opened = []
+    module.webbrowser.open = lambda *a, **kw: opened.append(a)
+    try:
+        module._apply_render_choices(opts)
+        assert len(opened) == 1  # 初回は新規タブ
+
+        module._choice_last_seen = module.time.time()  # ポーリング中とみなす
+        message = module._apply_render_choices(opts)
+        assert len(opened) == 1  # 生存中は新規タブを開かない
+        assert "既存のタブ" in message
+    finally:
+        module.webbrowser.open = lambda *args, **kwargs: None
+
+
+def test_render_choices_opens_new_tab_when_stale() -> None:
+    opts = [
+        {
+            "thumbnail_path": "\\\\wsl.localhost\\Ubuntu\\tmp\\a.png",
+            "label": "候補A",
+            "source_value": "\\\\wsl.localhost\\Ubuntu\\tmp\\a.mp4",
+        }
+    ]
+    opened = []
+    module.webbrowser.open = lambda *a, **kw: opened.append(a)
+    try:
+        module._choice_last_seen = module.time.time() - 999  # ポーリングが止まって久しい
+        module._apply_render_choices(opts)
+        assert len(opened) == 1
+    finally:
+        module.webbrowser.open = lambda *args, **kwargs: None
+
+
+def test_render_picture_reuses_tab_when_recently_polled() -> None:
+    opened = []
+    module.webbrowser.open = lambda *a, **kw: opened.append(a)
+    try:
+        module._apply_render_picture("\\\\wsl.localhost\\Ubuntu\\tmp\\pic.png")
+        assert len(opened) == 1
+
+        module._picture_last_seen = module.time.time()
+        message = module._apply_render_picture("\\\\wsl.localhost\\Ubuntu\\tmp\\pic2.png")
+        assert len(opened) == 1
+        assert "切り替えました" in message
+        assert module._picture_state["picture_uri"] == "file://wsl.localhost/Ubuntu/tmp/pic2.png"
+    finally:
+        module.webbrowser.open = lambda *args, **kwargs: None
 
 
 def test_get_status_returns_current_state() -> None:
