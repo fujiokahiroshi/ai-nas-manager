@@ -38,6 +38,13 @@ def test_get_fragment_details_returns_seekable_timestamps() -> None:
         assert fragment["description"]
 
 
+def test_get_fragment_details_includes_thumbnail_path() -> None:
+    details = server.get_fragment_details(1)
+    for fragment in details["fragments"]:
+        assert fragment["thumbnail_path"] is not None
+        assert fragment["thumbnail_path"].endswith(".png")
+
+
 def test_get_fragment_details_invalid_channel_raises() -> None:
     with pytest.raises(ValueError):
         server.get_fragment_details(99)
@@ -74,6 +81,42 @@ def test_analyze_video_returns_fragments_for_arbitrary_file(two_scene_video: Pat
 def test_analyze_video_missing_file_raises() -> None:
     with pytest.raises(ValueError):
         server.analyze_video("/no/such/file.mp4")
+
+
+def test_register_media_generates_thumbnail_for_real_file(
+    two_scene_video: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(server, "THUMBNAILS_DIR", tmp_path / "thumbnails")
+
+    result = server.register_media(
+        path=str(two_scene_video),
+        title="two scene",
+        tag="テスト映像",
+        fragments=[
+            {"start": 0.0, "end": 2.0, "description": "赤色の場面"},
+            {"start": 2.0, "end": 4.0, "description": "青色の場面"},
+        ],
+    )
+
+    assert len(result["fragments"]) == 2
+    for i, fragment in enumerate(result["fragments"]):
+        thumb = Path(fragment["thumbnail_path"])
+        assert thumb.exists()
+        assert thumb.name == f"two_scene_f{i}.png"
+
+    # search_mediaの結果にもthumbnail_pathがそのまま乗る。
+    results = server.search_media("テスト映像")
+    assert results[0]["fragments"][0]["thumbnail_path"] == result["fragments"][0]["thumbnail_path"]
+
+
+def test_register_media_missing_file_leaves_thumbnail_none() -> None:
+    result = server.register_media(
+        path="/no/such/video.mp4",
+        title="存在しない",
+        tag="tag",
+        fragments=[{"start": 0.0, "end": 1.0, "description": "場面"}],
+    )
+    assert result["fragments"][0]["thumbnail_path"] is None
 
 
 def test_register_media_then_search_media_finds_it() -> None:

@@ -21,6 +21,24 @@ from discovery import TunerInfo, discover_tuners as _discover_tuners
 
 mcp = MCPServer("ai-nas-manager")
 
+THUMBNAILS_DIR = Path(__file__).resolve().parent / "media" / "thumbnails"
+
+
+def _generate_fragment_thumbnail(video_path: Path, stem: str, index: int, at_seconds: float) -> str | None:
+    """fragmentの代表フレームを永続サムネイルとして保存し、パスを返す。
+
+    映像ファイルが存在しない、あるいはffmpegでの抽出に失敗した場合はNoneを返し、
+    register_media自体は失敗させない(サムネイルはあくまで付加情報のため)。
+    """
+    if not video_path.exists():
+        return None
+    out_path = THUMBNAILS_DIR / f"{stem}_f{index}.png"
+    try:
+        video_fragmentation.extract_frame(video_path, at_seconds, out_path)
+    except Exception:  # noqa: BLE001 - サムネイル生成はベストエフォート
+        return None
+    return str(out_path)
+
 
 @mcp.tool()
 def ping() -> str:
@@ -88,7 +106,12 @@ def search_media(keyword: str) -> list[dict]:
             "title": e.title,
             "tag": e.tag,
             "fragments": [
-                {"start": f.start, "end": f.end, "description": f.description}
+                {
+                    "start": f.start,
+                    "end": f.end,
+                    "description": f.description,
+                    "thumbnail_path": f.thumbnail_path,
+                }
                 for f in e.fragments
             ],
         }
@@ -106,14 +129,38 @@ def register_media(path: str, title: str, tag: str, fragments: list[dict]) -> di
     [{"start": float, "end": float, "description": str}, ...]の形。
     一度登録すればsearch_mediaで検索でき、list_pending_mediaの対象からも外れる。
     Claudeが自律的に「発見→解析→登録」の一連を行うための書き込み口。
+
+    各fragmentの代表フレーム(区間の中間時点)を自動でサムネイルとして
+    ai-nas-manager/media/thumbnails/に永続保存し、thumbnail_pathとして
+    fragmentに含める(search_mediaの結果にもそのまま乗る)。start(区間境界)
+    ちょうどはシーン変化の瞬間(≒ブレやフレームアウト)であることが多く
+    代表フレームとして不適切なため、中間時点を使う。映像ファイルが存在しない、
+    または抽出に失敗した場合はthumbnail_path=Noneのまま登録を続ける。
     """
-    entry = media_index.register(path, title, tag, fragments)
+    THUMBNAILS_DIR.mkdir(parents=True, exist_ok=True)
+    video_path = Path(path)
+    enriched_fragments = [
+        {
+            **f,
+            "thumbnail_path": _generate_fragment_thumbnail(
+                video_path, video_path.stem, i, (f["start"] + f["end"]) / 2
+            ),
+        }
+        for i, f in enumerate(fragments)
+    ]
+
+    entry = media_index.register(path, title, tag, enriched_fragments)
     return {
         "path": entry.path,
         "title": entry.title,
         "tag": entry.tag,
         "fragments": [
-            {"start": f.start, "end": f.end, "description": f.description}
+            {
+                "start": f.start,
+                "end": f.end,
+                "description": f.description,
+                "thumbnail_path": f.thumbnail_path,
+            }
             for f in entry.fragments
         ],
     }
@@ -146,7 +193,12 @@ def get_fragment_details(channel: int) -> dict:
         "channel": c.channel,
         "title": c.title,
         "fragments": [
-            {"start": f.start, "end": f.end, "description": f.description}
+            {
+                "start": f.start,
+                "end": f.end,
+                "description": f.description,
+                "thumbnail_path": str(f.thumbnail_path) if f.thumbnail_path else None,
+            }
             for f in c.fragments
         ],
     }

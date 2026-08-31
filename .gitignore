@@ -11,3 +11,4 @@ ai-nas-manager/media/pictogram_samples/*.png
 ai-nas-manager/media_index.json
 ai-nas-manager/media/test_dataset/*.mp4
 ai-nas-manager/media/test_dataset/thumbnails/*.png
+ai-nas-manager/media/thumbnails/*.png

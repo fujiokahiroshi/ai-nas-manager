@@ -29,6 +29,12 @@ def test_get_channel_has_fragments() -> None:
     assert c.fragments[-1].end > c.fragments[0].end
 
 
+def test_fragments_have_thumbnail_paths() -> None:
+    for c in media_catalog.list_channels():
+        for i, f in enumerate(c.fragments):
+            assert f.thumbnail_path == media_catalog._THUMBNAILS_DIR / f"ch{c.channel}_f{i}.png"
+
+
 def test_search_channels_matches_title() -> None:
     results = media_catalog.search_channels("gyroboy")
     assert [c.channel for c in results] == [1]

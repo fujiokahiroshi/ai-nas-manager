@@ -22,6 +22,7 @@ class FragmentEntry:
     start: float
     end: float
     description: str
+    thumbnail_path: str | None = None
 
 
 @dataclass(frozen=True)
