@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import tempfile
 import threading
 import time
@@ -17,7 +18,7 @@ import urllib.request
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path, PureWindowsPath
-from typing import Any
+from typing import Any, Callable
 
 from mcp.server.mcpserver import MCPServer
 
@@ -30,6 +31,43 @@ LEADER_BASE_URL = f"http://{HTTP_HOST}:{HTTP_PORT}"
 # タブが「生きている」とみなす、/stateポーリング(1秒間隔)からの許容経過時間。
 # 設計ドキュメント4.4節: ポーリング間隔の5倍を閾値にする。
 TAB_ALIVE_TIMEOUT_SEC = 5.0
+
+# 新規タブを開いた場合に、実際にページが読み込まれ最初のポーリングが届くまで
+# 待つ上限(ブラウザ起動+ページ読み込みの時間を見込む)。既存タブ再利用の場合は
+# 直近のポーリングで即座に確認できるはずなので、もっと短い上限で十分。
+_NEW_TAB_ACK_TIMEOUT_SEC = 6.0
+_REUSE_TAB_ACK_TIMEOUT_SEC = 2.0
+
+# webbrowser.open()はOSの既定ブラウザに丸投げするため、既定ブラウザが
+# 何になっているか(Edge/Chrome等)によって挙動が変わり、「表示したつもりの
+# タブがユーザーの見ているブラウザと違う」という混乱の原因になった
+# (2026-08-31, 既定ブラウザが把握しないままChromeに変わっていた)。
+# 見つかった場合はEdgeを名指しで起動し、常に同じブラウザに開く。
+_EDGE_CANDIDATES = [
+    r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+    r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+]
+
+
+def _open_in_browser(file_uri: str) -> None:
+    for candidate in _EDGE_CANDIDATES:
+        if Path(candidate).exists():
+            subprocess.Popen([candidate, file_uri])
+            return
+    webbrowser.open(file_uri)  # Edgeが見つからない場合のみOS既定ブラウザにフォールバック
+
+
+def _wait_for_ack(get_last_seen: Callable[[], float | None], since: float, timeout: float) -> bool:
+    """呼び出し時刻(since)より後に、対応するポーリングエンドポイントへのGETが
+    実際に届いたかを確認する。届いていなければFalseを返し、呼び出し元は
+    「表示できたつもりで実は届いていない」という結果を返さずに済む。"""
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        seen = get_last_seen()
+        if seen is not None and seen >= since:
+            return True
+        time.sleep(0.15)
+    return False
 
 _PLAYER_DIR = Path(tempfile.gettempdir()) / "media-renderer"
 _PLAYER_HTML_PATH = _PLAYER_DIR / "player.html"
@@ -221,7 +259,7 @@ def _player_html() -> str:
 def _open_player_page() -> None:
     _PLAYER_DIR.mkdir(exist_ok=True)
     _PLAYER_HTML_PATH.write_text(_player_html(), encoding="utf-8")
-    webbrowser.open(_PLAYER_HTML_PATH.as_uri())
+    _open_in_browser(_PLAYER_HTML_PATH.as_uri())
 
 
 def _choices_html() -> str:
@@ -311,7 +349,7 @@ def _choices_html() -> str:
 def _open_choices_page() -> None:
     _PLAYER_DIR.mkdir(exist_ok=True)
     _CHOICES_HTML_PATH.write_text(_choices_html(), encoding="utf-8")
-    webbrowser.open(_CHOICES_HTML_PATH.as_uri())
+    _open_in_browser(_CHOICES_HTML_PATH.as_uri())
 
 
 def _picture_html() -> str:
@@ -361,21 +399,32 @@ def _picture_html() -> str:
 def _open_picture_page() -> None:
     _PLAYER_DIR.mkdir(exist_ok=True)
     _PICTURE_HTML_PATH.write_text(_picture_html(), encoding="utf-8")
-    webbrowser.open(_PICTURE_HTML_PATH.as_uri())
+    _open_in_browser(_PICTURE_HTML_PATH.as_uri())
 
 
 def _apply_render_picture(path: str) -> str:
+    call_time = time.time()
     file_uri = _unc_to_file_uri(path)
     need_new_tab = (
         _picture_last_seen is None
-        or (time.time() - _picture_last_seen) > TAB_ALIVE_TIMEOUT_SEC
+        or (call_time - _picture_last_seen) > TAB_ALIVE_TIMEOUT_SEC
     )
     with _picture_lock:
         _picture_state["picture_uri"] = file_uri
         _picture_state["seq"] += 1
     if need_new_tab:
         _open_picture_page()
+        if not _wait_for_ack(lambda: _picture_last_seen, call_time, _NEW_TAB_ACK_TIMEOUT_SEC):
+            return (
+                "画像をブラウザで開こうとしましたが、応答が確認できませんでした。"
+                f"手動で確認してください(ファイル: {_PICTURE_HTML_PATH})。"
+            )
         return f"画像を表示しました: {path}"
+    if not _wait_for_ack(lambda: _picture_last_seen, call_time, _REUSE_TAB_ACK_TIMEOUT_SEC):
+        return (
+            "画像の切り替えを試みましたが、既存のタブからの応答が確認できませんでした。"
+            "タブが閉じられているか、固まっている可能性があります。"
+        )
     return f"表示中の画像を切り替えました: {path}"
 
 
@@ -391,8 +440,9 @@ def _apply_play(
     if source_type != "file":
         return f"未対応のsource_type: '{source_type}' (v-01は'file'のみ対応)"
 
+    call_time = time.time()
     need_new_tab = (
-        _last_seen is None or (time.time() - _last_seen) > TAB_ALIVE_TIMEOUT_SEC
+        _last_seen is None or (call_time - _last_seen) > TAB_ALIVE_TIMEOUT_SEC
     )
     file_uri = _unc_to_file_uri(source_value)
     thumbnail_uri = _unc_to_file_uri(thumbnail_path) if thumbnail_path else None
@@ -411,9 +461,20 @@ def _apply_play(
     seek_note = f"({seek_seconds:.1f}秒の位置から)" if seek_seconds is not None else ""
     if need_new_tab:
         _open_player_page()
+        if not _wait_for_ack(lambda: _last_seen, call_time, _NEW_TAB_ACK_TIMEOUT_SEC):
+            return (
+                "プレイヤーをブラウザで開こうとしましたが、応答が確認できませんでした。"
+                f"手動で確認してください(ファイル: {_PLAYER_HTML_PATH})。"
+            )
         return (
             f"プレイヤーをブラウザで開き、{label}{seek_note}の再生を指示しました。"
             "初回のみ画面の「クリックして開始」を押してください。"
+        )
+    if not _wait_for_ack(lambda: _last_seen, call_time, _REUSE_TAB_ACK_TIMEOUT_SEC):
+        return (
+            f"{label}{seek_note}への切り替えを試みましたが、"
+            "既存のタブからの応答が確認できませんでした。"
+            "タブが閉じられているか、固まっている可能性があります。"
         )
     return f"{label}{seek_note}の再生に切り替えました。"
 
@@ -459,9 +520,10 @@ def _apply_render_choices(options: list[dict[str, Any]]) -> str:
                 "channel": opt.get("channel"),
             }
         )
+    call_time = time.time()
     need_new_tab = (
         _choice_last_seen is None
-        or (time.time() - _choice_last_seen) > TAB_ALIVE_TIMEOUT_SEC
+        or (call_time - _choice_last_seen) > TAB_ALIVE_TIMEOUT_SEC
     )
     with _choice_lock:
         _choice_state["options"] = processed
@@ -469,7 +531,18 @@ def _apply_render_choices(options: list[dict[str, Any]]) -> str:
         _choice_state["seq"] += 1
     if need_new_tab:
         _open_choices_page()
+        if not _wait_for_ack(lambda: _choice_last_seen, call_time, _NEW_TAB_ACK_TIMEOUT_SEC):
+            return (
+                f"{len(processed)}件の候補を表示しようとしましたが、応答が確認できませんでした。"
+                f"手動で確認してください(ファイル: {_CHOICES_HTML_PATH})。"
+            )
         return f"{len(processed)}件の候補をブラウザに表示しました。選択されたらget_selectionで取得できます。"
+    if not _wait_for_ack(lambda: _choice_last_seen, call_time, _REUSE_TAB_ACK_TIMEOUT_SEC):
+        return (
+            f"{len(processed)}件の候補への更新を試みましたが、"
+            "既存のタブからの応答が確認できませんでした。"
+            "タブが閉じられているか、固まっている可能性があります。"
+        )
     return f"{len(processed)}件の候補に更新しました(既存のタブに反映されます)。"
 
 
@@ -528,6 +601,12 @@ class _Handler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")
+        # Private Network Access (PNA): Chromium系ブラウザは、file://等の
+        # ページからプライベートアドレス(127.0.0.1含む)へfetchする際、
+        # 事前にOPTIONSプリフライトを送りこのヘッダーでの許可を要求する
+        # (2026-08-31、対応していなかったため実際のfetchが"Failed to fetch"で
+        # サイレントに失敗する不具合を確認)。単純リクエストの応答にも念のため付与。
+        self.send_header("Access-Control-Allow-Private-Network", "true")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
@@ -536,6 +615,15 @@ class _Handler(BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length", "0"))
         raw = self.rfile.read(length) if length else b"{}"
         return dict(json.loads(raw or b"{}"))
+
+    def do_OPTIONS(self) -> None:  # noqa: N802 - PNA/CORSプリフライト応答
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Private-Network", "true")
+        self.send_header("Content-Length", "0")
+        self.end_headers()
 
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandlerの命名規則
         global _last_seen, _choice_last_seen, _picture_last_seen
