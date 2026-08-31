@@ -59,6 +59,14 @@
 |---|---|
 | 「この映像は何個のfragmentに分かれる?」 | `analyze_video`のfragments配列の長さを回答。編集済み映像(LEGO)は複数、連続ショット映像(Xiphテストセット)は1個になるはず(13節参照) |
 
+## 7. fragment単位サムネイル資産化(2026-08-30追加)
+
+| プロンプト | 期待される動き |
+|---|---|
+| 「自転車に乗った男性を検索して、候補をサムネイルで選ばせて」 | `search_media("自転車")` → 結果の各fragmentに`thumbnail_path`が最初から含まれている(`analyze_video`の再実行が不要)ことを確認 → その`thumbnail_path`をそのまま`render_choices([...])`に渡してブラウザにサムネイル2件(緑/赤の自転車)を表示 → ユーザーがクリック後`get_selection()`で選択結果(`source_value`/`seek_seconds`含む)を取得し`play_channel(...)`で再生 |
+| 「GyroBoyのfragment内訳を見せて」 | `get_fragment_details(1)` → 3件のfragmentそれぞれに`thumbnail_path`(`ch1_f0.png`等)が含まれることを確認 |
+| 「さっきのサムネイル、実際に開いて見せて」 | 得られた`thumbnail_path`(WSL絶対パス)をUNC変換して`render_picture(...)`。実際に代表フレーム画像が表示される |
+
 ## 既知の制約(2026-08-30時点)
 
 - CH1〜4以外の`get_fragment_details`はエラーになる(channel引数はmedia_catalog専用。
