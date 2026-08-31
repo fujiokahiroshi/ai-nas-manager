@@ -210,6 +210,69 @@ def test_render_picture_reuses_tab_when_recently_polled() -> None:
         module._open_in_browser = lambda *args, **kwargs: None
 
 
+def test_diagnose_connection_as_leader_reports_last_seen_ages() -> None:
+    module.is_leader = True
+    try:
+        now = module.time.time()
+        module._last_seen = now - 1.0
+        module._choice_last_seen = None
+        module._picture_last_seen = now - 30.0
+
+        result = module.diagnose_connection()
+
+        assert result["is_leader"] is True
+        assert result["instance_id"] == module.INSTANCE_ID
+        assert abs(result["state_last_seen_ago_sec"] - 1.0) < 0.5
+        assert result["choices_last_seen_ago_sec"] is None
+        assert abs(result["picture_last_seen_ago_sec"] - 30.0) < 0.5
+    finally:
+        module.is_leader = False
+
+
+def test_diagnose_connection_as_follower_reports_leader_reachability() -> None:
+    module.is_leader = False
+    original_urlopen = module.urllib.request.urlopen
+
+    class _FakeResponse:
+        def __enter__(self) -> "_FakeResponse":
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return json_dumps_bytes({"instance_id": "leader-xyz"})
+
+    def json_dumps_bytes(obj: dict) -> bytes:
+        return module.json.dumps(obj).encode("utf-8")
+
+    module.urllib.request.urlopen = lambda *a, **kw: _FakeResponse()
+    try:
+        result = module.diagnose_connection()
+        assert result["is_leader"] is False
+        assert result["leader_reachable"] is True
+        assert result["leader_instance_id"] == "leader-xyz"
+    finally:
+        module.urllib.request.urlopen = original_urlopen
+
+
+def test_diagnose_connection_as_follower_reports_unreachable_leader() -> None:
+    module.is_leader = False
+    original_urlopen = module.urllib.request.urlopen
+
+    def _raise(*a: object, **kw: object) -> None:
+        raise OSError("connection refused")
+
+    module.urllib.request.urlopen = _raise
+    try:
+        result = module.diagnose_connection()
+        assert result["is_leader"] is False
+        assert result["leader_reachable"] is False
+        assert "error" in result
+    finally:
+        module.urllib.request.urlopen = original_urlopen
+
+
 def test_apply_play_reports_failure_when_no_ack_on_new_tab() -> None:
     module._last_seen = None
     module._wait_for_ack = lambda *a, **kw: False

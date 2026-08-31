@@ -849,6 +849,53 @@ def get_playback_status() -> dict:
 
 
 @mcp.tool()
+def diagnose_connection() -> dict:
+    """media_rendererの接続状態を自己診断する。
+
+    「タブをクリックしても反応しない」「表示したはずなのに反映されない」等の
+    不具合を調べる最初の一歩として使う(design doc 4.1.2節の汎用チェックリストの
+    1・2番を自動化したもの)。このプロセス自身がリーダーかどうか、リーダーの場合は
+    実際にブラウザタブがポーリングしてきているか(state/choices/pictureそれぞれの
+    最終ポーリングからの経過秒数)とそのリーダー固有のINSTANCE_IDを返す。
+    フォロワーの場合はリーダーへの到達性を確認する。
+
+    last_seen_ago_secがNone、またはTAB_ALIVE_TIMEOUT_SEC(5秒)を大きく超えている
+    場合、対応するブラウザタブは開いていないか応答していない(サーバー側は
+    正常でも、タブが閉じられている・固まっている・別プロセスに繋がっている等)。
+    """
+    now = time.time()
+
+    def _ago(last_seen: float | None) -> float | None:
+        return round(now - last_seen, 1) if last_seen is not None else None
+
+    if is_leader:
+        return {
+            "is_leader": True,
+            "http_port": HTTP_PORT,
+            "instance_id": INSTANCE_ID,
+            "state_last_seen_ago_sec": _ago(_last_seen),
+            "choices_last_seen_ago_sec": _ago(_choice_last_seen),
+            "picture_last_seen_ago_sec": _ago(_picture_last_seen),
+        }
+    try:
+        with urllib.request.urlopen(LEADER_BASE_URL + "/state", timeout=5) as resp:
+            leader_state = dict(json.loads(resp.read()))
+        return {
+            "is_leader": False,
+            "http_port": HTTP_PORT,
+            "leader_reachable": True,
+            "leader_instance_id": leader_state.get("instance_id"),
+        }
+    except Exception as e:  # noqa: BLE001 - リーダー未応答等をユーザー向けに要約する
+        return {
+            "is_leader": False,
+            "http_port": HTTP_PORT,
+            "leader_reachable": False,
+            "error": f"リーダープロセスへの問い合わせに失敗しました: {e}",
+        }
+
+
+@mcp.tool()
 def render_choices(options: list[dict]) -> str:
     """複数の候補をサムネイル付きでブラウザに並べて表示し、ユーザーにクリックで選ばせる。
 
