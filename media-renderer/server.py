@@ -77,6 +77,38 @@ def _wait_for_ack(get_last_seen: Callable[[], float | None], since: float, timeo
         time.sleep(0.15)
     return False
 
+# どのページ(player/chooser/picture)にも共通で埋め込む、接続状態の可視化オーバーレイ。
+# 「クリックしても反応しない」系の不具合をユーザー自身が画面を見ただけで気づける
+# ようにする(diagnose_connectionをClaudeが呼ぶまでもなく、画面の右上を見れば
+# 直近のポーリングが成功しているか・リーダーのinstance_idが変わっていないかが
+# 分かる)。2026-08-31、ユーザー指摘により追加。
+DEBUG_OVERLAY_CSS = """
+  #debug {
+    position:fixed; top:8px; right:8px; width:200px; height:40px; z-index:999;
+    font-family:monospace; font-size:11px; color:#7CFC7C;
+    background:rgba(0,0,0,0.65); padding:4px 8px; border-radius:4px;
+    box-sizing:border-box; white-space:pre; pointer-events:none; text-align:right;
+  }
+  #debug.stale { color:#ff6b6b; }
+"""
+
+DEBUG_OVERLAY_JS = """
+  let lastPollOkAt = null;
+  function mrDebug(ok, data) {
+    const now = new Date().toLocaleTimeString('ja-JP', {hour12:false});
+    if (ok) {
+      lastPollOkAt = now;
+      debugEl.classList.remove('stale');
+      debugEl.textContent = 'OK ' + now
+        + '\\nseq=' + (data ? data.seq : '?')
+        + ' id=' + (data && data.instance_id ? data.instance_id.slice(0, 8) : '?');
+    } else {
+      debugEl.classList.add('stale');
+      debugEl.textContent = 'ERR 応答なし\\n最終成功: ' + (lastPollOkAt || 'なし');
+    }
+  }
+"""
+
 _PLAYER_DIR = Path(tempfile.gettempdir()) / "media-renderer"
 _PLAYER_HTML_PATH = _PLAYER_DIR / "player.html"
 _CHOICES_HTML_PATH = _PLAYER_DIR / "chooser.html"
@@ -158,6 +190,7 @@ def _player_html() -> str:
     object-fit:contain; border:2px solid rgba(255,255,255,0.85); border-radius:6px;
     z-index:6; box-shadow:0 2px 10px rgba(0,0,0,0.6); display:none; background:#000;
   }}
+{DEBUG_OVERLAY_CSS}
 </style>
 </head>
 <body>
@@ -166,6 +199,7 @@ def _player_html() -> str:
   <div id="title"></div>
   <div id="tag"></div>
   <img id="thumbnail" alt="thumbnail">
+  <div id="debug"></div>
 <script>
   const STATE_URL = {state_url};
   const video = document.getElementById('player');
@@ -173,10 +207,12 @@ def _player_html() -> str:
   const titleEl = document.getElementById('title');
   const tagEl = document.getElementById('tag');
   const thumbEl = document.getElementById('thumbnail');
+  const debugEl = document.getElementById('debug');
   let started = false;
   let lastSeq = -1;
   let lastInstanceId = null;
   let currentState = null;
+{DEBUG_OVERLAY_JS}
 
   function reportBrowserState(command) {{
     fetch(STATE_URL, {{
@@ -245,6 +281,7 @@ def _player_html() -> str:
     try {{
       const res = await fetch(STATE_URL, {{cache: 'no-store'}});
       const data = await res.json();
+      mrDebug(true, data);
       currentState = data;
       titleEl.textContent = data.title || '';
       tagEl.textContent = data.tag || '';
@@ -262,6 +299,7 @@ def _player_html() -> str:
         lastInstanceId = data.instance_id;
       }}
     }} catch (e) {{
+      mrDebug(false);
       /* リーダー未応答。次回ポーリングで再試行する */
     }}
   }}
@@ -299,19 +337,23 @@ def _choices_html() -> str:
   .card .label {{ margin-top:8px; font-size:14px; line-height:1.4; }}
   #empty {{ padding:20px; opacity:0.7; }}
   #status {{ padding:0 20px 20px; font-size:13px; opacity:0.8; }}
+{DEBUG_OVERLAY_CSS}
 </style>
 </head>
 <body>
   <div id="empty">候補が指定されていません。</div>
   <div id="grid"></div>
   <div id="status"></div>
+  <div id="debug"></div>
 <script>
   const CHOICES_URL = {choices_url};
   const grid = document.getElementById('grid');
   const empty = document.getElementById('empty');
   const status = document.getElementById('status');
+  const debugEl = document.getElementById('debug');
   let lastSeq = -1;
   let lastInstanceId = null;
+{DEBUG_OVERLAY_JS}
 
   function render(data) {{
     const options = data.options || [];
@@ -348,6 +390,7 @@ def _choices_html() -> str:
     try {{
       const res = await fetch(CHOICES_URL, {{cache: 'no-store'}});
       const data = await res.json();
+      mrDebug(true, data);
       const instanceChanged = data.instance_id !== lastInstanceId;
       if (instanceChanged || data.seq !== lastSeq) {{
         lastSeq = data.seq;
@@ -357,6 +400,7 @@ def _choices_html() -> str:
         lastInstanceId = data.instance_id;
       }}
     }} catch (e) {{
+      mrDebug(false);
       /* リーダー未応答。次回ポーリングで再試行する */
     }}
   }}
@@ -383,20 +427,25 @@ def _picture_html() -> str:
   html, body {{ margin:0; height:100%; background:#111; }}
   body {{ display:flex; align-items:center; justify-content:center; }}
   img {{ max-width:100vw; max-height:100vh; object-fit:contain; display:none; }}
+{DEBUG_OVERLAY_CSS}
 </style>
 </head>
 <body>
 <img id="picture" alt="picture">
+<div id="debug"></div>
 <script>
   const PICTURE_URL = {picture_url};
   const img = document.getElementById('picture');
+  const debugEl = document.getElementById('debug');
   let lastSeq = -1;
   let lastInstanceId = null;
+{DEBUG_OVERLAY_JS}
 
   async function poll() {{
     try {{
       const res = await fetch(PICTURE_URL, {{cache: 'no-store'}});
       const data = await res.json();
+      mrDebug(true, data);
       const instanceChanged = data.instance_id !== lastInstanceId;
       lastInstanceId = data.instance_id;
       if (instanceChanged || data.seq !== lastSeq) {{
@@ -410,6 +459,7 @@ def _picture_html() -> str:
         }}
       }}
     }} catch (e) {{
+      mrDebug(false);
       /* リーダー未応答。次回ポーリングで再試行する */
     }}
   }}
