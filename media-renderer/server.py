@@ -15,6 +15,7 @@ import tempfile
 import threading
 import time
 import urllib.request
+import uuid
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path, PureWindowsPath
@@ -27,6 +28,13 @@ mcp = MCPServer("media-renderer")
 HTTP_HOST = "127.0.0.1"
 HTTP_PORT = int(os.environ.get("MEDIA_RENDERER_HTTP_PORT", "39231"))
 LEADER_BASE_URL = f"http://{HTTP_HOST}:{HTTP_PORT}"
+
+# プロセス起動ごとに一意なID。ブラウザ側のポーリングは通常seqの変化だけを見るが、
+# 「サーバープロセスが再起動して内部のseqが0から数え直された結果、ブラウザが
+# 保持している古いseqの値とたまたま一致し、変化なしと誤判定して再描画をスキップ
+# する」という取り違えが実際に起きた(2026-08-31)。INSTANCE_IDが変わっていれば
+# seqの値に関係なく必ず再描画させることで、この種のプロセス取り違えを防ぐ。
+INSTANCE_ID = uuid.uuid4().hex
 
 # タブが「生きている」とみなす、/stateポーリング(1秒間隔)からの許容経過時間。
 # 設計ドキュメント4.4節: ポーリング間隔の5倍を閾値にする。
@@ -167,6 +175,7 @@ def _player_html() -> str:
   const thumbEl = document.getElementById('thumbnail');
   let started = false;
   let lastSeq = -1;
+  let lastInstanceId = null;
   let currentState = null;
 
   function reportBrowserState(command) {{
@@ -240,9 +249,17 @@ def _player_html() -> str:
       titleEl.textContent = data.title || '';
       tagEl.textContent = data.tag || '';
       applyThumbnail(data);
-      if (started && data.seq !== lastSeq) {{
+      // instance_idが変わっていれば、リーダープロセスが再起動して内部の
+      // seqが0から数え直されている可能性がある。seqの一致・不一致に関係なく
+      // 必ず反映する(そうしないと、たまたま同じseqの値になった場合に
+      // 「変化なし」と誤判定して再生指示を取りこぼす)。
+      const instanceChanged = data.instance_id !== lastInstanceId;
+      if (started && (instanceChanged || data.seq !== lastSeq)) {{
         lastSeq = data.seq;
+        lastInstanceId = data.instance_id;
         applyState(data);
+      }} else {{
+        lastInstanceId = data.instance_id;
       }}
     }} catch (e) {{
       /* リーダー未応答。次回ポーリングで再試行する */
@@ -294,6 +311,7 @@ def _choices_html() -> str:
   const empty = document.getElementById('empty');
   const status = document.getElementById('status');
   let lastSeq = -1;
+  let lastInstanceId = null;
 
   function render(data) {{
     const options = data.options || [];
@@ -330,9 +348,13 @@ def _choices_html() -> str:
     try {{
       const res = await fetch(CHOICES_URL, {{cache: 'no-store'}});
       const data = await res.json();
-      if (data.seq !== lastSeq) {{
+      const instanceChanged = data.instance_id !== lastInstanceId;
+      if (instanceChanged || data.seq !== lastSeq) {{
         lastSeq = data.seq;
+        lastInstanceId = data.instance_id;
         render(data);
+      }} else {{
+        lastInstanceId = data.instance_id;
       }}
     }} catch (e) {{
       /* リーダー未応答。次回ポーリングで再試行する */
@@ -369,12 +391,15 @@ def _picture_html() -> str:
   const PICTURE_URL = {picture_url};
   const img = document.getElementById('picture');
   let lastSeq = -1;
+  let lastInstanceId = null;
 
   async function poll() {{
     try {{
       const res = await fetch(PICTURE_URL, {{cache: 'no-store'}});
       const data = await res.json();
-      if (data.seq !== lastSeq) {{
+      const instanceChanged = data.instance_id !== lastInstanceId;
+      lastInstanceId = data.instance_id;
+      if (instanceChanged || data.seq !== lastSeq) {{
         lastSeq = data.seq;
         if (data.picture_uri) {{
           img.src = data.picture_uri;
@@ -630,17 +655,17 @@ class _Handler(BaseHTTPRequestHandler):
         if self.path == "/state":
             _last_seen = time.time()
             with _state_lock:
-                self._send_json(dict(_state))
+                self._send_json({**_state, "instance_id": INSTANCE_ID})
             return
         if self.path == "/choices":
             _choice_last_seen = time.time()
             with _choice_lock:
-                self._send_json(dict(_choice_state))
+                self._send_json({**_choice_state, "instance_id": INSTANCE_ID})
             return
         if self.path == "/picture":
             _picture_last_seen = time.time()
             with _picture_lock:
-                self._send_json(dict(_picture_state))
+                self._send_json({**_picture_state, "instance_id": INSTANCE_ID})
             return
         self.send_response(404)
         self.end_headers()

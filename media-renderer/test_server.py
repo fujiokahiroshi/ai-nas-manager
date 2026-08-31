@@ -304,6 +304,22 @@ def test_open_in_browser_falls_back_to_webbrowser_when_edge_missing() -> None:
         shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
+def test_instance_id_is_set_and_differs_across_process_restarts() -> None:
+    assert isinstance(module.INSTANCE_ID, str) and module.INSTANCE_ID
+
+    # 新しいプロセス起動をシミュレートするため、同じserver.pyをもう一度
+    # ロードし直す(モジュール内で毎回uuid4()するので、正しく実装されていれば
+    # 必ず異なる値になる。制御HTTPサーバーの二重bindはOSErrorとして
+    # 静かに失敗しis_leader=Falseになるだけなので、後始末は不要)。
+    other_spec = importlib.util.spec_from_file_location(
+        "media_renderer_server_other_instance", Path(__file__).with_name("server.py")
+    )
+    other = importlib.util.module_from_spec(other_spec)
+    assert other_spec and other_spec.loader
+    other_spec.loader.exec_module(other)
+    assert other.INSTANCE_ID != module.INSTANCE_ID
+
+
 def test_get_status_returns_current_state() -> None:
     module._apply_play(
         "file", "\\\\wsl.localhost\\Ubuntu\\tmp\\demo.mp4", 2, "CH2", tag="ダミーtag"
