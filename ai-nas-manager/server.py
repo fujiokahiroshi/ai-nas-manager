@@ -6,11 +6,15 @@ v-01ではTuner(仮想Tuner)発見・状態取得・番組表取得のMCP連携�
 """
 
 import hashlib
+import os
 import tempfile
 from pathlib import Path
+from urllib.parse import quote
 
 import anyio
 
+import event_api
+import event_queue
 from mcp.server.mcpserver import MCPServer
 
 import media_catalog
@@ -20,6 +24,8 @@ import video_fragmentation
 from discovery import TunerInfo, discover_tuners as _discover_tuners
 
 mcp = MCPServer("ai-nas-manager")
+event_api.start_event_api()
+
 
 THUMBNAILS_DIR = Path(__file__).resolve().parent / "media" / "thumbnails"
 
@@ -45,6 +51,95 @@ def ping() -> str:
     """疎通確認用のダミーツール。"""
     return "pong"
 
+
+@mcp.tool()
+def receive_view_events(
+    after_id: int | None = None,
+    limit: int = 100,
+    consumer: str = "ai-nas-manager",
+    acknowledge: bool = False,
+) -> dict:
+    """Windows ViewからNAS宛てに届いたイベントを連番順に取得する。
+
+    after_idを省略するとconsumerのACK済み位置から取得する。acknowledge=Trueなら、
+    返した最後のイベントまで同時にACKする。イベントはSQLiteに永続化されるため、
+    MCPやViewの再起動後も未処理分を取得できる。
+    """
+    cursor = event_queue.get_cursor(consumer) if after_id is None else after_id
+    events = event_queue.list_events("nas", after_id=cursor, limit=limit)
+    last_event_id = events[-1].id if events else cursor
+    if acknowledge and events:
+        event_queue.acknowledge(consumer, last_event_id)
+    return {
+        "consumer": consumer,
+        "after_id": cursor,
+        "last_event_id": last_event_id,
+        "events": [event.as_dict() for event in events],
+    }
+
+
+@mcp.tool()
+def acknowledge_view_events(
+    last_event_id: int,
+    consumer: str = "ai-nas-manager",
+) -> dict:
+    """Viewイベントを指定IDまで処理済みにする。ACK位置は後退しない。"""
+    cursor = event_queue.acknowledge(consumer, last_event_id)
+    return {"consumer": consumer, "last_event_id": cursor}
+
+
+@mcp.tool()
+def publish_view_event(
+    event_type: str,
+    payload: dict | None = None,
+    dedupe_key: str | None = None,
+) -> dict:
+    """AI NAS ManagerからWindows View宛てのイベントを永続キューへ発行する。
+
+    Viewはevent_type='playback_command'を解釈する。payload.commandには
+    'play'/'stop'/'seek'を指定でき、playはsource_valueまたはsource_uri、
+    seekはsecondsを使用する。
+    """
+    normalized_payload = dict(payload or {})
+    if (
+        event_type == "playback_command"
+        and normalized_payload.get("command") == "play"
+    ):
+        distro = os.environ.get("AI_NAS_WSL_DISTRO", "Ubuntu")
+        for source_key, uri_key in (
+            ("source_value", "source_uri"),
+            ("thumbnail_path", "thumbnail_uri"),
+        ):
+            value = normalized_payload.get(source_key)
+            if value and uri_key not in normalized_payload and str(value).startswith("/"):
+                encoded = quote(str(value), safe="/:")
+                normalized_payload[uri_key] = f"file://wsl.localhost/{distro}{encoded}"
+
+    event = event_queue.publish(
+        source="ai-nas-manager",
+        target="view",
+        event_type=event_type,
+        payload=normalized_payload,
+        dedupe_key=dedupe_key,
+    )
+    return event.as_dict()
+
+
+@mcp.tool()
+def get_view_event_status(consumer: str = "ai-nas-manager") -> dict:
+    """直接イベントAPIとキューの現在位置を返す。"""
+    return {
+        "event_api": {
+            "host": event_api.EVENT_API_HOST,
+            "port": event_api.EVENT_API_PORT,
+            "is_leader": event_api.is_leader,
+            "instance_id": event_api.INSTANCE_ID,
+        },
+        "nas_latest_event_id": event_queue.latest_event_id("nas"),
+        "view_latest_event_id": event_queue.latest_event_id("view"),
+        "consumer": consumer,
+        "consumer_last_event_id": event_queue.get_cursor(consumer),
+    }
 
 @mcp.tool()
 def list_media(path: str = ".") -> str:

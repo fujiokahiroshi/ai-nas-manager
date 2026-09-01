@@ -382,6 +382,43 @@ def test_instance_id_is_set_and_differs_across_process_restarts() -> None:
     other_spec.loader.exec_module(other)
     assert other.INSTANCE_ID != module.INSTANCE_ID
 
+def test_leadership_watchdog_retries_when_leader_is_missing() -> None:
+    original_is_leader = module.is_leader
+    original_thread = module._control_thread
+    original_try = module._try_become_leader
+    calls = []
+    try:
+        module.is_leader = False
+        module._control_thread = None
+        module._try_become_leader = lambda: calls.append(True) or True
+        assert module._leadership_watchdog_step() is True
+        assert calls == [True]
+    finally:
+        module.is_leader = original_is_leader
+        module._control_thread = original_thread
+        module._try_become_leader = original_try
+
+
+def test_play_channel_promotes_before_forwarding_when_leader_is_missing() -> None:
+    original_step = module._leadership_watchdog_step
+    original_apply = module._apply_play
+    original_forward = module._forward
+    forwarded = []
+    try:
+        module._leadership_watchdog_step = lambda: True
+        module._apply_play = lambda *args, **kwargs: "promoted locally"
+        module._forward = (
+            lambda *args, **kwargs: forwarded.append((args, kwargs)) or "forwarded"
+        )
+        result = module.play_channel("file", "dummy")
+        assert result == "promoted locally"
+        assert forwarded == []
+    finally:
+        module._leadership_watchdog_step = original_step
+        module._apply_play = original_apply
+        module._forward = original_forward
+
+
 
 def test_get_status_returns_current_state() -> None:
     module._apply_play(
@@ -394,3 +431,36 @@ def test_get_status_returns_current_state() -> None:
     assert status["title"] == "CH2"
     assert status["tag"] == "ダミーtag"
     assert status["command"] == "play"
+
+
+def test_player_html_connects_directly_to_nas_event_api() -> None:
+    html = module._player_html()
+
+    assert "http://127.0.0.1:39232" in html
+    assert "postNasEvent('playback_state'" in html
+    assert "pollNasEvents" in html
+    assert "handleNasEvent" in html
+    assert "NAS OK " in html
+
+
+def test_chooser_posts_selection_directly_to_nas() -> None:
+    html = module._choices_html()
+
+    assert '_nas_event_bridge_js' not in html
+    assert "postNasEvent('selection'" in html
+    assert "currentOptions[index]" in html
+    assert "target: 'nas'" in html
+
+
+def test_picture_view_reports_connection_to_nas() -> None:
+    html = module._picture_html()
+
+    assert "postNasEvent('view_connected'" in html
+    assert 'NAS_VIEW_KIND = "picture"' in html
+
+
+def test_player_answers_nas_status_request_directly() -> None:
+    html = module._player_html()
+
+    assert "event.event_type === 'status_request'" in html
+    assert "postNasEvent('view_status'" in html

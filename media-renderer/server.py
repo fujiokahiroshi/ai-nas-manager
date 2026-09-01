@@ -28,6 +28,10 @@ mcp = MCPServer("media-renderer")
 HTTP_HOST = "127.0.0.1"
 HTTP_PORT = int(os.environ.get("MEDIA_RENDERER_HTTP_PORT", "39231"))
 LEADER_BASE_URL = f"http://{HTTP_HOST}:{HTTP_PORT}"
+NAS_EVENT_API_BASE = os.environ.get(
+    "AI_NAS_EVENT_API_URL", "http://127.0.0.1:39232"
+).rstrip("/")
+NAS_EVENT_API_TOKEN = os.environ.get("AI_NAS_EVENT_TOKEN")
 
 # プロセス起動ごとに一意なID。ブラウザ側のポーリングは通常seqの変化だけを見るが、
 # 「サーバープロセスが再起動して内部のseqが0から数え直された結果、ブラウザが
@@ -109,6 +113,119 @@ DEBUG_OVERLAY_JS = """
   }
 """
 
+
+def _nas_event_bridge_js(view_kind: str) -> str:
+    """Viewとai-nas-managerイベントAPIを直接接続する共通JavaScript。"""
+    template = r"""
+  const NAS_EVENT_API_BASE = __BASE__;
+  const NAS_EVENT_TOKEN = __TOKEN__;
+  const NAS_VIEW_KIND = __VIEW_KIND__;
+  const NAS_EVENT_HEADERS = {'Content-Type': 'application/json'};
+  if (NAS_EVENT_TOKEN) {
+    NAS_EVENT_HEADERS['Authorization'] = 'Bearer ' + NAS_EVENT_TOKEN;
+  }
+
+  let nasViewId;
+  let nasCursor = 0;
+  try {
+    nasViewId = localStorage.getItem('aiNasViewId');
+    if (!nasViewId) {
+      nasViewId = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+      localStorage.setItem('aiNasViewId', nasViewId);
+    }
+    nasCursor = Number(localStorage.getItem('aiNasCursor:' + NAS_VIEW_KIND) || '0');
+  } catch (e) {
+    nasViewId = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+  }
+  const nasConsumer = 'windows-view:' + NAS_VIEW_KIND + ':' + nasViewId;
+
+  function nasDebug(ok, detail) {
+    let el = document.getElementById('nas-debug');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'nas-debug';
+      Object.assign(el.style, {
+        position:'fixed', top:'52px', right:'8px', width:'200px', height:'22px',
+        zIndex:'999', fontFamily:'monospace', fontSize:'11px',
+        background:'rgba(0,0,0,0.65)', padding:'4px 8px',
+        borderRadius:'4px', boxSizing:'border-box', pointerEvents:'none',
+        textAlign:'right'
+      });
+      document.body.appendChild(el);
+    }
+    el.style.color = ok ? '#7CFC7C' : '#ff6b6b';
+    el.textContent = ok ? ('NAS OK ' + detail) : ('NAS ERR ' + detail);
+  }
+
+  async function postNasEvent(eventType, payload, dedupeKey) {
+    try {
+      const response = await fetch(NAS_EVENT_API_BASE + '/events', {
+        method: 'POST',
+        headers: NAS_EVENT_HEADERS,
+        body: JSON.stringify({
+          source: 'windows-view',
+          target: 'nas',
+          event_type: eventType,
+          payload: payload || {},
+          dedupe_key: dedupeKey || null
+        })
+      });
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const data = await response.json();
+      nasDebug(true, 'sent=' + data.event.id);
+      return data.event;
+    } catch (error) {
+      nasDebug(false, 'send');
+      return null;
+    }
+  }
+
+  async function ackNasEvents() {
+    await fetch(NAS_EVENT_API_BASE + '/acks', {
+      method: 'POST',
+      headers: NAS_EVENT_HEADERS,
+      body: JSON.stringify({consumer: nasConsumer, last_event_id: nasCursor})
+    });
+  }
+
+  async function pollNasEvents() {
+    try {
+      const url = NAS_EVENT_API_BASE + '/events?target=view&after_id='
+        + nasCursor + '&limit=100';
+      const response = await fetch(url, {cache:'no-store', headers:NAS_EVENT_HEADERS});
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const data = await response.json();
+      for (const event of (data.events || [])) {
+        if (typeof handleNasEvent === 'function') {
+          await handleNasEvent(event);
+        }
+        nasCursor = Math.max(nasCursor, Number(event.id));
+      }
+      try {
+        localStorage.setItem('aiNasCursor:' + NAS_VIEW_KIND, String(nasCursor));
+      } catch (e) {}
+      if ((data.events || []).length) await ackNasEvents();
+      nasDebug(true, 'recv=' + nasCursor);
+    } catch (error) {
+      nasDebug(false, 'poll');
+    }
+  }
+
+  postNasEvent('view_connected', {
+    view: NAS_VIEW_KIND,
+    consumer: nasConsumer,
+    user_agent: navigator.userAgent
+  });
+  setInterval(pollNasEvents, 750);
+  pollNasEvents();
+"""
+    return (
+        template.replace("__BASE__", json.dumps(NAS_EVENT_API_BASE))
+        .replace("__TOKEN__", json.dumps(NAS_EVENT_API_TOKEN))
+        .replace("__VIEW_KIND__", json.dumps(view_kind))
+    )
+
+
 _PLAYER_DIR = Path(tempfile.gettempdir()) / "media-renderer"
 _PLAYER_HTML_PATH = _PLAYER_DIR / "player.html"
 _CHOICES_HTML_PATH = _PLAYER_DIR / "chooser.html"
@@ -119,6 +236,12 @@ _PICTURE_HTML_PATH = _PLAYER_DIR / "picture.html"
 # 取得できたプロセスだけが「リーダー」として実際の再生状態を保持し、
 # 取得できなかった「フォロワー」はツール呼び出しをリーダーへHTTP転送する。
 is_leader = False
+
+_LEADER_RETRY_SEC = 1.0
+_leadership_lock = threading.Lock()
+_control_server: ThreadingHTTPServer | None = None
+_control_thread: threading.Thread | None = None
+
 
 _state_lock = threading.Lock()
 _state: dict[str, Any] = {
@@ -213,6 +336,7 @@ def _player_html() -> str:
   let lastInstanceId = null;
   let currentState = null;
 {DEBUG_OVERLAY_JS}
+{_nas_event_bridge_js("player")}
 
   function reportBrowserState(command) {{
     fetch(STATE_URL, {{
@@ -220,6 +344,12 @@ def _player_html() -> str:
       headers: {{'Content-Type': 'application/json'}},
       body: JSON.stringify({{command}})
     }}).catch(() => {{}});
+    postNasEvent('playback_state', {{
+      command,
+      channel: currentState ? currentState.channel : null,
+      title: currentState ? currentState.title : null,
+      current_time: Number.isFinite(video.currentTime) ? video.currentTime : null
+    }});
   }}
 
   function applySeek(target) {{
@@ -272,29 +402,79 @@ def _player_html() -> str:
     }}
   }});
 
+  video.addEventListener('play', () => {{
+    if (video.dataset.ignorePause === '1') return;
+    reportBrowserState('play');
+  }});
+
   video.addEventListener('pause', () => {{
     if (video.dataset.ignorePause === '1') return;
     reportBrowserState('stop');
   }});
+
+  async function handleNasEvent(event) {{
+    if (event.event_type === 'status_request') {{
+      await postNasEvent('view_status', {{
+        request_event_id: event.id,
+        view: 'player',
+        started,
+        command: currentState ? currentState.command : null,
+        channel: currentState ? currentState.channel : null,
+        title: currentState ? currentState.title : null,
+        current_time: Number.isFinite(video.currentTime) ? video.currentTime : null
+      }});
+      return;
+    }}
+    if (event.event_type !== 'playback_command') return;
+    const payload = event.payload || {{}};
+    const command = payload.command;
+    if (command === 'seek') {{
+      const seconds = Number(payload.seconds);
+      if (Number.isFinite(seconds)) applySeek(seconds);
+      return;
+    }}
+    if (command === 'stop') {{
+      currentState = {{...(currentState || {{}}), command:'stop'}};
+      if (started) applyState(currentState);
+      return;
+    }}
+    if (command === 'play') {{
+      currentState = {{
+        ...(currentState || {{}}),
+        command: 'play',
+        source_type: payload.source_type || 'file',
+        source_value: payload.source_uri || payload.source_value,
+        title: payload.title || '',
+        tag: payload.tag || '',
+        thumbnail: payload.thumbnail_uri || null,
+        seek_to: payload.seek_seconds
+      }};
+      titleEl.textContent = currentState.title;
+      tagEl.textContent = currentState.tag;
+      applyThumbnail(currentState);
+      if (started) applyState(currentState);
+    }}
+  }}
 
   async function poll() {{
     try {{
       const res = await fetch(STATE_URL, {{cache: 'no-store'}});
       const data = await res.json();
       mrDebug(true, data);
-      currentState = data;
-      titleEl.textContent = data.title || '';
-      tagEl.textContent = data.tag || '';
-      applyThumbnail(data);
       // instance_idが変わっていれば、リーダープロセスが再起動して内部の
       // seqが0から数え直されている可能性がある。seqの一致・不一致に関係なく
       // 必ず反映する(そうしないと、たまたま同じseqの値になった場合に
       // 「変化なし」と誤判定して再生指示を取りこぼす)。
       const instanceChanged = data.instance_id !== lastInstanceId;
-      if (started && (instanceChanged || data.seq !== lastSeq)) {{
+      const rendererChanged = instanceChanged || data.seq !== lastSeq;
+      if (rendererChanged) {{
+        currentState = data;
         lastSeq = data.seq;
         lastInstanceId = data.instance_id;
-        applyState(data);
+        titleEl.textContent = data.title || '';
+        tagEl.textContent = data.tag || '';
+        applyThumbnail(data);
+        if (started) applyState(data);
       }} else {{
         lastInstanceId = data.instance_id;
       }}
@@ -353,10 +533,13 @@ def _choices_html() -> str:
   const debugEl = document.getElementById('debug');
   let lastSeq = -1;
   let lastInstanceId = null;
+  let currentOptions = [];
 {DEBUG_OVERLAY_JS}
+{_nas_event_bridge_js("chooser")}
 
   function render(data) {{
     const options = data.options || [];
+    currentOptions = options;
     empty.style.display = options.length ? 'none' : 'block';
     grid.innerHTML = '';
     options.forEach((opt, i) => {{
@@ -384,6 +567,13 @@ def _choices_html() -> str:
       headers: {{'Content-Type': 'application/json'}},
       body: JSON.stringify({{index}})
     }}).catch(() => {{}});
+    const option = currentOptions[index] || null;
+    postNasEvent('selection', {{
+      index,
+      option,
+      label: option ? option.label : null,
+      source_value: option ? option.source_value : null
+    }});
   }}
 
   async function poll() {{
@@ -441,6 +631,7 @@ def _picture_html() -> str:
   let lastInstanceId = null;
 {DEBUG_OVERLAY_JS}
 
+{_nas_event_bridge_js("picture")}
   async function poll() {{
     try {{
       const res = await fetch(PICTURE_URL, {{cache: 'no-store'}});
@@ -804,19 +995,71 @@ class _ExclusiveThreadingHTTPServer(ThreadingHTTPServer):
     allow_reuse_address = False
 
 
-def _start_control_server() -> None:
-    global is_leader
-    try:
-        httpd = _ExclusiveThreadingHTTPServer((HTTP_HOST, HTTP_PORT), _Handler)
-    except OSError:
+def _try_become_leader() -> bool:
+    """Start the control server if this process can claim the fixed port."""
+    global is_leader, _control_server, _control_thread
+
+    with _leadership_lock:
+        if is_leader and _control_thread is not None and _control_thread.is_alive():
+            return True
+
+        if _control_server is not None:
+            try:
+                _control_server.server_close()
+            except OSError:
+                pass
         is_leader = False
-        return
-    is_leader = True
-    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
-    thread.start()
+        _control_server = None
+        _control_thread = None
+
+        try:
+            httpd = _ExclusiveThreadingHTTPServer((HTTP_HOST, HTTP_PORT), _Handler)
+        except OSError:
+            return False
+
+        def _serve() -> None:
+            global is_leader, _control_server, _control_thread
+            try:
+                httpd.serve_forever()
+            finally:
+                with _leadership_lock:
+                    if _control_server is httpd:
+                        is_leader = False
+                        _control_server = None
+                        _control_thread = None
+                httpd.server_close()
+
+        thread = threading.Thread(
+            target=_serve,
+            daemon=True,
+            name="media-renderer-control",
+        )
+        _control_server = httpd
+        _control_thread = thread
+        is_leader = True
+        thread.start()
+        return True
 
 
-_start_control_server()
+def _leadership_watchdog_step() -> bool:
+    """Retry leader election when the leader or its HTTP thread is gone."""
+    if is_leader and _control_thread is not None and _control_thread.is_alive():
+        return True
+    return _try_become_leader()
+
+
+def _leadership_watchdog() -> None:
+    while True:
+        _leadership_watchdog_step()
+        time.sleep(_LEADER_RETRY_SEC)
+
+
+_try_become_leader()
+threading.Thread(
+    target=_leadership_watchdog,
+    daemon=True,
+    name="media-renderer-leader-watchdog",
+).start()
 
 
 @mcp.tool()
@@ -843,7 +1086,7 @@ def play_channel(
     thumbnail_pathを指定すると、代表フレーム画像(UNCパス)を画面右下に
     小さく重ねて表示する。
     """
-    if is_leader:
+    if _leadership_watchdog_step():
         return _apply_play(
             source_type, source_value, channel, title, tag, seek_seconds, thumbnail_path
         )
@@ -864,7 +1107,7 @@ def play_channel(
 @mcp.tool()
 def stop_media() -> str:
     """再生を停止する。"""
-    if is_leader:
+    if _leadership_watchdog_step():
         return _apply_stop()
     return _forward("/internal/stop", {})
 
@@ -877,7 +1120,7 @@ def seek(position_seconds: float) -> str:
     保持される)。ソース自体を切り替えたい場合はplay_channelのseek_seconds
     引数を使うこと。
     """
-    if is_leader:
+    if _leadership_watchdog_step():
         return _apply_seek(position_seconds)
     return _forward("/internal/seek", {"seconds": position_seconds})
 
@@ -889,7 +1132,7 @@ def get_playback_status() -> dict:
     ユーザーがブラウザ側で直接操作した場合(一時停止ボタン等)の状態変化も
     反映される。Claudeが「今何が再生されているか」を確認するためのツール。
     """
-    if is_leader:
+    if _leadership_watchdog_step():
         return _get_status()
     try:
         with urllib.request.urlopen(LEADER_BASE_URL + "/state", timeout=5) as resp:
@@ -918,7 +1161,7 @@ def diagnose_connection() -> dict:
     def _ago(last_seen: float | None) -> float | None:
         return round(now - last_seen, 1) if last_seen is not None else None
 
-    if is_leader:
+    if _leadership_watchdog_step():
         return {
             "is_leader": True,
             "http_port": HTTP_PORT,
@@ -962,7 +1205,7 @@ def render_choices(options: list[dict]) -> str:
     get_selection()で取得できる(まだ選ばれていなければ{"selected": None})。
     選択されたら、その内容をそのままplay_channelに渡して再生を開始する想定。
     """
-    if is_leader:
+    if _leadership_watchdog_step():
         return _apply_render_choices(options)
     return _forward("/internal/render_choices", {"options": options})
 
@@ -976,7 +1219,7 @@ def get_selection() -> dict:
     "tag":..., "seek_seconds":..., "channel":...}}を返す。source_value/tag/
     seek_seconds/channelはそのままplay_channelの引数に渡せる。
     """
-    if is_leader:
+    if _leadership_watchdog_step():
         return _get_selection()
     try:
         with urllib.request.urlopen(LEADER_BASE_URL + "/choices", timeout=5) as resp:
@@ -999,7 +1242,7 @@ def render_picture(path: str) -> str:
     差し替え、そうでなければ(未起動・タブを閉じた等)新規タブを開く
     (play_channelと同じタブ生存判定。4.4節)。
     """
-    if is_leader:
+    if _leadership_watchdog_step():
         return _apply_render_picture(path)
     return _forward("/internal/render_picture", {"path": path})
 
