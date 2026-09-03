@@ -83,9 +83,10 @@ venvは `C:\Users\yukik\media-renderer-venv\.venv` (ローカルパス)。
   (UNCパス)のみ実装。ブラウザでプレイヤーページを開き/切り替える。初回のみユーザーが
   画面をクリックする必要あり(Chromeの自動再生ポリシー対応)。
 - `stop_media()` — 再生停止。
-- `render_picture(path)` — 画像を新規タブで表示。
-- 制御はfile://で開いた固定のプレイヤーページ(`%TEMP%\media-renderer\player.html`)が
-  ローカル制御HTTPサーバー(既定ポート39231、`127.0.0.1`限定)を1秒間隔でポーリングする方式。
+- `render_picture(path)` — 統合Viewを画像表示へ切り替える。
+- プレイヤー・候補選択・画像は単一の統合View
+  (`%TEMP%\media-renderer\view.html`)内で切り替える。統合Viewがローカル制御HTTPサーバー
+  (既定ポート39231、`127.0.0.1`限定)をポーリングする方式。
   複数MCPクライアント対策として`windows-message-mcp`と同じリーダー/フォロワー方式を実装。
   **Windows固有の注意点**: `http.server.HTTPServer`は既定で`allow_reuse_address=1`のため、
   Windowsでは2つ目のプロセスもポートbindに成功してしまいリーダー/フォロワー判定が

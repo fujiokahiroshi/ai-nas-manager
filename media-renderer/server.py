@@ -230,6 +230,7 @@ _PLAYER_DIR = Path(tempfile.gettempdir()) / "media-renderer"
 _PLAYER_HTML_PATH = _PLAYER_DIR / "player.html"
 _CHOICES_HTML_PATH = _PLAYER_DIR / "chooser.html"
 _PICTURE_HTML_PATH = _PLAYER_DIR / "picture.html"
+_VIEW_HTML_PATH = _PLAYER_DIR / "view.html"
 
 # Claude CodeとClaude Desktopなど、同じMCPサーバー定義から複数プロセスが同時に
 # 起動されることがある(windows-message-mcpで経験済みの問題)。固定ポートを
@@ -271,6 +272,13 @@ _picture_state: dict[str, Any] = {
     "seq": 0,
 }
 _picture_last_seen: float | None = None
+
+_view_lock = threading.Lock()
+_view_state: dict[str, Any] = {
+    "mode": "player",
+    "seq": 0,
+}
+_view_last_seen: float | None = None
 
 
 def _unc_to_file_uri(unc_path: str) -> str:
@@ -492,9 +500,7 @@ def _player_html() -> str:
 
 
 def _open_player_page() -> None:
-    _PLAYER_DIR.mkdir(exist_ok=True)
-    _PLAYER_HTML_PATH.write_text(_player_html(), encoding="utf-8")
-    _open_in_browser(_PLAYER_HTML_PATH.as_uri())
+    _open_unified_view()
 
 
 def _choices_html() -> str:
@@ -603,9 +609,7 @@ def _choices_html() -> str:
 
 
 def _open_choices_page() -> None:
-    _PLAYER_DIR.mkdir(exist_ok=True)
-    _CHOICES_HTML_PATH.write_text(_choices_html(), encoding="utf-8")
-    _open_in_browser(_CHOICES_HTML_PATH.as_uri())
+    _open_unified_view()
 
 
 def _picture_html() -> str:
@@ -662,28 +666,101 @@ def _picture_html() -> str:
 </html>"""
 
 
-def _open_picture_page() -> None:
+def _unified_view_html() -> str:
+    view_url = json.dumps(LEADER_BASE_URL + "/view")
+    return f"""<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AI NAS Manager View</title>
+<style>
+  html, body {{ margin:0; width:100%; height:100%; overflow:hidden; background:#000; }}
+  iframe {{
+    position:fixed; inset:0; width:100%; height:100%; border:0;
+    display:none; background:#000;
+  }}
+  iframe.active {{ display:block; }}
+</style>
+</head>
+<body>
+  <iframe id="view-player" src="player.html" title="player"></iframe>
+  <iframe id="view-chooser" src="chooser.html" title="chooser"></iframe>
+  <iframe id="view-picture" src="picture.html" title="picture"></iframe>
+<script>
+  const VIEW_URL = {view_url};
+  const frames = {{
+    player: document.getElementById('view-player'),
+    chooser: document.getElementById('view-chooser'),
+    picture: document.getElementById('view-picture')
+  }};
+  let activeMode = null;
+
+  function show(mode) {{
+    const nextMode = Object.prototype.hasOwnProperty.call(frames, mode)
+      ? mode : 'player';
+    if (nextMode === activeMode) return;
+    Object.entries(frames).forEach(([name, frame]) => {{
+      frame.classList.toggle('active', name === nextMode);
+    }});
+    activeMode = nextMode;
+  }}
+
+  async function poll() {{
+    try {{
+      const response = await fetch(VIEW_URL, {{cache:'no-store'}});
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const data = await response.json();
+      show(data.mode);
+    }} catch (error) {{
+      /* 次のポーリングで再試行する */
+    }}
+  }}
+
+  show('player');
+  setInterval(poll, 500);
+  poll();
+</script>
+</body>
+</html>"""
+
+
+def _set_active_view(mode: str) -> None:
+    with _view_lock:
+        _view_state["mode"] = mode
+        _view_state["seq"] += 1
+
+
+def _open_unified_view() -> None:
+    """Generate every child page and open their single top-level container."""
     _PLAYER_DIR.mkdir(exist_ok=True)
+    _PLAYER_HTML_PATH.write_text(_player_html(), encoding="utf-8")
+    _CHOICES_HTML_PATH.write_text(_choices_html(), encoding="utf-8")
     _PICTURE_HTML_PATH.write_text(_picture_html(), encoding="utf-8")
-    _open_in_browser(_PICTURE_HTML_PATH.as_uri())
+    _VIEW_HTML_PATH.write_text(_unified_view_html(), encoding="utf-8")
+    _open_in_browser(_VIEW_HTML_PATH.as_uri())
+
+
+def _open_picture_page() -> None:
+    _open_unified_view()
 
 
 def _apply_render_picture(path: str) -> str:
     call_time = time.time()
     file_uri = _unc_to_file_uri(path)
     need_new_tab = (
-        _picture_last_seen is None
-        or (call_time - _picture_last_seen) > TAB_ALIVE_TIMEOUT_SEC
+        _view_last_seen is None
+        or (call_time - _view_last_seen) > TAB_ALIVE_TIMEOUT_SEC
     )
     with _picture_lock:
         _picture_state["picture_uri"] = file_uri
         _picture_state["seq"] += 1
+    _set_active_view("picture")
     if need_new_tab:
         _open_picture_page()
         if not _wait_for_ack(lambda: _picture_last_seen, call_time, _NEW_TAB_ACK_TIMEOUT_SEC):
             return (
                 "画像をブラウザで開こうとしましたが、応答が確認できませんでした。"
-                f"手動で確認してください(ファイル: {_PICTURE_HTML_PATH})。"
+                f"手動で確認してください(ファイル: {_VIEW_HTML_PATH})。"
             )
         return f"画像を表示しました: {path}"
     if not _wait_for_ack(lambda: _picture_last_seen, call_time, _REUSE_TAB_ACK_TIMEOUT_SEC):
@@ -708,7 +785,7 @@ def _apply_play(
 
     call_time = time.time()
     need_new_tab = (
-        _last_seen is None or (call_time - _last_seen) > TAB_ALIVE_TIMEOUT_SEC
+        _view_last_seen is None or (call_time - _view_last_seen) > TAB_ALIVE_TIMEOUT_SEC
     )
     file_uri = _unc_to_file_uri(source_value)
     thumbnail_uri = _unc_to_file_uri(thumbnail_path) if thumbnail_path else None
@@ -722,6 +799,7 @@ def _apply_play(
         _state["seek_to"] = seek_seconds
         _state["command"] = "play"
         _state["seq"] += 1
+    _set_active_view("player")
 
     label = title or (f"CH{channel}" if channel is not None else source_value)
     seek_note = f"({seek_seconds:.1f}秒の位置から)" if seek_seconds is not None else ""
@@ -730,7 +808,7 @@ def _apply_play(
         if not _wait_for_ack(lambda: _last_seen, call_time, _NEW_TAB_ACK_TIMEOUT_SEC):
             return (
                 "プレイヤーをブラウザで開こうとしましたが、応答が確認できませんでした。"
-                f"手動で確認してください(ファイル: {_PLAYER_HTML_PATH})。"
+                f"手動で確認してください(ファイル: {_VIEW_HTML_PATH})。"
             )
         return (
             f"プレイヤーをブラウザで開き、{label}{seek_note}の再生を指示しました。"
@@ -788,19 +866,20 @@ def _apply_render_choices(options: list[dict[str, Any]]) -> str:
         )
     call_time = time.time()
     need_new_tab = (
-        _choice_last_seen is None
-        or (call_time - _choice_last_seen) > TAB_ALIVE_TIMEOUT_SEC
+        _view_last_seen is None
+        or (call_time - _view_last_seen) > TAB_ALIVE_TIMEOUT_SEC
     )
     with _choice_lock:
         _choice_state["options"] = processed
         _choice_state["selected_index"] = None
         _choice_state["seq"] += 1
+    _set_active_view("chooser")
     if need_new_tab:
         _open_choices_page()
         if not _wait_for_ack(lambda: _choice_last_seen, call_time, _NEW_TAB_ACK_TIMEOUT_SEC):
             return (
                 f"{len(processed)}件の候補を表示しようとしましたが、応答が確認できませんでした。"
-                f"手動で確認してください(ファイル: {_CHOICES_HTML_PATH})。"
+                f"手動で確認してください(ファイル: {_VIEW_HTML_PATH})。"
             )
         return f"{len(processed)}件の候補をブラウザに表示しました。選択されたらget_selectionで取得できます。"
     if not _wait_for_ack(lambda: _choice_last_seen, call_time, _REUSE_TAB_ACK_TIMEOUT_SEC):
@@ -892,7 +971,12 @@ class _Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandlerの命名規則
-        global _last_seen, _choice_last_seen, _picture_last_seen
+        global _last_seen, _choice_last_seen, _picture_last_seen, _view_last_seen
+        if self.path == "/view":
+            _view_last_seen = time.time()
+            with _view_lock:
+                self._send_json({**_view_state, "instance_id": INSTANCE_ID})
+            return
         if self.path == "/state":
             _last_seen = time.time()
             with _state_lock:
@@ -1168,6 +1252,8 @@ def diagnose_connection() -> dict:
             "instance_id": INSTANCE_ID,
             "state_last_seen_ago_sec": _ago(_last_seen),
             "choices_last_seen_ago_sec": _ago(_choice_last_seen),
+            "active_view": _view_state["mode"],
+            "view_last_seen_ago_sec": _ago(_view_last_seen),
             "picture_last_seen_ago_sec": _ago(_picture_last_seen),
         }
     try:
@@ -1201,8 +1287,8 @@ def render_choices(options: list[dict]) -> str:
     - seek_seconds (省略可): 選択時にその秒数から再生を開始する
     - channel (省略可): チャンネル番号
 
-    呼び出す度に新しいタブでブラウザに一覧を表示する。ユーザーが選んだ結果は
-    get_selection()で取得できる(まだ選ばれていなければ{"selected": None})。
+    単一の統合Viewを候補一覧へ切り替える。ユーザーが選んだ結果はget_selection()で
+    取得できる(まだ選ばれていなければ{"selected": None})。
     選択されたら、その内容をそのままplay_channelに渡して再生を開始する想定。
     """
     if _leadership_watchdog_step():
@@ -1238,9 +1324,8 @@ def get_selection() -> dict:
 def render_picture(path: str) -> str:
     """指定パス(UNC)の画像を既定ブラウザで表示する。
 
-    直近5秒以内にタブがポーリングで生存確認できていれば同じタブの画像を
-    差し替え、そうでなければ(未起動・タブを閉じた等)新規タブを開く
-    (play_channelと同じタブ生存判定。4.4節)。
+    単一の統合Viewを画像表示へ切り替える。統合Viewが閉じられている場合だけ
+    新しいタブを開く。
     """
     if _leadership_watchdog_step():
         return _apply_render_picture(path)

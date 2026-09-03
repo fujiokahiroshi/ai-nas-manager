@@ -165,10 +165,12 @@ def test_render_choices_reuses_tab_when_recently_polled() -> None:
     opened = []
     module._open_in_browser = lambda *a, **kw: opened.append(a)
     try:
+        module._view_last_seen = None
         module._apply_render_choices(opts)
         assert len(opened) == 1  # 初回は新規タブ
 
         module._choice_last_seen = module.time.time()  # ポーリング中とみなす
+        module._view_last_seen = module.time.time()
         message = module._apply_render_choices(opts)
         assert len(opened) == 1  # 生存中は新規タブを開かない
         assert "既存のタブ" in message
@@ -188,6 +190,7 @@ def test_render_choices_opens_new_tab_when_stale() -> None:
     module._open_in_browser = lambda *a, **kw: opened.append(a)
     try:
         module._choice_last_seen = module.time.time() - 999  # ポーリングが止まって久しい
+        module._view_last_seen = module.time.time() - 999
         module._apply_render_choices(opts)
         assert len(opened) == 1
     finally:
@@ -198,10 +201,12 @@ def test_render_picture_reuses_tab_when_recently_polled() -> None:
     opened = []
     module._open_in_browser = lambda *a, **kw: opened.append(a)
     try:
+        module._view_last_seen = None
         module._apply_render_picture("\\\\wsl.localhost\\Ubuntu\\tmp\\pic.png")
         assert len(opened) == 1
 
         module._picture_last_seen = module.time.time()
+        module._view_last_seen = module.time.time()
         message = module._apply_render_picture("\\\\wsl.localhost\\Ubuntu\\tmp\\pic2.png")
         assert len(opened) == 1
         assert "切り替えました" in message
@@ -217,12 +222,15 @@ def test_diagnose_connection_as_leader_reports_last_seen_ages() -> None:
         module._last_seen = now - 1.0
         module._choice_last_seen = None
         module._picture_last_seen = now - 30.0
+        module._view_last_seen = now - 2.0
 
         result = module.diagnose_connection()
 
         assert result["is_leader"] is True
         assert result["instance_id"] == module.INSTANCE_ID
         assert abs(result["state_last_seen_ago_sec"] - 1.0) < 0.5
+        assert result["active_view"] in {"player", "chooser", "picture"}
+        assert abs(result["view_last_seen_ago_sec"] - 2.0) < 0.5
         assert result["choices_last_seen_ago_sec"] is None
         assert abs(result["picture_last_seen_ago_sec"] - 30.0) < 0.5
     finally:
@@ -275,6 +283,7 @@ def test_diagnose_connection_as_follower_reports_unreachable_leader() -> None:
 
 def test_apply_play_reports_failure_when_no_ack_on_new_tab() -> None:
     module._last_seen = None
+    module._view_last_seen = None
     module._wait_for_ack = lambda *a, **kw: False
     try:
         message = module._apply_play("file", "\\\\wsl.localhost\\Ubuntu\\tmp\\demo.mp4", 3, "CH3")
@@ -286,6 +295,7 @@ def test_apply_play_reports_failure_when_no_ack_on_new_tab() -> None:
 
 def test_apply_play_reports_failure_when_no_ack_on_reuse() -> None:
     module._last_seen = module.time.time()  # 既存タブありと判定させる
+    module._view_last_seen = module.time.time()
     module._wait_for_ack = lambda *a, **kw: False
     try:
         message = module._apply_play("file", "\\\\wsl.localhost\\Ubuntu\\tmp\\demo.mp4", 3, "CH3")
@@ -297,6 +307,7 @@ def test_apply_play_reports_failure_when_no_ack_on_reuse() -> None:
 
 def test_apply_render_choices_reports_failure_when_no_ack() -> None:
     module._choice_last_seen = None
+    module._view_last_seen = None
     module._wait_for_ack = lambda *a, **kw: False
     try:
         message = module._apply_render_choices(
@@ -315,6 +326,7 @@ def test_apply_render_choices_reports_failure_when_no_ack() -> None:
 
 def test_apply_render_picture_reports_failure_when_no_ack() -> None:
     module._picture_last_seen = None
+    module._view_last_seen = None
     module._wait_for_ack = lambda *a, **kw: False
     try:
         message = module._apply_render_picture("\\\\wsl.localhost\\Ubuntu\\tmp\\pic.png")
@@ -464,3 +476,48 @@ def test_player_answers_nas_status_request_directly() -> None:
 
     assert "event.event_type === 'status_request'" in html
     assert "postNasEvent('view_status'" in html
+
+
+def test_unified_view_contains_all_display_modes() -> None:
+    html = module._unified_view_html()
+
+    assert 'src="player.html"' in html
+    assert 'src="chooser.html"' in html
+    assert 'src="picture.html"' in html
+    assert 'const VIEW_URL = "http://127.0.0.1:39231/view"' in html
+
+
+def test_switching_display_modes_reuses_one_browser_window() -> None:
+    options = [
+        {
+            "thumbnail_path": r"\\wsl.localhost\Ubuntu\tmp\a.png",
+            "label": "候補A",
+            "source_value": r"\\wsl.localhost\Ubuntu\tmp\a.mp4",
+        }
+    ]
+    opened: list[tuple[object, ...]] = []
+    module._open_in_browser = lambda *args, **kwargs: opened.append(args)
+    try:
+        module._view_last_seen = None
+        module._apply_play(
+            "file", r"\\wsl.localhost\Ubuntu\tmp\demo.mp4", 1, "CH1"
+        )
+        assert len(opened) == 1
+        assert str(opened[0][0]).endswith("/view.html")
+
+        module._view_last_seen = module.time.time()
+        module._apply_render_choices(options)
+        assert len(opened) == 1
+        assert module._view_state["mode"] == "chooser"
+
+        module._apply_render_picture(r"\\wsl.localhost\Ubuntu\tmp\pic.png")
+        assert len(opened) == 1
+        assert module._view_state["mode"] == "picture"
+
+        module._apply_play(
+            "file", r"\\wsl.localhost\Ubuntu\tmp\demo.mp4", 1, "CH1"
+        )
+        assert len(opened) == 1
+        assert module._view_state["mode"] == "player"
+    finally:
+        module._open_in_browser = lambda *args, **kwargs: None
