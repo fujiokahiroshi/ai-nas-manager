@@ -86,3 +86,16 @@ def test_object_change_can_open_fragment() -> None:
     assert len(events) == 1
     assert events[0].kind is EventKind.OPEN
     assert events[0].signals.object_change == 1.0
+
+
+def test_discontinuity_closes_and_next_frame_reopens() -> None:
+    fragmenter = OnlineMultiSignalFragmenter("camera")
+    opened = fragmenter.process(frame(0, 20))
+    closed = fragmenter.discontinuity(750)
+    reopened = fragmenter.process(frame(1_000, 20))
+    assert opened[0].kind is EventKind.OPEN
+    assert closed[0].kind is EventKind.CLOSE
+    assert closed[0].reason == "source_disconnected"
+    assert closed[0].observed_ms == 750
+    assert reopened[0].kind is EventKind.OPEN
+    assert reopened[0].fragment_id != opened[0].fragment_id

@@ -94,6 +94,19 @@ at 3.64 seconds and four text results before the 14.95-second stream ended.  Two
 stale revisions were replaced, no fragment was dropped, and no request failed.
 See `live-gemma-experiment-2026-09-10.md`.
 
+## RTSP reconnect result
+
+`stream_input.py` now provides an FFmpeg-based RTSP input adapter. It emits
+explicit connection state changes, samples decoded video without waiting for
+the stream to finish, and maintains a local monotonic timeline across source
+timestamp resets. A disconnect closes the active fragment; the first complete
+frame after recovery opens a new fragment ID.
+
+The Windows test stopped a looping RTSP publisher at 7 seconds and restarted it
+after 3 seconds. It decoded 11 frames before the interruption and 17 afterward,
+with one disconnect and two usable connections. See
+`rtsp-reconnect-experiment-2026-09-10.md`.
+
 ## Reproduction
 
 From the `ai-nas-manager` directory:

@@ -13,3 +13,6 @@ ai-nas-manager/*.sqlite3
 ai-nas-manager/*.sqlite3-shm
 ai-nas-manager/*.sqlite3-wal
 ai-nas-manager/models/*.onnx
+ai-nas-manager/tools/mediamtx/
+ai-nas-manager/tools/*.zip
+ai-nas-manager/docs/.rtsp-runtime/

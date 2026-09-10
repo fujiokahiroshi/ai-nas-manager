@@ -1,0 +1,319 @@
+{
+  "rtsp_url": "rtsp://127.0.0.1:18554/ai-nas-test",
+  "duration_seconds": 20.0,
+  "interrupt_at_seconds": 7.0,
+  "requested_outage_seconds": 3.0,
+  "sampled_frames": 28,
+  "frames_per_connection": {
+    "1": 11,
+    "2": 17
+  },
+  "connections": 2,
+  "disconnects": 1,
+  "reconnect_gap_ms": 5703,
+  "usable_connections": {
+    "1": 11,
+    "2": 17
+  },
+  "state_events": [
+    {
+      "kind": "connected",
+      "timeline_ms": 2500,
+      "connection": 1
+    },
+    {
+      "kind": "disconnected",
+      "timeline_ms": 6734,
+      "connection": 1
+    },
+    {
+      "kind": "reconnect_failed",
+      "timeline_ms": 7031,
+      "connection": 1,
+      "detail": "[in#0 @ 000001a70dbe1840] method DESCRIBE failed: 404 (Not Found)\r\n[in#0 @ 000001a70dbe1440] Error opening input: Server returned 404 Not Found\r\nError opening input file rtsp://127.0.0.1:18554/ai-nas-test.\r\nError opening input files: Server returned 404 Not Found"
+    },
+    {
+      "kind": "reconnect_failed",
+      "timeline_ms": 7328,
+      "connection": 1,
+      "detail": "[in#0 @ 000001b57fb51bc0] method DESCRIBE failed: 404 (Not Found)\r\n[in#0 @ 000001b57fb51700] Error opening input: Server returned 404 Not Found\r\nError opening input file rtsp://127.0.0.1:18554/ai-nas-test.\r\nError opening input files: Server returned 404 Not Found"
+    },
+    {
+      "kind": "reconnect_failed",
+      "timeline_ms": 7609,
+      "connection": 1,
+      "detail": "[in#0 @ 000001f3ad2415c0] method DESCRIBE failed: 404 (Not Found)\r\n[in#0 @ 000001f3ad2411c0] Error opening input: Server returned 404 Not Found\r\nError opening input file rtsp://127.0.0.1:18554/ai-nas-test.\r\nError opening input files: Server returned 404 Not Found"
+    },
+    {
+      "kind": "reconnect_failed",
+      "timeline_ms": 7906,
+      "connection": 1,
+      "detail": "[in#0 @ 000001feae9e1b80] method DESCRIBE failed: 404 (Not Found)\r\n[in#0 @ 000001feae9e1740] Error opening input: Server returned 404 Not Found\r\nError opening input file rtsp://127.0.0.1:18554/ai-nas-test.\r\nError opening input files: Server returned 404 Not Found"
+    },
+    {
+      "kind": "reconnect_failed",
+      "timeline_ms": 8203,
+      "connection": 1,
+      "detail": "[in#0 @ 0000029b091f3100] method DESCRIBE failed: 404 (Not Found)\r\n[in#0 @ 0000029b091f2c40] Error opening input: Server returned 404 Not Found\r\nError opening input file rtsp://127.0.0.1:18554/ai-nas-test.\r\nError opening input files: Server returned 404 Not Found"
+    },
+    {
+      "kind": "reconnect_failed",
+      "timeline_ms": 8500,
+      "connection": 1,
+      "detail": "[in#0 @ 0000011660e91900] method DESCRIBE failed: 404 (Not Found)\r\n[in#0 @ 0000011660e91400] Error opening input: Server returned 404 Not Found\r\nError opening input file rtsp://127.0.0.1:18554/ai-nas-test.\r\nError opening input files: Server returned 404 Not Found"
+    },
+    {
+      "kind": "reconnect_failed",
+      "timeline_ms": 8796,
+      "connection": 1,
+      "detail": "[in#0 @ 00000192f16e1b40] method DESCRIBE failed: 404 (Not Found)\r\n[in#0 @ 00000192f16e1700] Error opening input: Server returned 404 Not Found\r\nError opening input file rtsp://127.0.0.1:18554/ai-nas-test.\r\nError opening input files: Server returned 404 Not Found"
+    },
+    {
+      "kind": "reconnect_failed",
+      "timeline_ms": 9078,
+      "connection": 1,
+      "detail": "[in#0 @ 00000226f64418c0] method DESCRIBE failed: 404 (Not Found)\r\n[in#0 @ 00000226f64414c0] Error opening input: Server returned 404 Not Found\r\nError opening input file rtsp://127.0.0.1:18554/ai-nas-test.\r\nError opening input files: Server returned 404 Not Found"
+    },
+    {
+      "kind": "reconnect_failed",
+      "timeline_ms": 9375,
+      "connection": 1,
+      "detail": "[in#0 @ 00000236459e1b00] method DESCRIBE failed: 404 (Not Found)\r\n[in#0 @ 00000236459e1700] Error opening input: Server returned 404 Not Found\r\nError opening input file rtsp://127.0.0.1:18554/ai-nas-test.\r\nError opening input files: Server returned 404 Not Found"
+    },
+    {
+      "kind": "reconnect_failed",
+      "timeline_ms": 9671,
+      "connection": 1,
+      "detail": "[in#0 @ 0000024d6bab6600] method DESCRIBE failed: 404 (Not Found)\r\n[in#0 @ 0000024d6ba21a40] Error opening input: Server returned 404 Not Found\r\nError opening input file rtsp://127.0.0.1:18554/ai-nas-test.\r\nError opening input files: Server returned 404 Not Found"
+    },
+    {
+      "kind": "connected",
+      "timeline_ms": 12437,
+      "connection": 2
+    }
+  ],
+  "fragment_events": [
+    {
+      "kind": "open",
+      "fragment_id": "rtsp-ai-nas-test-0000000002500-000001",
+      "revision": 1,
+      "start_ms": 2500,
+      "observed_ms": 2500,
+      "reason": "stream_start",
+      "subtitle": "",
+      "representative_times_ms": [
+        2500
+      ],
+      "signals": {
+        "luma_difference": 0.0,
+        "histogram_difference": 0.0,
+        "edge_difference": 0.0,
+        "changed_pixel_ratio": 0.0,
+        "adaptive_novelty": 0.0,
+        "object_change": 1.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.25
+      }
+    },
+    {
+      "kind": "update",
+      "fragment_id": "rtsp-ai-nas-test-0000000002500-000001",
+      "revision": 2,
+      "start_ms": 2500,
+      "observed_ms": 4500,
+      "reason": "continued_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        2500,
+        3015,
+        4500
+      ],
+      "signals": {
+        "luma_difference": 0.064687,
+        "histogram_difference": 0.040833,
+        "edge_difference": 0.031164,
+        "changed_pixel_ratio": 0.248403,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.414442,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.152826
+      }
+    },
+    {
+      "kind": "update",
+      "fragment_id": "rtsp-ai-nas-test-0000000002500-000001",
+      "revision": 3,
+      "start_ms": 2500,
+      "observed_ms": 6500,
+      "reason": "continued_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        2500,
+        3015,
+        5015
+      ],
+      "signals": {
+        "luma_difference": 0.111675,
+        "histogram_difference": 0.042639,
+        "edge_difference": 0.056453,
+        "changed_pixel_ratio": 0.454236,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.288749,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.156348
+      }
+    },
+    {
+      "kind": "close",
+      "fragment_id": "rtsp-ai-nas-test-0000000002500-000001",
+      "revision": 4,
+      "start_ms": 2500,
+      "observed_ms": 6734,
+      "reason": "source_disconnected",
+      "subtitle": "",
+      "representative_times_ms": [
+        2500,
+        3015,
+        6703
+      ],
+      "signals": {
+        "luma_difference": 0.0,
+        "histogram_difference": 0.0,
+        "edge_difference": 0.0,
+        "changed_pixel_ratio": 0.0,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.0
+      }
+    },
+    {
+      "kind": "open",
+      "fragment_id": "rtsp-ai-nas-test-0000000012437-000002",
+      "revision": 1,
+      "start_ms": 12437,
+      "observed_ms": 12437,
+      "reason": "stream_start",
+      "subtitle": "",
+      "representative_times_ms": [
+        12437
+      ],
+      "signals": {
+        "luma_difference": 0.0,
+        "histogram_difference": 0.0,
+        "edge_difference": 0.0,
+        "changed_pixel_ratio": 0.0,
+        "adaptive_novelty": 0.0,
+        "object_change": 1.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.25
+      }
+    },
+    {
+      "kind": "update",
+      "fragment_id": "rtsp-ai-nas-test-0000000012437-000002",
+      "revision": 2,
+      "start_ms": 12437,
+      "observed_ms": 14953,
+      "reason": "continued_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        12437,
+        12968,
+        14953
+      ],
+      "signals": {
+        "luma_difference": 0.076055,
+        "histogram_difference": 0.029375,
+        "edge_difference": 0.039489,
+        "changed_pixel_ratio": 0.296736,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.379903,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.150844
+      }
+    },
+    {
+      "kind": "update",
+      "fragment_id": "rtsp-ai-nas-test-0000000012437-000002",
+      "revision": 3,
+      "start_ms": 12437,
+      "observed_ms": 16453,
+      "reason": "continued_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        12437,
+        12968,
+        16453
+      ],
+      "signals": {
+        "luma_difference": 0.107023,
+        "histogram_difference": 0.036042,
+        "edge_difference": 0.053411,
+        "changed_pixel_ratio": 0.438889,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.367769,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.172269
+      }
+    },
+    {
+      "kind": "update",
+      "fragment_id": "rtsp-ai-nas-test-0000000012437-000002",
+      "revision": 4,
+      "start_ms": 12437,
+      "observed_ms": 17968,
+      "reason": "continued_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        12437,
+        12968,
+        17437
+      ],
+      "signals": {
+        "luma_difference": 0.123623,
+        "histogram_difference": 0.051806,
+        "edge_difference": 0.056202,
+        "changed_pixel_ratio": 0.481389,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.276327,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.159785
+      }
+    },
+    {
+      "kind": "close",
+      "fragment_id": "rtsp-ai-nas-test-0000000012437-000002",
+      "revision": 5,
+      "start_ms": 12437,
+      "observed_ms": 20453,
+      "reason": "end_of_stream",
+      "subtitle": "",
+      "representative_times_ms": [
+        12437,
+        12968,
+        17437
+      ],
+      "signals": {
+        "luma_difference": 0.0,
+        "histogram_difference": 0.0,
+        "edge_difference": 0.0,
+        "changed_pixel_ratio": 0.0,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.0
+      }
+    }
+  ],
+  "passed": true
+}

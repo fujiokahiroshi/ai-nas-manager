@@ -374,3 +374,23 @@ class OnlineMultiSignalFragmenter:
         event = self._event(EventKind.CLOSE, self._previous, zero, "end_of_stream", self._last_subtitle)
         self._open = None
         return [event]
+
+    def discontinuity(self, timestamp_ms: int, reason: str = "source_disconnected") -> list[FragmentEvent]:
+        """Close current state and forget frame history after an input gap."""
+
+        events: list[FragmentEvent] = []
+        if self._open is not None and self._previous is not None:
+            previous = self._previous
+            marker = GrayFrame(
+                max(timestamp_ms, previous.timestamp_ms),
+                previous.width,
+                previous.height,
+                previous.pixels,
+            )
+            self._open.revision += 1
+            events.append(self._event(EventKind.CLOSE, marker, SignalVector(), reason, self._last_subtitle))
+        self._open = None
+        self._previous = None
+        self._last_subtitle = ""
+        self._baseline = _AdaptiveBaseline(self.config.ewma_alpha)
+        return events
