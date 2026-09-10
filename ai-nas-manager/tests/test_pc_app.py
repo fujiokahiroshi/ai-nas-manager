@@ -1,4 +1,4 @@
-from pc_app import FragmentStore, fragment_records, scene_boundaries, scene_records
+from pc_app import FragmentStore, fragment_records, scene_boundaries, scene_boundary_markers, scene_records
 
 
 def sample_payload() -> dict:
@@ -87,6 +87,25 @@ def test_scene_boundaries_prefers_manual_review() -> None:
         "pelt_boundaries_ms": [9_000],
     }}
     assert scene_boundaries(payload) == ([4_000, 8_000], "Manual review")
+
+
+def test_scene_boundary_markers_keeps_comparison_series_separate() -> None:
+    payload = {
+        "scene_segmentation": {
+            "online_boundaries": [{"boundary_ms": 1_000}],
+            "shadow_algorithms": {
+                "adaptive_memory_v1": {"boundaries": [{"boundary_ms": 1_500}]},
+                "adaptive_memory_tuned_v1": {"boundaries": [{"boundary_ms": 2_000}]},
+            },
+        },
+        "scene_ground_truth": {"boundaries_ms": [2_100]},
+    }
+    assert scene_boundary_markers(payload) == {
+        "current": [1_000],
+        "adaptive": [1_500],
+        "tuned": [2_000],
+        "ground_truth": [2_100],
+    }
 
 
 def test_scene_summary_replaces_latest_fragment_text() -> None:

@@ -110,3 +110,22 @@ Gemma requests or database records. Experiment JSON stores them under
 `scene_segmentation.shadow_algorithms.adaptive_memory_v1`, including a score
 trace and detection latency. The PC App draws confirmed shadow boundaries as
 purple markers, allowing direct comparison before enabling the algorithm.
+
+## Reviewed-boundary comparison and tuning
+
+The experiment also stores the absolute state vector trace. This permits
+offline threshold replay without decoding the video or calling Gemma again.
+
+```powershell
+uv run python scripts/evaluate_scene_boundaries.py `
+  docs/live-gemma-sandwich-shadow-2026-09-10.json `
+  docs/scene-ground-truth-sandwich-20s.json `
+  --tolerance-ms 1500 `
+  --output docs/scene-boundary-evaluation-sandwich-2026-09-10.json `
+  --annotated-output docs/live-gemma-sandwich-shadow-evaluated-2026-09-10.json
+```
+
+The tuner searches only Shadow parameters and requires at least two consecutive
+samples. It does not update production defaults. PC App timeline colours are
+orange for current online, purple for default Adaptive Memory, cyan for tuned
+Adaptive Memory, and green for reviewed ground truth.

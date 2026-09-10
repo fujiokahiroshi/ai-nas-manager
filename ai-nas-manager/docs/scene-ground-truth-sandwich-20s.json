@@ -1,0 +1,24 @@
+{
+  "id": "sandwich-20s-manual-v1",
+  "video": "media/evaluation/videos/demo/sandwich-20s.mp4",
+  "annotation_method": "manual-review",
+  "boundaries_ms": [14014, 16516],
+  "labels": [
+    {
+      "start_ms": 0,
+      "end_ms": 14014,
+      "description_ja": "サンドイッチを両手で持つ"
+    },
+    {
+      "start_ms": 14014,
+      "end_ms": 16516,
+      "description_ja": "サンドイッチが画面外へ移動し、地面が映る"
+    },
+    {
+      "start_ms": 16516,
+      "end_ms": 20000,
+      "description_ja": "建物、車両、歩道のある屋外風景"
+    }
+  ],
+  "notes": "The two boundaries were reviewed from Gemma Fragment revisions and the video timeline."
+}

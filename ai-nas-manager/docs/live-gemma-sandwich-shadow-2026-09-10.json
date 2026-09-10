@@ -1,0 +1,1963 @@
+{
+  "source": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\demo\\sandwich-20s.mp4",
+  "sample_fps": 2.0,
+  "sampled_frames": 40,
+  "stream_wall_seconds": 19.584,
+  "total_wall_seconds": 19.61,
+  "queue_replaced": 1,
+  "queue_dropped": 0,
+  "fragment_events": [
+    {
+      "kind": "open",
+      "fragment_id": "sandwich-20s-0000000000000-000001",
+      "revision": 1,
+      "start_ms": 0,
+      "observed_ms": 0,
+      "reason": "stream_start",
+      "subtitle": "",
+      "representative_times_ms": [
+        0
+      ],
+      "signals": {
+        "luma_difference": 0.0,
+        "histogram_difference": 0.0,
+        "edge_difference": 0.0,
+        "changed_pixel_ratio": 0.0,
+        "adaptive_novelty": 0.0,
+        "object_change": 1.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.25
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4056,
+          "box": [
+            0.0001,
+            0.3807,
+            0.1094,
+            0.8732
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "update",
+      "fragment_id": "sandwich-20s-0000000000000-000001",
+      "revision": 2,
+      "start_ms": 0,
+      "observed_ms": 2002,
+      "reason": "strong_visual_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        0,
+        1001,
+        2002
+      ],
+      "signals": {
+        "luma_difference": 0.204966,
+        "histogram_difference": 0.041528,
+        "edge_difference": 0.060847,
+        "changed_pixel_ratio": 0.677014,
+        "adaptive_novelty": 0.954778,
+        "object_change": 0.389027,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.574646
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.7995,
+          "box": [
+            0.0043,
+            0.1537,
+            0.7449,
+            0.9829
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "update",
+      "fragment_id": "sandwich-20s-0000000000000-000001",
+      "revision": 3,
+      "start_ms": 0,
+      "observed_ms": 5005,
+      "reason": "strong_visual_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        2002,
+        2502,
+        3003
+      ],
+      "signals": {
+        "luma_difference": 0.139574,
+        "histogram_difference": 0.066667,
+        "edge_difference": 0.056514,
+        "changed_pixel_ratio": 0.496736,
+        "adaptive_novelty": 0.315862,
+        "object_change": 0.325801,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.239381
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.7183,
+          "box": [
+            0.0012,
+            0.1404,
+            0.2678,
+            0.5621
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4824,
+          "box": [
+            0.0412,
+            0.5518,
+            0.5696,
+            0.9979
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3275,
+          "box": [
+            0.0088,
+            0.114,
+            0.587,
+            0.9828
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "update",
+      "fragment_id": "sandwich-20s-0000000000000-000001",
+      "revision": 4,
+      "start_ms": 0,
+      "observed_ms": 14014,
+      "reason": "fused_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        2002,
+        2502,
+        3003
+      ],
+      "signals": {
+        "luma_difference": 0.080825,
+        "histogram_difference": 0.319236,
+        "edge_difference": 0.038412,
+        "changed_pixel_ratio": 0.336042,
+        "adaptive_novelty": 0.076439,
+        "object_change": 0.75,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.292395
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4611,
+          "box": [
+            0.74,
+            0.0541,
+            0.7873,
+            0.1465
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "close",
+      "fragment_id": "sandwich-20s-0000000000000-000001",
+      "revision": 5,
+      "start_ms": 0,
+      "observed_ms": 15015,
+      "reason": "maximum_duration",
+      "subtitle": "",
+      "representative_times_ms": [
+        2002,
+        2502,
+        3003
+      ],
+      "signals": {
+        "luma_difference": 0.089536,
+        "histogram_difference": 0.185833,
+        "edge_difference": 0.046276,
+        "changed_pixel_ratio": 0.333403,
+        "adaptive_novelty": 0.0,
+        "object_change": 1.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.336452
+      },
+      "detected_objects": [
+        {
+          "class_id": 2,
+          "label": "car",
+          "confidence": 0.8687,
+          "box": [
+            0.2555,
+            0.1294,
+            0.4633,
+            0.2521
+          ]
+        },
+        {
+          "class_id": 2,
+          "label": "car",
+          "confidence": 0.7273,
+          "box": [
+            0.7546,
+            0.106,
+            0.9455,
+            0.2445
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.6283,
+          "box": [
+            0.494,
+            0.1102,
+            0.5164,
+            0.1997
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4972,
+          "box": [
+            0.094,
+            0.134,
+            0.115,
+            0.2289
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3573,
+          "box": [
+            0.0227,
+            0.1224,
+            0.0467,
+            0.2337
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3285,
+          "box": [
+            0.5852,
+            0.1306,
+            0.6053,
+            0.2097
+          ]
+        },
+        {
+          "class_id": 2,
+          "label": "car",
+          "confidence": 0.3278,
+          "box": [
+            0.8455,
+            0.1477,
+            1.0,
+            0.369
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "open",
+      "fragment_id": "sandwich-20s-0000000015015-000002",
+      "revision": 1,
+      "start_ms": 15015,
+      "observed_ms": 15015,
+      "reason": "continued_stream",
+      "subtitle": "",
+      "representative_times_ms": [
+        15015
+      ],
+      "signals": {
+        "luma_difference": 0.089536,
+        "histogram_difference": 0.185833,
+        "edge_difference": 0.046276,
+        "changed_pixel_ratio": 0.333403,
+        "adaptive_novelty": 0.0,
+        "object_change": 1.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.336452
+      },
+      "detected_objects": [
+        {
+          "class_id": 2,
+          "label": "car",
+          "confidence": 0.8687,
+          "box": [
+            0.2555,
+            0.1294,
+            0.4633,
+            0.2521
+          ]
+        },
+        {
+          "class_id": 2,
+          "label": "car",
+          "confidence": 0.7273,
+          "box": [
+            0.7546,
+            0.106,
+            0.9455,
+            0.2445
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.6283,
+          "box": [
+            0.494,
+            0.1102,
+            0.5164,
+            0.1997
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4972,
+          "box": [
+            0.094,
+            0.134,
+            0.115,
+            0.2289
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3573,
+          "box": [
+            0.0227,
+            0.1224,
+            0.0467,
+            0.2337
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3285,
+          "box": [
+            0.5852,
+            0.1306,
+            0.6053,
+            0.2097
+          ]
+        },
+        {
+          "class_id": 2,
+          "label": "car",
+          "confidence": 0.3278,
+          "box": [
+            0.8455,
+            0.1477,
+            1.0,
+            0.369
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "update",
+      "fragment_id": "sandwich-20s-0000000015015-000002",
+      "revision": 2,
+      "start_ms": 15015,
+      "observed_ms": 16516,
+      "reason": "strong_visual_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        15015,
+        16016,
+        16516
+      ],
+      "signals": {
+        "luma_difference": 0.190628,
+        "histogram_difference": 0.091806,
+        "edge_difference": 0.094542,
+        "changed_pixel_ratio": 0.698611,
+        "adaptive_novelty": 0.398394,
+        "object_change": 0.406887,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.300919
+      },
+      "detected_objects": [
+        {
+          "class_id": 2,
+          "label": "car",
+          "confidence": 0.9012,
+          "box": [
+            0.4058,
+            0.6932,
+            0.5863,
+            0.8119
+          ]
+        },
+        {
+          "class_id": 2,
+          "label": "car",
+          "confidence": 0.8858,
+          "box": [
+            0.1507,
+            0.7004,
+            0.3241,
+            0.8182
+          ]
+        },
+        {
+          "class_id": 7,
+          "label": "truck",
+          "confidence": 0.5648,
+          "box": [
+            0.658,
+            0.6477,
+            0.8654,
+            0.8115
+          ]
+        },
+        {
+          "class_id": 2,
+          "label": "car",
+          "confidence": 0.437,
+          "box": [
+            0.7496,
+            0.7435,
+            0.9993,
+            0.9711
+          ]
+        },
+        {
+          "class_id": 2,
+          "label": "car",
+          "confidence": 0.2917,
+          "box": [
+            0.665,
+            0.6478,
+            0.8747,
+            0.8286
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "close",
+      "fragment_id": "sandwich-20s-0000000015015-000002",
+      "revision": 3,
+      "start_ms": 15015,
+      "observed_ms": 19520,
+      "reason": "end_of_stream",
+      "subtitle": "",
+      "representative_times_ms": [
+        15015,
+        16016,
+        17017
+      ],
+      "signals": {
+        "luma_difference": 0.0,
+        "histogram_difference": 0.0,
+        "edge_difference": 0.0,
+        "changed_pixel_ratio": 0.0,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.0
+      }
+    }
+  ],
+  "scene_segmentation": {
+    "online_algorithm": "cusum-bocpd-semantic-veto-v1",
+    "online_boundaries": [
+      {
+        "scene_id": "sandwich-20s-scene-000002",
+        "boundary_ms": 3003,
+        "emitted_ms": 4504,
+        "latency_ms": 1501,
+        "confidence": 1.0,
+        "reasons": [
+          "cusum"
+        ],
+        "fused_change": 0.288102
+      },
+      {
+        "scene_id": "sandwich-20s-scene-000003",
+        "boundary_ms": 6006,
+        "emitted_ms": 7508,
+        "latency_ms": 1502,
+        "confidence": 1.0,
+        "reasons": [
+          "cusum"
+        ],
+        "fused_change": 0.233194
+      },
+      {
+        "scene_id": "sandwich-20s-scene-000004",
+        "boundary_ms": 9009,
+        "emitted_ms": 10510,
+        "latency_ms": 1501,
+        "confidence": 1.0,
+        "reasons": [
+          "cusum"
+        ],
+        "fused_change": 0.326043
+      },
+      {
+        "scene_id": "sandwich-20s-scene-000005",
+        "boundary_ms": 12012,
+        "emitted_ms": 13514,
+        "latency_ms": 1502,
+        "confidence": 1.0,
+        "reasons": [
+          "cusum"
+        ],
+        "fused_change": 0.273959
+      },
+      {
+        "scene_id": "sandwich-20s-scene-000006",
+        "boundary_ms": 15015,
+        "emitted_ms": 16516,
+        "latency_ms": 1501,
+        "confidence": 1.0,
+        "reasons": [
+          "cusum"
+        ],
+        "fused_change": 0.340393
+      },
+      {
+        "scene_id": "sandwich-20s-scene-000007",
+        "boundary_ms": 18018,
+        "emitted_ms": 19520,
+        "latency_ms": 1502,
+        "confidence": 1.0,
+        "reasons": [
+          "cusum"
+        ],
+        "fused_change": 0.22173
+      }
+    ],
+    "offline_algorithm": "pelt-luma-object-state-v1",
+    "pelt_penalty": 0.35,
+    "pelt_boundaries_ms": [
+      15015
+    ],
+    "shadow_algorithms": {
+      "adaptive_memory_v1": {
+        "authoritative": false,
+        "boundaries": [
+          {
+            "boundary_ms": 14514,
+            "emitted_ms": 15015,
+            "latency_ms": 501,
+            "score": 0.375196,
+            "short_similarity": 0.718658,
+            "long_similarity": 0.556841
+          }
+        ],
+        "trace": [
+          {
+            "timestamp_ms": 0,
+            "score": 0.0,
+            "short_similarity": 1.0,
+            "long_similarity": 1.0,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 500,
+            "score": 0.000268,
+            "short_similarity": 0.999732,
+            "long_similarity": 0.999732,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 1001,
+            "score": 0.066398,
+            "short_similarity": 0.934204,
+            "long_similarity": 0.933166,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 1502,
+            "score": 0.037175,
+            "short_similarity": 0.984574,
+            "long_similarity": 0.947076,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 2002,
+            "score": 0.016168,
+            "short_similarity": 0.967353,
+            "long_similarity": 0.995764,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 2502,
+            "score": 0.029782,
+            "short_similarity": 0.982044,
+            "long_similarity": 0.961654,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 3003,
+            "score": 0.070011,
+            "short_similarity": 0.962891,
+            "long_similarity": 0.906164,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 3504,
+            "score": 0.045762,
+            "short_similarity": 0.992745,
+            "long_similarity": 0.926354,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 4004,
+            "score": 0.014251,
+            "short_similarity": 0.991185,
+            "long_similarity": 0.981812,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 4504,
+            "score": 0.010465,
+            "short_similarity": 0.996862,
+            "long_similarity": 0.984228,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 5005,
+            "score": 0.039179,
+            "short_similarity": 0.987174,
+            "long_similarity": 0.941738,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 5506,
+            "score": 0.013644,
+            "short_similarity": 0.992555,
+            "long_similarity": 0.981867,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 6006,
+            "score": 0.035208,
+            "short_similarity": 0.990218,
+            "long_similarity": 0.94638,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 6506,
+            "score": 0.02497,
+            "short_similarity": 0.997493,
+            "long_similarity": 0.958764,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 7007,
+            "score": 0.021475,
+            "short_similarity": 0.998347,
+            "long_similarity": 0.964171,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 7508,
+            "score": 0.019929,
+            "short_similarity": 0.998494,
+            "long_similarity": 0.96673,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 8008,
+            "score": 0.017447,
+            "short_similarity": 0.995792,
+            "long_similarity": 0.972965,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 8508,
+            "score": 0.025199,
+            "short_similarity": 0.991515,
+            "long_similarity": 0.962698,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 9009,
+            "score": 0.019402,
+            "short_similarity": 0.980974,
+            "long_similarity": 0.980325,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 9510,
+            "score": 0.086802,
+            "short_similarity": 0.880567,
+            "long_similarity": 0.936828,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 10010,
+            "score": 0.08421,
+            "short_similarity": 0.912792,
+            "long_similarity": 0.91796,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 10510,
+            "score": 0.054139,
+            "short_similarity": 0.967099,
+            "long_similarity": 0.930482,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 11011,
+            "score": 0.04809,
+            "short_similarity": 0.982497,
+            "long_similarity": 0.929761,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 11512,
+            "score": 0.027191,
+            "short_similarity": 0.969981,
+            "long_similarity": 0.974857,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 12012,
+            "score": 0.058162,
+            "short_similarity": 0.921422,
+            "long_similarity": 0.956621,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 12512,
+            "score": 0.011564,
+            "short_similarity": 0.996833,
+            "long_similarity": 0.982356,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 13013,
+            "score": 0.015529,
+            "short_similarity": 0.992561,
+            "long_similarity": 0.978612,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 13514,
+            "score": 0.043468,
+            "short_similarity": 0.964988,
+            "long_similarity": 0.950409,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 14014,
+            "score": 0.230852,
+            "short_similarity": 0.772771,
+            "long_similarity": 0.766524,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 14514,
+            "score": 0.375196,
+            "short_similarity": 0.718658,
+            "long_similarity": 0.556841,
+            "pending": true
+          },
+          {
+            "timestamp_ms": 15015,
+            "score": 0.288085,
+            "short_similarity": 0.678575,
+            "long_similarity": 0.736057,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 15516,
+            "score": 0.200423,
+            "short_similarity": 0.799577,
+            "long_similarity": 0.799577,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 16016,
+            "score": 0.322108,
+            "short_similarity": 0.78897,
+            "long_similarity": 0.597456,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 16516,
+            "score": 0.247201,
+            "short_similarity": 0.928641,
+            "long_similarity": 0.625466,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 17017,
+            "score": 0.160844,
+            "short_similarity": 0.981261,
+            "long_similarity": 0.736252,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 17518,
+            "score": 0.11422,
+            "short_similarity": 0.956573,
+            "long_similarity": 0.834516,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 18018,
+            "score": 0.100005,
+            "short_similarity": 0.967809,
+            "long_similarity": 0.850888,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 18518,
+            "score": 0.11808,
+            "short_similarity": 0.978688,
+            "long_similarity": 0.811847,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 19019,
+            "score": 0.074073,
+            "short_similarity": 0.976815,
+            "long_similarity": 0.889078,
+            "pending": false
+          },
+          {
+            "timestamp_ms": 19520,
+            "score": 0.062557,
+            "short_similarity": 0.998828,
+            "long_similarity": 0.892992,
+            "pending": false
+          }
+        ],
+        "state_trace": [
+          {
+            "timestamp_ms": 0,
+            "vector": [
+              0.0154687,
+              0.0228646,
+              0.02875,
+              0.0366493,
+              0.0564757,
+              0.1199132,
+              0.1943403,
+              0.1763542,
+              0.0879167,
+              0.0540104,
+              0.0191667,
+              0.0155035,
+              0.027934,
+              0.0459201,
+              0.0879861,
+              0.0107465,
+              0.2,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 500,
+            "vector": [
+              0.0156771,
+              0.0238889,
+              0.0294444,
+              0.0386111,
+              0.0571875,
+              0.1161632,
+              0.1894444,
+              0.1713715,
+              0.0873785,
+              0.057691,
+              0.0197743,
+              0.0154514,
+              0.0291146,
+              0.045625,
+              0.0913715,
+              0.0118056,
+              0.2,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 1001,
+            "vector": [
+              0.0148611,
+              0.0235938,
+              0.0309201,
+              0.0410069,
+              0.0640104,
+              0.1254167,
+              0.1775347,
+              0.1460069,
+              0.1145313,
+              0.0603993,
+              0.0194792,
+              0.0152083,
+              0.0284896,
+              0.0485937,
+              0.0808333,
+              0.0091146,
+              0.4,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 1502,
+            "vector": [
+              0.0138715,
+              0.0242361,
+              0.0310764,
+              0.0416146,
+              0.0631076,
+              0.12125,
+              0.2014063,
+              0.1525521,
+              0.1114931,
+              0.0613542,
+              0.0210243,
+              0.0133333,
+              0.0264931,
+              0.0440625,
+              0.0652431,
+              0.0078819,
+              0.4,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 2002,
+            "vector": [
+              0.0222396,
+              0.0305208,
+              0.0307812,
+              0.04375,
+              0.0537674,
+              0.1135764,
+              0.2064757,
+              0.1611285,
+              0.0994965,
+              0.0618056,
+              0.0204861,
+              0.0107465,
+              0.0221007,
+              0.044375,
+              0.069566,
+              0.009184,
+              0.2,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 2502,
+            "vector": [
+              0.0223785,
+              0.0274826,
+              0.0270312,
+              0.0359201,
+              0.0494097,
+              0.1167014,
+              0.2441319,
+              0.201875,
+              0.0694965,
+              0.0441667,
+              0.0134201,
+              0.009375,
+              0.0200521,
+              0.0432986,
+              0.0643403,
+              0.0109201,
+              0.4,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 3003,
+            "vector": [
+              0.0130382,
+              0.0204861,
+              0.0224653,
+              0.0409375,
+              0.0660069,
+              0.160434,
+              0.2656076,
+              0.1596181,
+              0.0800694,
+              0.035434,
+              0.0103819,
+              0.0096528,
+              0.0172569,
+              0.0405903,
+              0.0504687,
+              0.0075521,
+              0.6,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 3504,
+            "vector": [
+              0.0122396,
+              0.0201389,
+              0.0202431,
+              0.0336979,
+              0.0556597,
+              0.1510069,
+              0.2834375,
+              0.1744792,
+              0.0811632,
+              0.0356597,
+              0.0098611,
+              0.0089931,
+              0.0171354,
+              0.0401562,
+              0.0480208,
+              0.0081076,
+              0.6,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 4004,
+            "vector": [
+              0.012934,
+              0.0207813,
+              0.0206424,
+              0.0342187,
+              0.0609375,
+              0.1472049,
+              0.2662847,
+              0.1780208,
+              0.086059,
+              0.0376736,
+              0.0109549,
+              0.0089931,
+              0.0173438,
+              0.038559,
+              0.0503646,
+              0.0090278,
+              0.4,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 4504,
+            "vector": [
+              0.0131424,
+              0.0242014,
+              0.0218056,
+              0.0307465,
+              0.0685937,
+              0.1442882,
+              0.2586806,
+              0.1780208,
+              0.0851215,
+              0.0469618,
+              0.0112847,
+              0.0061632,
+              0.0147569,
+              0.0406076,
+              0.0475694,
+              0.0080556,
+              0.4,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 5005,
+            "vector": [
+              0.0057292,
+              0.0150868,
+              0.0286632,
+              0.0409722,
+              0.0725347,
+              0.1705556,
+              0.2568403,
+              0.1689063,
+              0.0739063,
+              0.0476389,
+              0.0236806,
+              0.0119792,
+              0.0105035,
+              0.0236806,
+              0.0410069,
+              0.008316,
+              0.6,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 5506,
+            "vector": [
+              0.0295833,
+              0.0157813,
+              0.0273438,
+              0.0600868,
+              0.0895833,
+              0.1556771,
+              0.2303646,
+              0.160816,
+              0.0608854,
+              0.0432465,
+              0.0207118,
+              0.0139063,
+              0.0113368,
+              0.0311111,
+              0.0420139,
+              0.0075521,
+              0.4,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 6006,
+            "vector": [
+              0.035434,
+              0.017691,
+              0.0281076,
+              0.0531944,
+              0.0842361,
+              0.1537326,
+              0.2406076,
+              0.1547569,
+              0.0628646,
+              0.0434549,
+              0.021441,
+              0.0146528,
+              0.0111979,
+              0.0315625,
+              0.0405556,
+              0.0065104,
+              0.6,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 6506,
+            "vector": [
+              0.0327083,
+              0.0219097,
+              0.0288194,
+              0.0415799,
+              0.0671875,
+              0.1463368,
+              0.2555903,
+              0.1656771,
+              0.0646701,
+              0.0472917,
+              0.0223958,
+              0.0138542,
+              0.009809,
+              0.0312153,
+              0.0446528,
+              0.0063021,
+              0.6,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 7007,
+            "vector": [
+              0.040625,
+              0.0208333,
+              0.0324826,
+              0.0334375,
+              0.0570312,
+              0.144375,
+              0.250191,
+              0.1646007,
+              0.0701215,
+              0.0533854,
+              0.0227604,
+              0.0139063,
+              0.0089583,
+              0.0287153,
+              0.0509896,
+              0.0075868,
+              0.6,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 7508,
+            "vector": [
+              0.0405382,
+              0.0273785,
+              0.0264931,
+              0.0274306,
+              0.0655729,
+              0.1558507,
+              0.2454688,
+              0.143125,
+              0.075625,
+              0.0436458,
+              0.0190625,
+              0.0120313,
+              0.0166667,
+              0.04125,
+              0.0515972,
+              0.0082639,
+              0.6,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 8008,
+            "vector": [
+              0.0256424,
+              0.0344618,
+              0.0261806,
+              0.0311285,
+              0.0587326,
+              0.1509375,
+              0.2793403,
+              0.180816,
+              0.0731944,
+              0.0395139,
+              0.0200694,
+              0.0296354,
+              0.0269444,
+              0.0157118,
+              0.0068576,
+              0.0008333,
+              0.6,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 8508,
+            "vector": [
+              0.0631944,
+              0.0372743,
+              0.0341667,
+              0.0403646,
+              0.0830035,
+              0.1766493,
+              0.2025868,
+              0.1332292,
+              0.0667535,
+              0.0330035,
+              0.0141667,
+              0.0085938,
+              0.0143229,
+              0.0600347,
+              0.0309722,
+              0.001684,
+              0.6,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 9009,
+            "vector": [
+              0.0844618,
+              0.0331424,
+              0.0378819,
+              0.0350347,
+              0.0630556,
+              0.1507813,
+              0.1825,
+              0.1480903,
+              0.0417014,
+              0.037066,
+              0.0165799,
+              0.0163194,
+              0.0609375,
+              0.0467361,
+              0.0326215,
+              0.0130903,
+              0.4,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 9510,
+            "vector": [
+              0.0321701,
+              0.0314236,
+              0.0326736,
+              0.0398611,
+              0.0752778,
+              0.1260764,
+              0.2106424,
+              0.2058333,
+              0.0624826,
+              0.0528993,
+              0.0247569,
+              0.0137674,
+              0.0198611,
+              0.0284549,
+              0.0260937,
+              0.0177257,
+              0.2,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 10010,
+            "vector": [
+              0.0136979,
+              0.0174479,
+              0.0303472,
+              0.0413194,
+              0.0593056,
+              0.1134375,
+              0.3013194,
+              0.1754861,
+              0.0641319,
+              0.0608681,
+              0.0357465,
+              0.0121181,
+              0.0136111,
+              0.0190104,
+              0.0239757,
+              0.0181771,
+              0.2,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 10510,
+            "vector": [
+              0.0697743,
+              0.0239583,
+              0.0261979,
+              0.0333681,
+              0.0684201,
+              0.1411111,
+              0.2783333,
+              0.1278646,
+              0.0681424,
+              0.0497569,
+              0.025816,
+              0.0096007,
+              0.0128299,
+              0.0231424,
+              0.0246007,
+              0.0170833,
+              0.2,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 11011,
+            "vector": [
+              0.0486111,
+              0.0238194,
+              0.0243229,
+              0.0304687,
+              0.0605556,
+              0.1599479,
+              0.3019965,
+              0.1338021,
+              0.0583854,
+              0.0413021,
+              0.0143403,
+              0.0131597,
+              0.0153125,
+              0.0333507,
+              0.0307639,
+              0.0098611,
+              0.2,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 11512,
+            "vector": [
+              0.0221701,
+              0.0234028,
+              0.0227257,
+              0.0288021,
+              0.0565104,
+              0.1989583,
+              0.3421354,
+              0.1177431,
+              0.0401562,
+              0.0367188,
+              0.0144792,
+              0.0109201,
+              0.0105729,
+              0.0281771,
+              0.0404687,
+              0.006059,
+              0.4,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 12012,
+            "vector": [
+              0.0451042,
+              0.0258507,
+              0.0315104,
+              0.0377778,
+              0.0886806,
+              0.2149479,
+              0.2358507,
+              0.1020139,
+              0.0644097,
+              0.0266146,
+              0.0144618,
+              0.0117188,
+              0.0233507,
+              0.0505903,
+              0.0240104,
+              0.0031076,
+              0.6,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 12512,
+            "vector": [
+              0.0626736,
+              0.0237847,
+              0.0293924,
+              0.0309549,
+              0.0772049,
+              0.2089583,
+              0.2710069,
+              0.1075174,
+              0.0576736,
+              0.0222396,
+              0.0117535,
+              0.0089062,
+              0.0196701,
+              0.0433681,
+              0.0222396,
+              0.0026563,
+              0.4,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 13013,
+            "vector": [
+              0.0784549,
+              0.0166146,
+              0.0134722,
+              0.0223437,
+              0.0728472,
+              0.2088889,
+              0.322934,
+              0.1282292,
+              0.0479167,
+              0.0257292,
+              0.0111458,
+              0.0116319,
+              0.0074306,
+              0.0135069,
+              0.0176736,
+              0.0011806,
+              0.4,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 13514,
+            "vector": [
+              0.0097396,
+              0.0094965,
+              0.0077083,
+              0.0102257,
+              0.0427431,
+              0.1899306,
+              0.4615451,
+              0.1570313,
+              0.0609375,
+              0.0190625,
+              0.0095139,
+              0.0076215,
+              0.0049479,
+              0.0042535,
+              0.0039236,
+              0.0013194,
+              0.4,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 14014,
+            "vector": [
+              0.0006424,
+              0.0004514,
+              0.0006076,
+              0.000434,
+              0.0028299,
+              0.065434,
+              0.4252083,
+              0.4801215,
+              0.0143403,
+              0.0015625,
+              0.0015278,
+              0.0029688,
+              0.000816,
+              0.0015451,
+              0.0013368,
+              0.0001736,
+              0.2,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 14514,
+            "vector": [
+              0.0067708,
+              0.0052604,
+              0.0038021,
+              0.0171528,
+              0.0407118,
+              0.0624306,
+              0.2389931,
+              0.5459028,
+              0.0760764,
+              0.0020139,
+              0.0004167,
+              0.0003125,
+              0.0001042,
+              0.0,
+              3.47e-05,
+              1.74e-05,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "timestamp_ms": 15015,
+            "vector": [
+              0.0328646,
+              0.0354688,
+              0.0249826,
+              0.0334028,
+              0.0583507,
+              0.0567187,
+              0.1297222,
+              0.4808333,
+              0.1302778,
+              0.0065625,
+              0.0034028,
+              0.0020486,
+              0.0018576,
+              0.002309,
+              0.0008507,
+              0.0003472,
+              0.8,
+              0.0,
+              0.6
+            ]
+          },
+          {
+            "timestamp_ms": 15516,
+            "vector": [
+              0.032066,
+              0.0509201,
+              0.0528819,
+              0.0527431,
+              0.0770833,
+              0.0784549,
+              0.1018056,
+              0.3783507,
+              0.1491319,
+              0.0108681,
+              0.0044271,
+              0.0033681,
+              0.0023958,
+              0.0024653,
+              0.0023611,
+              0.0006771,
+              0.4,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "timestamp_ms": 16016,
+            "vector": [
+              0.0198438,
+              0.0495486,
+              0.0604861,
+              0.0648611,
+              0.0933507,
+              0.0950521,
+              0.0817361,
+              0.1794444,
+              0.2492361,
+              0.0582639,
+              0.0089062,
+              0.0044618,
+              0.0032118,
+              0.0032118,
+              0.0033681,
+              0.0250174,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "timestamp_ms": 16516,
+            "vector": [
+              0.0181597,
+              0.0435764,
+              0.0649479,
+              0.0622917,
+              0.1024653,
+              0.0944271,
+              0.0928993,
+              0.1402083,
+              0.2129688,
+              0.1023958,
+              0.0155903,
+              0.0055035,
+              0.0038889,
+              0.0040799,
+              0.0034549,
+              0.0331424,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "timestamp_ms": 17017,
+            "vector": [
+              0.0165104,
+              0.0310417,
+              0.0517361,
+              0.0579514,
+              0.0684549,
+              0.0764583,
+              0.0889063,
+              0.1298438,
+              0.1990451,
+              0.1187847,
+              0.0234722,
+              0.0066319,
+              0.0051563,
+              0.0044618,
+              0.0044965,
+              0.1170486,
+              0.2,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "timestamp_ms": 17518,
+            "vector": [
+              0.0136979,
+              0.0290278,
+              0.0467882,
+              0.0569271,
+              0.0691319,
+              0.0717882,
+              0.0893229,
+              0.1208333,
+              0.2025694,
+              0.1309549,
+              0.0278993,
+              0.0057812,
+              0.0041319,
+              0.0043229,
+              0.0049306,
+              0.1218924,
+              0.4,
+              0.0,
+              0.8
+            ]
+          },
+          {
+            "timestamp_ms": 18018,
+            "vector": [
+              0.0123958,
+              0.0335069,
+              0.0505035,
+              0.0592535,
+              0.0689583,
+              0.0841146,
+              0.0913715,
+              0.1212847,
+              0.1960938,
+              0.1282813,
+              0.029809,
+              0.0052431,
+              0.0036806,
+              0.0035243,
+              0.0047049,
+              0.1072743,
+              0.6,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "timestamp_ms": 18518,
+            "vector": [
+              0.0176215,
+              0.0337674,
+              0.049809,
+              0.0607639,
+              0.0703299,
+              0.0869444,
+              0.0933681,
+              0.1195486,
+              0.1887674,
+              0.1286632,
+              0.0297569,
+              0.004809,
+              0.0033507,
+              0.0037326,
+              0.0041667,
+              0.1046007,
+              0.2,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "timestamp_ms": 19019,
+            "vector": [
+              0.0236285,
+              0.0335243,
+              0.0526736,
+              0.0597569,
+              0.0697049,
+              0.0881597,
+              0.0917708,
+              0.1161458,
+              0.185625,
+              0.1273611,
+              0.0302604,
+              0.0055035,
+              0.0043229,
+              0.0033333,
+              0.0042882,
+              0.103941,
+              0.6,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "timestamp_ms": 19520,
+            "vector": [
+              0.0201563,
+              0.0371528,
+              0.0555382,
+              0.0601563,
+              0.0787326,
+              0.0959028,
+              0.0870139,
+              0.1155729,
+              0.1944444,
+              0.1283507,
+              0.0321181,
+              0.0063368,
+              0.0039931,
+              0.0038021,
+              0.0034375,
+              0.0772917,
+              0.4,
+              0.0,
+              1.0
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "inferences": [
+    {
+      "observation_ja": "白い紙に包まれた、野菜の入ったサンドイッチを手に持つ様子。",
+      "objects": [
+        "サンドイッチ",
+        "紙",
+        "手",
+        "野菜"
+      ],
+      "action_ja": "サンドイッチを保持している",
+      "change_from_previous_ja": "新規の映像",
+      "confidence": 0.9,
+      "fragment_id": "sandwich-20s-0000000000000-000001",
+      "revision": 1,
+      "source_timestamp_ms": 0,
+      "lm_stats": {
+        "input_tokens": 579,
+        "total_output_tokens": 74,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 44.88393812902841,
+        "time_to_first_token_seconds": 0.8033920000000001
+      },
+      "trigger_reason": "stream_start",
+      "latency_ms": 2757.87,
+      "completed_wall_ms": 2857,
+      "completed_during_stream": true
+    },
+    {
+      "observation_ja": "白い紙で包まれた、野菜の入ったサンドイッチを手に持つ様子。",
+      "objects": [
+        "サンドイッチ",
+        "紙",
+        "手",
+        "野菜"
+      ],
+      "action_ja": "サンドイッチを保持している",
+      "change_from_previous_ja": "変化なし",
+      "confidence": 0.95,
+      "fragment_id": "sandwich-20s-0000000000000-000001",
+      "revision": 2,
+      "source_timestamp_ms": 2002,
+      "lm_stats": {
+        "input_tokens": 647,
+        "total_output_tokens": 74,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 45.32019337443606,
+        "time_to_first_token_seconds": 0.653302
+      },
+      "trigger_reason": "strong_visual_change",
+      "latency_ms": 2453.689,
+      "completed_wall_ms": 5311,
+      "completed_during_stream": true
+    },
+    {
+      "observation_ja": "白い紙で包まれた、野菜の入ったサンドイッチを両手で持っている。",
+      "objects": [
+        "サンドイッチ",
+        "白い紙",
+        "手",
+        "野菜"
+      ],
+      "action_ja": "サンドイッチを保持している",
+      "change_from_previous_ja": "変化なし",
+      "confidence": 0.9,
+      "fragment_id": "sandwich-20s-0000000000000-000001",
+      "revision": 3,
+      "source_timestamp_ms": 5005,
+      "lm_stats": {
+        "input_tokens": 768,
+        "total_output_tokens": 76,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 44.339396203838255,
+        "time_to_first_token_seconds": 0.7111989999999999
+      },
+      "trigger_reason": "strong_visual_change",
+      "latency_ms": 2676.865,
+      "completed_wall_ms": 7988,
+      "completed_during_stream": true
+    },
+    {
+      "observation_ja": "地面の質感と、右上に小さな黒い物体が見える。",
+      "objects": [
+        "地面",
+        "黒い物体"
+      ],
+      "action_ja": "静止",
+      "change_from_previous_ja": "サンドイッチが画面外へ移動",
+      "confidence": 0.6,
+      "fragment_id": "sandwich-20s-0000000000000-000001",
+      "revision": 4,
+      "source_timestamp_ms": 14014,
+      "lm_stats": {
+        "input_tokens": 646,
+        "total_output_tokens": 67,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 45.16523289862938,
+        "time_to_first_token_seconds": 0.7742089999999999
+      },
+      "trigger_reason": "fused_change",
+      "latency_ms": 2544.952,
+      "completed_wall_ms": 16605,
+      "completed_during_stream": true
+    },
+    {
+      "observation_ja": "建物前に複数の車両が停車または走行しており、歩道には柵がある。",
+      "objects": [
+        "建物",
+        "乗用車",
+        "トラック",
+        "柵",
+        "街灯"
+      ],
+      "action_ja": "車両が道路上を移動または停車している",
+      "change_from_previous_ja": "建物と車両が視認できる",
+      "confidence": 0.9,
+      "fragment_id": "sandwich-20s-0000000015015-000002",
+      "revision": 2,
+      "source_timestamp_ms": 16516,
+      "lm_stats": {
+        "input_tokens": 893,
+        "total_output_tokens": 86,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 44.58700629725895,
+        "time_to_first_token_seconds": 0.791107
+      },
+      "trigger_reason": "strong_visual_change",
+      "latency_ms": 3004.322,
+      "completed_wall_ms": 19609,
+      "completed_during_stream": false
+    }
+  ],
+  "failures": []
+}

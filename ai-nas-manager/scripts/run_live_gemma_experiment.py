@@ -55,6 +55,7 @@ def main() -> None:
     scene_state_vectors: list[tuple[float, ...]] = []
     adaptive_events: list[dict[str, object]] = []
     adaptive_trace: list[dict[str, object]] = []
+    adaptive_state_trace: list[dict[str, object]] = []
     previous_scene = ""
     start_wall = time.perf_counter()
     stream_ended_wall: float | None = None
@@ -145,6 +146,10 @@ def main() -> None:
         adaptive_events.extend(
             event.as_dict() for event in adaptive_shadow.process(timestamp_ms, state_vector)
         )
+        adaptive_state_trace.append({
+            "timestamp_ms": timestamp_ms,
+            "vector": [round(value, 7) for value in state_vector],
+        })
         if adaptive_shadow.last_snapshot is not None:
             adaptive_trace.append(adaptive_shadow.last_snapshot.as_dict())
         for event in events:
@@ -204,6 +209,7 @@ def main() -> None:
                     "authoritative": False,
                     "boundaries": adaptive_events,
                     "trace": adaptive_trace,
+                    "state_trace": adaptive_state_trace,
                 },
             },
         },

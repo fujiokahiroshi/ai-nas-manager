@@ -73,6 +73,34 @@ def scene_boundaries(payload: dict) -> tuple[list[int], str]:
     return values, "CUSUM/BOCPD provisional" if values else "time-gap fallback"
 
 
+def scene_boundary_markers(payload: dict) -> dict[str, list[int]]:
+    segmentation = payload.get("scene_segmentation", {})
+    if not isinstance(segmentation, dict):
+        segmentation = {}
+    shadow = segmentation.get("shadow_algorithms", {})
+    if not isinstance(shadow, dict):
+        shadow = {}
+
+    def event_times(name: str) -> list[int]:
+        value = shadow.get(name, {})
+        if not isinstance(value, dict):
+            return []
+        return [int(item["boundary_ms"]) for item in value.get("boundaries", [])]
+
+    truth = payload.get("scene_ground_truth", {})
+    if not isinstance(truth, dict):
+        truth = {}
+    return {
+        "current": [
+            int(item["boundary_ms"])
+            for item in segmentation.get("online_boundaries", [])
+        ],
+        "adaptive": event_times("adaptive_memory_v1"),
+        "tuned": event_times("adaptive_memory_tuned_v1"),
+        "ground_truth": [int(value) for value in truth.get("boundaries_ms", [])],
+    }
+
+
 def scene_records(
     fragments: list[dict],
     boundaries_ms: list[int],
@@ -264,6 +292,7 @@ class AppState:
     boundary_method: str
     scene_summaries: list[dict]
     shadow_boundaries: list[dict]
+    boundary_markers: dict[str, list[int]]
 
 
 def build_thumbnails(source: Path, records: list[dict]) -> dict[str, bytes]:
@@ -304,6 +333,7 @@ class AppHandler(BaseHTTPRequestHandler):
             self._json({
                 "source_name": self.state.source.name,
                 "shadow_boundaries": self.state.shadow_boundaries,
+                "boundary_markers": self.state.boundary_markers,
                 "fragments": self.state.store.list(
                     query,
                     favorites,
@@ -333,6 +363,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 "source_name": self.state.source.name,
                 "scenes": scenes,
                 "shadow_boundaries": self.state.shadow_boundaries,
+                "boundary_markers": self.state.boundary_markers,
             })
         elif parsed.path.startswith("/api/thumbnail/"):
             try:
@@ -464,6 +495,7 @@ def main() -> None:
         boundary_method,
         list(payload.get("scene_summaries", [])),
         shadow_boundaries,
+        scene_boundary_markers(payload),
     )
     server = create_server(args.host, args.port, state)
     url = f"http://{args.host}:{args.port}"

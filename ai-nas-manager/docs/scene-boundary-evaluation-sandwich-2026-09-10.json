@@ -1,0 +1,189 @@
+{
+  "source": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\demo\\sandwich-20s.mp4",
+  "ground_truth": {
+    "id": "sandwich-20s-manual-v1",
+    "video": "media/evaluation/videos/demo/sandwich-20s.mp4",
+    "annotation_method": "manual-review",
+    "boundaries_ms": [
+      14014,
+      16516
+    ],
+    "labels": [
+      {
+        "start_ms": 0,
+        "end_ms": 14014,
+        "description_ja": "サンドイッチを両手で持つ"
+      },
+      {
+        "start_ms": 14014,
+        "end_ms": 16516,
+        "description_ja": "サンドイッチが画面外へ移動し、地面が映る"
+      },
+      {
+        "start_ms": 16516,
+        "end_ms": 20000,
+        "description_ja": "建物、車両、歩道のある屋外風景"
+      }
+    ],
+    "notes": "The two boundaries were reviewed from Gemma Fragment revisions and the video timeline."
+  },
+  "tolerance_ms": 1500,
+  "comparison": {
+    "current_online": {
+      "predicted": [
+        3003,
+        6006,
+        9009,
+        12012,
+        15015,
+        18018
+      ],
+      "expected": [
+        14014,
+        16516
+      ],
+      "matches": [
+        {
+          "predicted_ms": 15015,
+          "expected_ms": 14014,
+          "error_ms": 1001
+        }
+      ],
+      "false_positive_ms": [
+        3003,
+        6006,
+        9009,
+        12012,
+        18018
+      ],
+      "false_negative_ms": [
+        16516
+      ],
+      "true_positive": 1,
+      "false_positive": 5,
+      "false_negative": 1,
+      "precision": 0.166667,
+      "recall": 0.5,
+      "f1": 0.25,
+      "mean_absolute_error_ms": 1001
+    },
+    "pelt_final": {
+      "predicted": [
+        15015
+      ],
+      "expected": [
+        14014,
+        16516
+      ],
+      "matches": [
+        {
+          "predicted_ms": 15015,
+          "expected_ms": 14014,
+          "error_ms": 1001
+        }
+      ],
+      "false_positive_ms": [],
+      "false_negative_ms": [
+        16516
+      ],
+      "true_positive": 1,
+      "false_positive": 0,
+      "false_negative": 1,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.666667,
+      "mean_absolute_error_ms": 1001
+    },
+    "adaptive_shadow": {
+      "predicted": [
+        14514
+      ],
+      "expected": [
+        14014,
+        16516
+      ],
+      "matches": [
+        {
+          "predicted_ms": 14514,
+          "expected_ms": 14014,
+          "error_ms": 500
+        }
+      ],
+      "false_positive_ms": [],
+      "false_negative_ms": [
+        16516
+      ],
+      "true_positive": 1,
+      "false_positive": 0,
+      "false_negative": 1,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.666667,
+      "mean_absolute_error_ms": 500
+    }
+  },
+  "tuned_adaptive_memory": {
+    "algorithm": "adaptive-memory-v1-grid-search",
+    "evaluated_configurations": 432,
+    "config": {
+      "short_alpha": 0.42,
+      "long_alpha": 0.055,
+      "short_weight": 0.42,
+      "long_weight": 0.58,
+      "high_threshold": 0.24,
+      "low_threshold": 0.108,
+      "confirmation_samples": 2,
+      "min_scene_ms": 2000,
+      "cooldown_ms": 2000
+    },
+    "boundaries": [
+      {
+        "boundary_ms": 14514,
+        "emitted_ms": 15015,
+        "latency_ms": 501,
+        "score": 0.375196,
+        "short_similarity": 0.718658,
+        "long_similarity": 0.556841
+      },
+      {
+        "boundary_ms": 16516,
+        "emitted_ms": 17017,
+        "latency_ms": 501,
+        "score": 0.247201,
+        "short_similarity": 0.928641,
+        "long_similarity": 0.625466
+      }
+    ],
+    "metrics": {
+      "predicted": [
+        14514,
+        16516
+      ],
+      "expected": [
+        14014,
+        16516
+      ],
+      "matches": [
+        {
+          "predicted_ms": 14514,
+          "expected_ms": 14014,
+          "error_ms": 500
+        },
+        {
+          "predicted_ms": 16516,
+          "expected_ms": 16516,
+          "error_ms": 0
+        }
+      ],
+      "false_positive_ms": [],
+      "false_negative_ms": [],
+      "true_positive": 2,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "mean_absolute_error_ms": 250
+    }
+  }
+}
