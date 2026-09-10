@@ -350,6 +350,217 @@ def cosine_similarity(left: Sequence[float], right: Sequence[float]) -> float:
     return _clip(dot / (left_norm * right_norm))
 
 
+def _ema_vector(
+    previous: tuple[float, ...],
+    current: tuple[float, ...],
+    alpha: float,
+) -> tuple[float, ...]:
+    return tuple((1.0 - alpha) * old + alpha * new for old, new in zip(previous, current))
+
+
+@dataclass(frozen=True, slots=True)
+class AdaptiveMemoryConfig:
+    """Parameters for the non-authoritative adaptive-memory shadow detector."""
+
+    short_alpha: float = 0.42
+    long_alpha: float = 0.055
+    short_weight: float = 0.42
+    long_weight: float = 0.58
+    high_threshold: float = 0.24
+    low_threshold: float = 0.12
+    confirmation_samples: int = 2
+    min_scene_ms: int = 3_000
+    cooldown_ms: int = 2_000
+
+    def __post_init__(self) -> None:
+        probabilities = (
+            self.short_alpha,
+            self.long_alpha,
+            self.short_weight,
+            self.long_weight,
+            self.high_threshold,
+            self.low_threshold,
+        )
+        if any(value < 0.0 or value > 1.0 for value in probabilities):
+            raise ValueError("adaptive-memory values must be in 0..1")
+        if self.short_weight + self.long_weight <= 0:
+            raise ValueError("adaptive-memory weights must have a positive sum")
+        if self.low_threshold > self.high_threshold:
+            raise ValueError("low_threshold cannot exceed high_threshold")
+        if self.confirmation_samples <= 0:
+            raise ValueError("confirmation_samples must be positive")
+        if min(self.min_scene_ms, self.cooldown_ms) < 0:
+            raise ValueError("adaptive-memory timing values must be non-negative")
+
+
+@dataclass(frozen=True, slots=True)
+class AdaptiveMemorySnapshot:
+    timestamp_ms: int
+    score: float
+    short_similarity: float
+    long_similarity: float
+    pending: bool
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "timestamp_ms": self.timestamp_ms,
+            "score": round(self.score, 6),
+            "short_similarity": round(self.short_similarity, 6),
+            "long_similarity": round(self.long_similarity, 6),
+            "pending": self.pending,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class AdaptiveMemoryBoundary:
+    boundary_ms: int
+    emitted_ms: int
+    score: float
+    short_similarity: float
+    long_similarity: float
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "boundary_ms": self.boundary_ms,
+            "emitted_ms": self.emitted_ms,
+            "latency_ms": self.emitted_ms - self.boundary_ms,
+            "score": round(self.score, 6),
+            "short_similarity": round(self.short_similarity, 6),
+            "long_similarity": round(self.long_similarity, 6),
+        }
+
+
+@dataclass(slots=True)
+class _AdaptivePending:
+    boundary_ms: int
+    vectors: list[tuple[float, ...]]
+    max_score: float
+    short_similarity: float
+    long_similarity: float
+
+
+class AdaptiveMemoryShadowDetector:
+    """Causal short/long context memory that never changes production output.
+
+    A candidate freezes both memories and must remain different for a small
+    number of samples.  This hysteresis rejects a one-frame flash while keeping
+    latency bounded.  On confirmation the new samples seed the next Scene.
+    """
+
+    def __init__(self, config: AdaptiveMemoryConfig | None = None) -> None:
+        self.config = config or AdaptiveMemoryConfig()
+        self._short: tuple[float, ...] | None = None
+        self._long: tuple[float, ...] | None = None
+        self._pending: _AdaptivePending | None = None
+        self._previous_timestamp_ms: int | None = None
+        self._scene_start_ms: int | None = None
+        self._last_boundary_ms = -10**12
+        self.last_snapshot: AdaptiveMemorySnapshot | None = None
+
+    @staticmethod
+    def _vector(values: Sequence[float]) -> tuple[float, ...]:
+        vector = tuple(float(value) for value in values)
+        if not vector:
+            raise ValueError("adaptive-memory vectors cannot be empty")
+        return vector
+
+    @staticmethod
+    def _mean(vectors: Sequence[tuple[float, ...]]) -> tuple[float, ...]:
+        return tuple(sum(vector[index] for vector in vectors) / len(vectors) for index in range(len(vectors[0])))
+
+    def _update_memories(self, vector: tuple[float, ...]) -> None:
+        assert self._short is not None and self._long is not None
+        self._short = _ema_vector(self._short, vector, self.config.short_alpha)
+        self._long = _ema_vector(self._long, vector, self.config.long_alpha)
+
+    def process(self, timestamp_ms: int, values: Sequence[float]) -> list[AdaptiveMemoryBoundary]:
+        if timestamp_ms < 0:
+            raise ValueError("timestamp_ms must be non-negative")
+        if self._previous_timestamp_ms is not None and timestamp_ms < self._previous_timestamp_ms:
+            raise ValueError("adaptive-memory samples must be timestamp ordered")
+        vector = self._vector(values)
+        if self._short is None:
+            self._short = self._long = vector
+            self._scene_start_ms = timestamp_ms
+            self._previous_timestamp_ms = timestamp_ms
+            self.last_snapshot = AdaptiveMemorySnapshot(timestamp_ms, 0.0, 1.0, 1.0, False)
+            return []
+        if len(vector) != len(self._short):
+            raise ValueError("adaptive-memory vector dimensions must match")
+        self._previous_timestamp_ms = timestamp_ms
+        assert self._long is not None and self._scene_start_ms is not None
+        short_similarity = cosine_similarity(vector, self._short)
+        long_similarity = cosine_similarity(vector, self._long)
+        total_weight = self.config.short_weight + self.config.long_weight
+        score = _clip((
+            self.config.short_weight * (1.0 - short_similarity)
+            + self.config.long_weight * (1.0 - long_similarity)
+        ) / total_weight)
+        events: list[AdaptiveMemoryBoundary] = []
+        if self._pending is not None:
+            if score >= self.config.low_threshold:
+                self._pending.vectors.append(vector)
+                self._pending.max_score = max(self._pending.max_score, score)
+                if len(self._pending.vectors) >= self.config.confirmation_samples:
+                    pending = self._pending
+                    events.append(AdaptiveMemoryBoundary(
+                        pending.boundary_ms,
+                        timestamp_ms,
+                        pending.max_score,
+                        pending.short_similarity,
+                        pending.long_similarity,
+                    ))
+                    seed = self._mean(pending.vectors)
+                    self._short = self._long = seed
+                    self._scene_start_ms = pending.boundary_ms
+                    self._last_boundary_ms = pending.boundary_ms
+                    self._pending = None
+            else:
+                self._pending = None
+                self._update_memories(vector)
+        else:
+            old_enough = timestamp_ms - self._scene_start_ms >= self.config.min_scene_ms
+            cooled_down = timestamp_ms - self._last_boundary_ms >= self.config.cooldown_ms
+            if score >= self.config.high_threshold and old_enough and cooled_down:
+                self._pending = _AdaptivePending(
+                    timestamp_ms,
+                    [vector],
+                    score,
+                    short_similarity,
+                    long_similarity,
+                )
+                if self.config.confirmation_samples == 1:
+                    events.append(AdaptiveMemoryBoundary(
+                        timestamp_ms,
+                        timestamp_ms,
+                        score,
+                        short_similarity,
+                        long_similarity,
+                    ))
+                    self._short = self._long = vector
+                    self._scene_start_ms = timestamp_ms
+                    self._last_boundary_ms = timestamp_ms
+                    self._pending = None
+            else:
+                self._update_memories(vector)
+        self.last_snapshot = AdaptiveMemorySnapshot(
+            timestamp_ms,
+            score,
+            short_similarity,
+            long_similarity,
+            self._pending is not None,
+        )
+        return events
+
+    def discontinuity(self) -> None:
+        self._short = None
+        self._long = None
+        self._pending = None
+        self._previous_timestamp_ms = None
+        self._scene_start_ms = None
+        self.last_snapshot = None
+
+
 def _as_vectors(values: Sequence[float | Sequence[float]]) -> list[tuple[float, ...]]:
     vectors: list[tuple[float, ...]] = []
     width: int | None = None

@@ -14,7 +14,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from audio_detection import AudioChangeConfig, AudioFeatureTimeline, iter_audio_features
 from online_fragmentation import GrayFrame, OnlineMultiSignalFragmenter, fragment_config
-from scene_segmentation import OnlineHybridSceneSegmenter, SceneSample, pelt_boundaries
+from scene_segmentation import (
+    AdaptiveMemoryShadowDetector,
+    OnlineHybridSceneSegmenter,
+    SceneSample,
+    pelt_boundaries,
+)
 
 
 def luma_state_vector(frame: GrayFrame, bins: int = 16) -> tuple[float, ...]:
@@ -63,6 +68,7 @@ def analyze(source: Path, args: argparse.Namespace) -> dict[str, object]:
         fragment_config(args.profile),
     )
     scene_segmenter = OnlineHybridSceneSegmenter(source.stem)
+    adaptive_shadow = AdaptiveMemoryShadowDetector()
     audio_features = (
         list(iter_audio_features(
             source,
@@ -79,6 +85,8 @@ def analyze(source: Path, args: argparse.Namespace) -> dict[str, object]:
     scene_events = []
     scene_timestamps_ms: list[int] = []
     scene_state_vectors: list[tuple[float, ...]] = []
+    adaptive_events: list[dict[str, object]] = []
+    adaptive_trace: list[dict[str, object]] = []
     for frame in iter_frames(source, args.ffmpeg, args.width, args.height, args.fps):
         frame_count += 1
         audio = audio_timeline.at(frame.timestamp_ms)
@@ -100,8 +108,14 @@ def analyze(source: Path, args: argparse.Namespace) -> dict[str, object]:
             visual_change=visual_change,
             audio_change=audio.change_score if audio is not None else 0.0,
         )))
+        state_vector = luma_state_vector(frame)
         scene_timestamps_ms.append(frame.timestamp_ms)
-        scene_state_vectors.append(luma_state_vector(frame))
+        scene_state_vectors.append(state_vector)
+        adaptive_events.extend(
+            event.as_dict() for event in adaptive_shadow.process(frame.timestamp_ms, state_vector)
+        )
+        if adaptive_shadow.last_snapshot is not None:
+            adaptive_trace.append(adaptive_shadow.last_snapshot.as_dict())
         for name, value in fragmenter.last_signals.as_dict().items():
             samples.setdefault(name, []).append(value)
         for event in produced:
@@ -151,6 +165,13 @@ def analyze(source: Path, args: argparse.Namespace) -> dict[str, object]:
             "offline_algorithm": "pelt-multivariate-luma-histogram-v1",
             "pelt_penalty": args.pelt_penalty,
             "pelt_boundaries_ms": [scene_timestamps_ms[index] for index in pelt_indices],
+            "shadow_algorithms": {
+                "adaptive_memory_v1": {
+                    "authoritative": False,
+                    "boundaries": adaptive_events,
+                    "trace": adaptive_trace,
+                },
+            },
         },
         "events": events,
     }

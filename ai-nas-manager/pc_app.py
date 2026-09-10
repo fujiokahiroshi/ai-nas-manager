@@ -263,6 +263,7 @@ class AppState:
     boundaries_ms: list[int]
     boundary_method: str
     scene_summaries: list[dict]
+    shadow_boundaries: list[dict]
 
 
 def build_thumbnails(source: Path, records: list[dict]) -> dict[str, bytes]:
@@ -302,6 +303,7 @@ class AppHandler(BaseHTTPRequestHandler):
             favorites = values.get("favorites", ["0"])[0] == "1"
             self._json({
                 "source_name": self.state.source.name,
+                "shadow_boundaries": self.state.shadow_boundaries,
                 "fragments": self.state.store.list(
                     query,
                     favorites,
@@ -327,7 +329,11 @@ class AppHandler(BaseHTTPRequestHandler):
                 ).casefold()]
             if favorites:
                 scenes = [scene for scene in scenes if scene["favorite"]]
-            self._json({"source_name": self.state.source.name, "scenes": scenes})
+            self._json({
+                "source_name": self.state.source.name,
+                "scenes": scenes,
+                "shadow_boundaries": self.state.shadow_boundaries,
+            })
         elif parsed.path.startswith("/api/thumbnail/"):
             try:
                 record_id = unquote(parsed.path[len("/api/thumbnail/"):])
@@ -443,6 +449,12 @@ def main() -> None:
     store = FragmentStore(args.database)
     store.import_records(records_to_store)
     boundaries_ms, boundary_method = scene_boundaries(payload)
+    shadow_boundaries = list(
+        payload.get("scene_segmentation", {})
+        .get("shadow_algorithms", {})
+        .get("adaptive_memory_v1", {})
+        .get("boundaries", [])
+    )
     state = AppState(
         store,
         source,
@@ -451,6 +463,7 @@ def main() -> None:
         boundaries_ms,
         boundary_method,
         list(payload.get("scene_summaries", [])),
+        shadow_boundaries,
     )
     server = create_server(args.host, args.port, state)
     url = f"http://{args.host}:{args.port}"

@@ -3,6 +3,8 @@ from __future__ import annotations
 import pytest
 
 from scene_segmentation import (
+    AdaptiveMemoryConfig,
+    AdaptiveMemoryShadowDetector,
     BayesianOnlineChangeDetector,
     OnlineHybridSceneSegmenter,
     OnlineSceneConfig,
@@ -89,3 +91,35 @@ def test_cosine_similarity() -> None:
     assert cosine_similarity([1.0, 0.0], [1.0, 0.0]) == pytest.approx(1.0)
     assert cosine_similarity([1.0, 0.0], [0.0, 1.0]) == pytest.approx(0.0)
 
+
+def test_adaptive_memory_shadow_detects_persistent_change() -> None:
+    detector = AdaptiveMemoryShadowDetector(AdaptiveMemoryConfig(
+        high_threshold=0.20,
+        low_threshold=0.10,
+        confirmation_samples=2,
+        min_scene_ms=1_000,
+        cooldown_ms=0,
+    ))
+    for timestamp in (0, 500, 1_000):
+        assert detector.process(timestamp, (1.0, 0.0)) == []
+    assert detector.process(1_500, (0.0, 1.0)) == []
+    events = detector.process(2_000, (0.0, 1.0))
+    assert len(events) == 1
+    assert events[0].boundary_ms == 1_500
+    assert events[0].emitted_ms == 2_000
+
+
+def test_adaptive_memory_shadow_rejects_single_sample_flash() -> None:
+    detector = AdaptiveMemoryShadowDetector(AdaptiveMemoryConfig(
+        high_threshold=0.20,
+        low_threshold=0.10,
+        confirmation_samples=2,
+        min_scene_ms=500,
+        cooldown_ms=0,
+    ))
+    detector.process(0, (1.0, 0.0))
+    detector.process(500, (1.0, 0.0))
+    assert detector.process(1_000, (0.0, 1.0)) == []
+    assert detector.process(1_500, (1.0, 0.0)) == []
+    assert detector.last_snapshot is not None
+    assert detector.last_snapshot.pending is False

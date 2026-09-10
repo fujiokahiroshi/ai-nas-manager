@@ -96,3 +96,17 @@ uv run python scripts/summarize_gemma_scenes.py `
 
 The PC App displays these records with the `Gemma Scene要約` badge. Fragment
 text remains the evidence and can still be inspected in the Fragment tab.
+
+## Adaptive Memory shadow mode
+
+`AdaptiveMemoryShadowDetector` runs beside the authoritative CUSUM/BOCPD
+detector. It compares every absolute state vector with both a fast short-term
+EMA and a slow Scene-level EMA. A high/low hysteresis and consecutive-sample
+confirmation reject single-frame flashes. Confirmed candidates seed the next
+memory, so memory remains bounded for an indefinitely running Stream.
+
+Shadow decisions never alter Fragment admission, production Scene boundaries,
+Gemma requests or database records. Experiment JSON stores them under
+`scene_segmentation.shadow_algorithms.adaptive_memory_v1`, including a score
+trace and detection latency. The PC App draws confirmed shadow boundaries as
+purple markers, allowing direct comparison before enabling the algorithm.

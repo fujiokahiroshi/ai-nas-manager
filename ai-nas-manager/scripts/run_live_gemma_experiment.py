@@ -14,7 +14,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from live_semantics import FragmentEvidence, LatestEvidenceQueue, LMStudioVisionClient
 from object_detection import YoloXOnnxDetector, object_change_score
 from online_fragmentation import GrayFrame, EventKind, OnlineMultiSignalFragmenter, fragment_config
-from scene_segmentation import OnlineHybridSceneSegmenter, SceneSample, pelt_boundaries
+from scene_segmentation import (
+    AdaptiveMemoryShadowDetector,
+    OnlineHybridSceneSegmenter,
+    SceneSample,
+    pelt_boundaries,
+)
 
 
 def main() -> None:
@@ -39,6 +44,7 @@ def main() -> None:
         fragment_config("fused-v2-balanced"),
     )
     scene_segmenter = OnlineHybridSceneSegmenter(args.source.stem)
+    adaptive_shadow = AdaptiveMemoryShadowDetector()
     queue = LatestEvidenceQueue(max_fragments=4)
     client = LMStudioVisionClient(base_url=args.lm_studio_url, model=args.model)
     fragment_events: list[dict[str, object]] = []
@@ -47,6 +53,8 @@ def main() -> None:
     scene_events: list[dict[str, object]] = []
     scene_timestamps_ms: list[int] = []
     scene_state_vectors: list[tuple[float, ...]] = []
+    adaptive_events: list[dict[str, object]] = []
+    adaptive_trace: list[dict[str, object]] = []
     previous_scene = ""
     start_wall = time.perf_counter()
     stream_ended_wall: float | None = None
@@ -128,11 +136,17 @@ def main() -> None:
         histogram = cv2.calcHist([gray], [0], None, [16], [0, 256]).reshape(-1)
         histogram_total = max(1.0, float(histogram.sum()))
         object_groups = ("person", "two_wheeler", "road_vehicle")
-        scene_state_vectors.append(tuple(float(value) / histogram_total for value in histogram) + tuple(
+        state_vector = tuple(float(value) / histogram_total for value in histogram) + tuple(
             min(1.0, sum(item.trigger_group == group for item in detections) / 5.0)
             for group in object_groups
-        ))
+        )
+        scene_state_vectors.append(state_vector)
         scene_timestamps_ms.append(timestamp_ms)
+        adaptive_events.extend(
+            event.as_dict() for event in adaptive_shadow.process(timestamp_ms, state_vector)
+        )
+        if adaptive_shadow.last_snapshot is not None:
+            adaptive_trace.append(adaptive_shadow.last_snapshot.as_dict())
         for event in events:
             event_record = event.as_dict()
             event_record["detected_objects"] = [item.as_dict() for item in detections]
@@ -185,6 +199,13 @@ def main() -> None:
             "offline_algorithm": "pelt-luma-object-state-v1",
             "pelt_penalty": args.pelt_penalty,
             "pelt_boundaries_ms": [scene_timestamps_ms[index] for index in pelt_indices],
+            "shadow_algorithms": {
+                "adaptive_memory_v1": {
+                    "authoritative": False,
+                    "boundaries": adaptive_events,
+                    "trace": adaptive_trace,
+                },
+            },
         },
         "inferences": inferences,
         "failures": failures,
