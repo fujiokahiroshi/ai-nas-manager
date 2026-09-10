@@ -75,6 +75,17 @@ RGA without transferring full-resolution video through Python.
 - Thresholds have only been exercised on four short test videos.  Human ground
   truth is required before calling them production-optimal.
 
+## Object-assisted experiment
+
+`object_detection.py` defines normalized detections, object-state comparison,
+and a Windows YOLOX/ONNX Runtime adapter.  Its output enters the existing
+`object_change` input; it does not couple the fragmenter to ONNX.  On RK3588 the
+adapter can therefore be replaced with RKNN while preserving event behavior.
+
+See `object-fragment-experiment-2026-09-10.md` for measured results.  On the
+pedestrian sample, object changes reduced the first UPDATE time from 11.00 s to
+1.92 s.
+
 ## Reproduction
 
 From the `ai-nas-manager` directory:
@@ -89,4 +100,3 @@ uv run python scripts/run_fragment_experiment.py `
   --ffmpeg C:\path\to\ffmpeg.exe `
   --output docs/fragment-experiment-2026-09-10.json
 ```
-

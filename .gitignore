@@ -12,3 +12,4 @@ ai-nas-manager/media/thumbnails/*.png
 ai-nas-manager/*.sqlite3
 ai-nas-manager/*.sqlite3-shm
 ai-nas-manager/*.sqlite3-wal
+ai-nas-manager/models/*.onnx
