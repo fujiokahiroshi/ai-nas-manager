@@ -1,4 +1,16 @@
-from pc_app import FragmentStore, fragment_records, scene_boundaries, scene_boundary_markers, scene_records
+from pathlib import Path
+
+import pytest
+
+from pc_app import (
+    AppState,
+    FragmentStore,
+    fragment_records,
+    imported_video_path,
+    scene_boundaries,
+    scene_boundary_markers,
+    scene_records,
+)
 
 
 def sample_payload() -> dict:
@@ -122,3 +134,36 @@ def test_scene_summary_replaces_latest_fragment_text() -> None:
     assert scenes[0]["summary"] == "人物が歩道を移動するScene"
     assert scenes[0]["summary_method"] == "gemma_multi_fragment"
     assert "歩道" in scenes[0]["objects"]
+
+
+def test_imported_video_path_is_unique_and_stays_in_directory(tmp_path) -> None:
+    first = imported_video_path(tmp_path, "../家族 動画.mp4")
+    second = imported_video_path(tmp_path, "../家族 動画.mp4")
+    assert first.parent == tmp_path
+    assert first.suffix == ".mp4"
+    assert first != second
+    with pytest.raises(ValueError):
+        imported_video_path(tmp_path, "notes.txt")
+
+
+def test_select_source_clears_previous_analysis(tmp_path) -> None:
+    source = tmp_path / "new.mp4"
+    source.write_bytes(b"video")
+    state = AppState(
+        FragmentStore(tmp_path / "pc.sqlite3"),
+        Path("old.mp4"),
+        b"ui",
+        {"old": b"image"},
+        [1_000],
+        "PELT final",
+        [{"summary_ja": "old"}],
+        [{"boundary_ms": 1_000}],
+        {"current": [1_000]},
+        tmp_path / "imports",
+    )
+    state.select_source(source)
+    assert state.source == source.resolve()
+    assert state.thumbnails == {}
+    assert state.boundaries_ms == []
+    assert state.scene_summaries == []
+    assert state.boundary_markers["current"] == []

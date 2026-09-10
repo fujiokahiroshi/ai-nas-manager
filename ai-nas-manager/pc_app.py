@@ -5,10 +5,12 @@ from __future__ import annotations
 import argparse
 import json
 import mimetypes
+import re
 import sqlite3
 import threading
+import uuid
 import webbrowser
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -21,6 +23,21 @@ ROOT = Path(__file__).resolve().parent
 DEFAULT_RESULT = ROOT / "docs" / "live-gemma-pedestrian-2026-09-10.json"
 DEFAULT_UI = ROOT / "pc-app" / "index.html"
 DEFAULT_DB = ROOT / "pc_app.sqlite3"
+DEFAULT_IMPORT_DIR = ROOT / "media" / "pc-app-imports"
+VIDEO_EXTENSIONS = {".mp4", ".mov", ".mkv", ".avi", ".webm", ".m4v", ".ts", ".m2ts"}
+
+
+def imported_video_path(directory: Path, filename: str) -> Path:
+    """Return a unique path inside the import directory for a browser upload."""
+
+    basename = Path(unquote(filename)).name
+    suffix = Path(basename).suffix.casefold()
+    if suffix not in VIDEO_EXTENSIONS:
+        raise ValueError("unsupported video extension")
+    stem = re.sub(r"[^\w .()-]", "_", Path(basename).stem, flags=re.UNICODE).strip(" .")
+    if not stem:
+        stem = "video"
+    return directory / f"{uuid.uuid4().hex[:10]}-{stem[:100]}{suffix}"
 
 
 def fragment_records(payload: dict) -> list[dict]:
@@ -293,6 +310,25 @@ class AppState:
     scene_summaries: list[dict]
     shadow_boundaries: list[dict]
     boundary_markers: dict[str, list[int]]
+    import_dir: Path = DEFAULT_IMPORT_DIR
+    lock: threading.RLock = field(default_factory=threading.RLock, repr=False)
+
+    def select_source(self, source: Path) -> None:
+        """Switch playback to an unanalysed source without mixing old results."""
+
+        with self.lock:
+            self.source = source.resolve()
+            self.thumbnails = {}
+            self.boundaries_ms = []
+            self.boundary_method = "not analyzed"
+            self.scene_summaries = []
+            self.shadow_boundaries = []
+            self.boundary_markers = {
+                "current": [],
+                "adaptive": [],
+                "tuned": [],
+                "ground_truth": [],
+            }
 
 
 def build_thumbnails(source: Path, records: list[dict]) -> dict[str, bytes]:
@@ -330,22 +366,27 @@ class AppHandler(BaseHTTPRequestHandler):
             values = parse_qs(parsed.query)
             query = values.get("q", [""])[0]
             favorites = values.get("favorites", ["0"])[0] == "1"
+            source_path = str(self.state.source.resolve())
+            has_analysis = bool(self.state.store.list(source_path=source_path))
+            fragments = self.state.store.list(
+                query,
+                favorites,
+                source_path,
+            )
             self._json({
                 "source_name": self.state.source.name,
                 "shadow_boundaries": self.state.shadow_boundaries,
                 "boundary_markers": self.state.boundary_markers,
-                "fragments": self.state.store.list(
-                    query,
-                    favorites,
-                    str(self.state.source.resolve()),
-                ),
+                "analysis_state": "ready" if has_analysis else "not_analyzed",
+                "fragments": fragments,
             })
         elif parsed.path == "/api/scenes":
             values = parse_qs(parsed.query)
             query = values.get("q", [""])[0].casefold()
             favorites = values.get("favorites", ["0"])[0] == "1"
+            source_records = self.state.store.list(source_path=str(self.state.source.resolve()))
             scenes = scene_records(
-                self.state.store.list(source_path=str(self.state.source.resolve())),
+                source_records,
                 self.state.boundaries_ms,
                 self.state.boundary_method,
                 summaries=self.state.scene_summaries,
@@ -362,6 +403,7 @@ class AppHandler(BaseHTTPRequestHandler):
             self._json({
                 "source_name": self.state.source.name,
                 "scenes": scenes,
+                "analysis_state": "ready" if source_records else "not_analyzed",
                 "shadow_boundaries": self.state.shadow_boundaries,
                 "boundary_markers": self.state.boundary_markers,
             })
@@ -380,6 +422,9 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
+        if parsed.path == "/api/media/select":
+            self._select_media()
+            return
         prefix = "/api/fragments/"
         if not parsed.path.startswith(prefix):
             self.send_error(HTTPStatus.NOT_FOUND)
@@ -400,8 +445,42 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         self._json(updated)
 
+    def _select_media(self) -> None:
+        temporary: Path | None = None
+        try:
+            size = int(self.headers.get("Content-Length", "0"))
+            if size <= 0:
+                raise ValueError("empty upload")
+            filename = self.headers.get("X-File-Name", "")
+            target = imported_video_path(self.state.import_dir, filename)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            temporary = target.with_name(f".{target.name}.{uuid.uuid4().hex}.part")
+            remaining = size
+            with temporary.open("xb") as handle:
+                while remaining:
+                    chunk = self.rfile.read(min(1024 * 1024, remaining))
+                    if not chunk:
+                        raise ValueError("incomplete upload")
+                    handle.write(chunk)
+                    remaining -= len(chunk)
+            temporary.replace(target)
+            temporary = None
+            self.state.select_source(target)
+        except (OSError, ValueError) as exc:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+            self.send_error(HTTPStatus.BAD_REQUEST, str(exc))
+            return
+        self._json({
+            "source_name": target.name,
+            "size_bytes": target.stat().st_size,
+            "analysis_state": "not_analyzed",
+            "video_url": "/media/video",
+        })
+
     def _video(self) -> None:
-        source = self.state.source
+        with self.state.lock:
+            source = self.state.source
         size = source.stat().st_size
         start, end = 0, size - 1
         status = HTTPStatus.OK

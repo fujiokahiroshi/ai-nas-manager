@@ -21,6 +21,7 @@ ai-nas-manager/media/evaluation/sources/
 ai-nas-manager/media/evaluation/videos/
 ai-nas-manager/media/evaluation/downloads/
 ai-nas-manager/media/evaluation/*.sqlite3
+ai-nas-manager/media/pc-app-imports/
 ai-nas-manager/.pytest_cache/
 ai-nas-manager/.uv-*/
 ai-nas-manager/.testtmp*/
