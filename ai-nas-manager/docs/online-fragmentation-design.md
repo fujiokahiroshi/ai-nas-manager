@@ -47,6 +47,8 @@ composite = 0.50*max(visual, adaptive_novelty)
 ```
 
 Weights and thresholds are configuration, not protocol constants.
+In addition, an `audio_change` score of 0.72 or higher is an explicit event
+trigger. This allows a sound onset to open a Fragment when the image is static.
 
 ## Streaming state
 
@@ -71,7 +73,9 @@ RGA without transferring full-resolution video through Python.
 - No object detector/tracker is wired in yet; a visually small person may not
   generate a strong update.
 - Global camera motion is not compensated and can look like scene activity.
-- Audio and broadcast subtitle extraction are input hooks, not decoders yet.
+- Audio DSP and file decoding are implemented; live RTSP audio synchronization,
+  sound classification, speech recognition, and broadcast subtitle decoding
+  remain adapter work.
 - Thresholds have only been exercised on four short test videos.  Human ground
   truth is required before calling them production-optimal.
 
@@ -93,6 +97,15 @@ adapter.  The real-time pedestrian experiment produced its first Japanese text
 at 3.64 seconds and four text results before the 14.95-second stream ended.  Two
 stale revisions were replaced, no fragment was dropped, and no request failed.
 See `live-gemma-experiment-2026-09-10.md`.
+
+## Audio-assisted result
+
+`audio_detection.py` converts 16 kHz mono PCM into causal 500 ms change scores
+using RMS, peak, zero-crossing rate, spectral flux, and onset transitions. In a
+static-video comparison, visual-only analysis produced one Fragment and no
+updates. Enabling audio produced two Fragments and an audio-driven update; the
+second Fragment opened solely from an impact-like sound at 6.0 seconds. See
+`audio-fragment-experiment-2026-09-10.md`.
 
 ## RTSP reconnect result
 

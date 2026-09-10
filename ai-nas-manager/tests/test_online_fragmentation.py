@@ -88,6 +88,18 @@ def test_object_change_can_open_fragment() -> None:
     assert events[0].signals.object_change == 1.0
 
 
+def test_audio_change_can_open_fragment() -> None:
+    fragmenter = OnlineMultiSignalFragmenter(
+        "audio", OnlineFragmentConfig(open_on_start=False)
+    )
+    assert fragmenter.process(frame(0, 20)) == []
+    events = fragmenter.process(frame(500, 20), audio_change=0.9)
+    assert len(events) == 1
+    assert events[0].kind is EventKind.OPEN
+    assert events[0].reason == "audio_change"
+    assert events[0].signals.audio_change == 0.9
+
+
 def test_discontinuity_closes_and_next_frame_reopens() -> None:
     fragmenter = OnlineMultiSignalFragmenter("camera")
     opened = fragmenter.process(frame(0, 20))

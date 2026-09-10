@@ -16,3 +16,4 @@ ai-nas-manager/models/*.onnx
 ai-nas-manager/tools/mediamtx/
 ai-nas-manager/tools/*.zip
 ai-nas-manager/docs/.rtsp-runtime/
+ai-nas-manager/media/test_dataset/audio_event_sample.mp4

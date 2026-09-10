@@ -1,0 +1,127 @@
+{
+  "algorithm": "online-multisignal-v1",
+  "results": [
+    {
+      "source": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\test_dataset\\audio_event_sample.mp4",
+      "analysis_size": [
+        320,
+        180
+      ],
+      "sample_fps": 2.0,
+      "frames": 20,
+      "audio_windows": 0,
+      "audio_events": [],
+      "fragments": 1,
+      "updates": 0,
+      "closes": 1,
+      "reasons": {
+        "stream_start": 1,
+        "quiet_timeout": 1
+      },
+      "signal_distribution": {
+        "luma_difference": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "histogram_difference": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "edge_difference": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "changed_pixel_ratio": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "adaptive_novelty": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "object_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "audio_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "subtitle_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "composite": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        }
+      },
+      "events": [
+        {
+          "kind": "open",
+          "fragment_id": "audio_event_sample-0000000000000-000001",
+          "revision": 1,
+          "start_ms": 0,
+          "observed_ms": 0,
+          "reason": "stream_start",
+          "subtitle": "",
+          "representative_times_ms": [
+            0
+          ],
+          "signals": {
+            "luma_difference": 0.0,
+            "histogram_difference": 0.0,
+            "edge_difference": 0.0,
+            "changed_pixel_ratio": 0.0,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.0
+          }
+        },
+        {
+          "kind": "close",
+          "fragment_id": "audio_event_sample-0000000000000-000001",
+          "revision": 2,
+          "start_ms": 0,
+          "observed_ms": 2000,
+          "reason": "quiet_timeout",
+          "subtitle": "",
+          "representative_times_ms": [
+            0
+          ],
+          "signals": {
+            "luma_difference": 0.0,
+            "histogram_difference": 0.0,
+            "edge_difference": 0.0,
+            "changed_pixel_ratio": 0.0,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.0
+          }
+        }
+      ]
+    }
+  ]
+}

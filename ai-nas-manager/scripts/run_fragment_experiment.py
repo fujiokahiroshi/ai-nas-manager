@@ -11,6 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from audio_detection import AudioChangeConfig, AudioFeatureTimeline, iter_audio_features
 from online_fragmentation import GrayFrame, OnlineFragmentConfig, OnlineMultiSignalFragmenter
 
 
@@ -44,13 +45,26 @@ def iter_frames(source: Path, ffmpeg: str, width: int, height: int, fps: float):
 
 def analyze(source: Path, args: argparse.Namespace) -> dict[str, object]:
     fragmenter = OnlineMultiSignalFragmenter(source.stem, OnlineFragmentConfig())
+    audio_features = (
+        list(iter_audio_features(
+            source,
+            args.ffmpeg,
+            AudioChangeConfig(window_ms=args.audio_window_ms),
+        ))
+        if args.audio else []
+    )
+    audio_timeline = AudioFeatureTimeline(audio_features)
     events = []
     samples: dict[str, list[float]] = {}
     frame_count = 0
     maxima = Counter()
     for frame in iter_frames(source, args.ffmpeg, args.width, args.height, args.fps):
         frame_count += 1
-        produced = fragmenter.process(frame)
+        audio = audio_timeline.at(frame.timestamp_ms)
+        produced = fragmenter.process(
+            frame,
+            audio_change=audio.change_score if audio is not None else 0.0,
+        )
         for name, value in fragmenter.last_signals.as_dict().items():
             samples.setdefault(name, []).append(value)
         for event in produced:
@@ -73,6 +87,11 @@ def analyze(source: Path, args: argparse.Namespace) -> dict[str, object]:
         "analysis_size": [args.width, args.height],
         "sample_fps": args.fps,
         "frames": frame_count,
+        "audio_windows": len(audio_features),
+        "audio_events": [
+            feature.as_dict() for feature in audio_features
+            if feature.change_score >= 0.5 or feature.onset
+        ],
         "fragments": len(opens),
         "updates": len(updates),
         "closes": len(closes),
@@ -89,6 +108,8 @@ def main() -> None:
     parser.add_argument("--width", type=int, default=320)
     parser.add_argument("--height", type=int, default=180)
     parser.add_argument("--fps", type=float, default=2.0)
+    parser.add_argument("--audio", action="store_true")
+    parser.add_argument("--audio-window-ms", type=int, default=500)
     parser.add_argument("--output", type=Path, default=Path("fragment-experiment.json"))
     args = parser.parse_args()
     results = [analyze(source, args) for source in args.sources]

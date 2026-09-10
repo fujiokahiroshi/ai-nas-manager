@@ -83,6 +83,7 @@ class OnlineFragmentConfig:
     update_threshold: float = 0.15
     quiet_threshold: float = 0.05
     hard_cut_threshold: float = 0.42
+    audio_trigger_threshold: float = 0.72
     quiet_ms: int = 2_000
     min_update_ms: int = 1_500
     min_fragment_ms: int = 1_000
@@ -99,6 +100,7 @@ class OnlineFragmentConfig:
             self.update_threshold,
             self.quiet_threshold,
             self.hard_cut_threshold,
+            self.audio_trigger_threshold,
             self.ewma_alpha,
         )
         if any(value < 0.0 or value > 1.0 for value in probabilities):
@@ -286,11 +288,13 @@ class OnlineMultiSignalFragmenter:
         self._previous = frame
         self._last_subtitle = subtitle
         hard_cut = histogram > self.config.hard_cut_threshold or luma > self.config.hard_cut_threshold
+        audio_triggered = audio_change >= self.config.audio_trigger_threshold
         active = composite >= self.config.quiet_threshold
         trigger = (
             (first_frame and self.config.open_on_start)
             or hard_cut
             or composite >= self.config.open_threshold
+            or audio_triggered
             or subtitle_changed
         )
         events: list[FragmentEvent] = []
@@ -309,6 +313,7 @@ class OnlineMultiSignalFragmenter:
                 reason = (
                     "stream_start" if first_frame
                     else "hard_cut" if hard_cut
+                    else "audio_change" if audio_triggered
                     else "subtitle" if subtitle_changed
                     else "adaptive_change"
                 )
@@ -359,10 +364,18 @@ class OnlineMultiSignalFragmenter:
             return events
 
         update_due = frame.timestamp_ms - self._open.last_emit_ms >= self.config.min_update_ms
-        if update_due and (composite >= self.config.update_threshold or subtitle_changed):
+        if update_due and (
+            composite >= self.config.update_threshold
+            or audio_triggered
+            or subtitle_changed
+        ):
             self._open.revision += 1
             self._open.last_emit_ms = frame.timestamp_ms
-            reason = "subtitle" if subtitle_changed else "continued_change"
+            reason = (
+                "subtitle" if subtitle_changed
+                else "audio_change" if audio_triggered
+                else "continued_change"
+            )
             events.append(self._event(EventKind.UPDATE, frame, signals, reason, subtitle))
         return events
 
