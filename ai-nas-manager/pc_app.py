@@ -248,7 +248,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     break
                 try:
                     self.wfile.write(chunk)
-                except (BrokenPipeError, ConnectionResetError):
+                except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
                     # Browsers cancel an old byte-range request after seeking.
                     break
                 remaining -= len(chunk)
