@@ -86,6 +86,14 @@ See `object-fragment-experiment-2026-09-10.md` for measured results.  On the
 pedestrian sample, object changes reduced the first UPDATE time from 11.00 s to
 1.92 s.
 
+## Live Gemma result
+
+`live_semantics.py` supplies a bounded latest-revision queue and LM Studio vision
+adapter.  The real-time pedestrian experiment produced its first Japanese text
+at 3.64 seconds and four text results before the 14.95-second stream ended.  Two
+stale revisions were replaced, no fragment was dropped, and no request failed.
+See `live-gemma-experiment-2026-09-10.md`.
+
 ## Reproduction
 
 From the `ai-nas-manager` directory:

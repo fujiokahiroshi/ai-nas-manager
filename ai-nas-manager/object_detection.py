@@ -28,6 +28,15 @@ COCO_CLASSES = (
     "toothbrush",
 )
 
+TRIGGER_GROUPS = {
+    0: "person",
+    1: "two_wheeler",
+    3: "two_wheeler",
+    2: "road_vehicle",
+    5: "road_vehicle",
+    7: "road_vehicle",
+}
+
 
 @dataclass(frozen=True, slots=True)
 class Detection:
@@ -50,6 +59,10 @@ class Detection:
             "box": [round(value, 4) for value in (self.x1, self.y1, self.x2, self.y2)],
         }
 
+    @property
+    def trigger_group(self) -> str:
+        return TRIGGER_GROUPS.get(self.class_id, self.label)
+
 
 def intersection_over_union(left: Detection, right: Detection) -> float:
     if left.class_id != right.class_id:
@@ -69,8 +82,8 @@ def object_change_score(previous: Iterable[Detection], current: Iterable[Detecti
     old, new = list(previous), list(current)
     if not old and not new:
         return 0.0
-    old_counts = Counter(item.class_id for item in old)
-    new_counts = Counter(item.class_id for item in new)
+    old_counts = Counter(item.trigger_group for item in old)
+    new_counts = Counter(item.trigger_group for item in new)
     classes = old_counts.keys() | new_counts.keys()
     count_delta = sum(abs(old_counts[key] - new_counts[key]) for key in classes)
     count_scale = max(1, sum(max(old_counts[key], new_counts[key]) for key in classes))
@@ -79,7 +92,17 @@ def object_change_score(previous: Iterable[Detection], current: Iterable[Detecti
     unmatched_old = set(range(len(old)))
     matched_ious: list[float] = []
     for detection in new:
-        candidates = [(intersection_over_union(old[index], detection), index) for index in unmatched_old]
+        candidates = [
+            (
+                intersection_over_union(old[index], detection)
+                if old[index].class_id == detection.class_id
+                else _box_iou(old[index], detection)
+                if old[index].trigger_group == detection.trigger_group
+                else 0.0,
+                index,
+            )
+            for index in unmatched_old
+        ]
         best_iou, best_index = max(candidates, default=(0.0, -1))
         if best_iou >= 0.15:
             unmatched_old.remove(best_index)
@@ -91,6 +114,16 @@ def object_change_score(previous: Iterable[Detection], current: Iterable[Detecti
         if matched_ious else (1.0 if old or new else 0.0)
     )
     return min(1.0, 0.50 * count_score + 0.30 * churn_score + 0.20 * movement_score)
+
+
+def _box_iou(left: Detection, right: Detection) -> float:
+    x1, y1 = max(left.x1, right.x1), max(left.y1, right.y1)
+    x2, y2 = min(left.x2, right.x2), min(left.y2, right.y2)
+    intersection = max(0.0, x2 - x1) * max(0.0, y2 - y1)
+    left_area = max(0.0, left.x2 - left.x1) * max(0.0, left.y2 - left.y1)
+    right_area = max(0.0, right.x2 - right.x1) * max(0.0, right.y2 - right.y1)
+    union = left_area + right_area - intersection
+    return intersection / union if union else 0.0
 
 
 class YoloXOnnxDetector:

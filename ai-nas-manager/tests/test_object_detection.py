@@ -21,3 +21,10 @@ def test_object_entry_is_maximum_change() -> None:
 def test_position_change_has_nonzero_score() -> None:
     score = object_change_score([detection(x=0.1)], [detection(x=0.2)])
     assert 0.0 < score < 1.0
+
+
+def test_bicycle_motorcycle_class_flip_is_same_trigger_group() -> None:
+    bicycle = detection(class_id=1)
+    motorcycle = detection(class_id=3)
+    assert bicycle.trigger_group == motorcycle.trigger_group == "two_wheeler"
+    assert object_change_score([bicycle], [motorcycle]) == 0.0
