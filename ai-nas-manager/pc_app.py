@@ -246,7 +246,11 @@ class AppHandler(BaseHTTPRequestHandler):
                 chunk = handle.read(min(256 * 1024, remaining))
                 if not chunk:
                     break
-                self.wfile.write(chunk)
+                try:
+                    self.wfile.write(chunk)
+                except (BrokenPipeError, ConnectionResetError):
+                    # Browsers cancel an old byte-range request after seeking.
+                    break
                 remaining -= len(chunk)
 
     def _json(self, value: object) -> None:
