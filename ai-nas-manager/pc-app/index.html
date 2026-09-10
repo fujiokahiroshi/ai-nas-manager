@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI NAS Manager</title>
+  <style>
+    :root { color-scheme: dark; font-family: "Yu Gothic UI", "Meiryo", sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #090d13; color: #edf3fa; }
+    header { height: 68px; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; border-bottom: 1px solid #263142; background: #101722; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: .02em; }
+    .logo { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: linear-gradient(135deg,#20b8ff,#7057ff); box-shadow: 0 0 24px #2a8fff55; }
+    .status { color: #6ee7a5; font-size: 13px; }
+    main { display: grid; grid-template-columns: minmax(420px, 1.08fr) minmax(410px, .92fr); height: calc(100vh - 68px); }
+    .viewer { padding: 24px; border-right: 1px solid #263142; overflow: auto; }
+    .stage { background: #000; border: 1px solid #2b3748; border-radius: 16px; overflow: hidden; box-shadow: 0 18px 60px #0008; }
+    video { display: block; width: 100%; aspect-ratio: 16/9; background: #000; }
+    .now { padding: 18px 20px 20px; background: #111925; }
+    .eyebrow { color: #68c8ff; font-size: 12px; text-transform: uppercase; letter-spacing: .12em; }
+    .now h1 { margin: 9px 0 6px; font-size: 20px; line-height: 1.55; }
+    .now p { margin: 0; color: #9eabbb; line-height: 1.6; }
+    .timeline { margin-top: 20px; }
+    .timeline-label { display: flex; justify-content: space-between; color: #8d99a9; font-size: 12px; }
+    .rail { position: relative; height: 40px; margin-top: 8px; border-radius: 10px; background: #131c29; overflow: hidden; }
+    .marker { position: absolute; top: 7px; width: 8px; height: 26px; border: 0; border-radius: 5px; background: #28b8ff; cursor: pointer; transform: translateX(-4px); }
+    .marker.favorite { background: #ffbf3f; }
+    .library { display: flex; flex-direction: column; min-height: 0; }
+    .tools { padding: 18px 20px 14px; border-bottom: 1px solid #263142; background: #0f1620; }
+    .tools h2 { margin: 0 0 12px; font-size: 18px; }
+    .search-row { display: flex; gap: 9px; }
+    input[type=search] { flex: 1; min-width: 0; padding: 11px 13px; color: inherit; background: #182231; border: 1px solid #344258; border-radius: 10px; outline: none; }
+    input[type=search]:focus { border-color: #3bbcff; box-shadow: 0 0 0 3px #28aaff22; }
+    button { color: inherit; font: inherit; }
+    .filter { border: 1px solid #344258; border-radius: 10px; padding: 0 13px; background: #182231; cursor: pointer; }
+    .filter.active { color: #17120a; background: #ffbf3f; border-color: #ffbf3f; }
+    .summary { margin-top: 10px; color: #8997a8; font-size: 12px; }
+    #cards { padding: 15px 18px 28px; overflow-y: auto; display: grid; gap: 12px; }
+    .card { display: grid; grid-template-columns: 154px 1fr; gap: 14px; padding: 12px; background: #121b27; border: 1px solid #29374a; border-radius: 13px; cursor: pointer; transition: .15s ease; }
+    .card:hover, .card.selected { border-color: #35baff; background: #162334; transform: translateY(-1px); }
+    .thumb { position: relative; align-self: start; }
+    .thumb img { display: block; width: 154px; aspect-ratio: 16/9; object-fit: cover; border-radius: 9px; background: #05070a; }
+    .time { position: absolute; right: 6px; bottom: 6px; padding: 3px 6px; border-radius: 6px; background: #000c; font-size: 11px; }
+    .card-head { display: flex; justify-content: space-between; gap: 8px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 5px; }
+    .badge { padding: 3px 7px; border-radius: 999px; background: #243246; color: #aebdd0; font-size: 11px; }
+    .badge.live { color: #72e7a7; background: #123725; }
+    .star { border: 0; background: none; color: #647287; font-size: 22px; cursor: pointer; line-height: 1; }
+    .star.on { color: #ffbf3f; }
+    .description { margin: 9px 0 5px; line-height: 1.55; font-size: 14px; }
+    .objects { color: #8190a3; font-size: 12px; }
+    .edit { display: flex; gap: 7px; margin-top: 9px; }
+    .edit input { flex: 1; min-width: 0; padding: 7px 9px; border: 1px solid #334258; border-radius: 7px; color: inherit; background: #0d141e; }
+    .save { border: 0; border-radius: 7px; padding: 0 10px; background: #197fbc; cursor: pointer; }
+    .empty { padding: 40px; text-align: center; color: #7f8da0; }
+    @media (max-width: 900px) { main { display: block; height: auto; } .viewer { border-right: 0; } .library { height: 700px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="logo">AI</div><div>AI NAS Manager <span style="color:#77869a;font-weight:400">PC Prototype</span></div></div>
+    <div class="status">● Local Edge Database</div>
+  </header>
+  <main>
+    <section class="viewer">
+      <div class="stage">
+        <video id="video" controls preload="metadata" src="/media/video"></video>
+        <div class="now">
+          <div class="eyebrow">Selected fragment</div>
+          <h1 id="nowText">Fragmentを選択してください</h1>
+          <p id="nowMeta">サムネイルまたはタイムラインをクリックすると、その位置から再生します。</p>
+        </div>
+      </div>
+      <div class="timeline">
+        <div class="timeline-label"><span>Semantic timeline</span><span id="sourceName"></span></div>
+        <div class="rail" id="rail"></div>
+      </div>
+    </section>
+    <section class="library">
+      <div class="tools">
+        <h2>映像Fragment Database</h2>
+        <div class="search-row">
+          <input id="search" type="search" placeholder="人物、自転車、歩道…" autocomplete="off">
+          <button id="favorites" class="filter">★ お気に入り</button>
+        </div>
+        <div class="summary" id="summary">読み込み中…</div>
+      </div>
+      <div id="cards"></div>
+    </section>
+  </main>
+  <script>
+    const video = document.querySelector('#video');
+    const cards = document.querySelector('#cards');
+    const search = document.querySelector('#search');
+    const favoriteButton = document.querySelector('#favorites');
+    let fragments = [], favoritesOnly = false, selectedId = '';
+
+    const timecode = ms => {
+      const seconds = ms / 1000;
+      return `${String(Math.floor(seconds / 60)).padStart(2,'0')}:${String(Math.floor(seconds % 60)).padStart(2,'0')}.${String(Math.floor(ms % 1000 / 100))}`;
+    };
+    const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+
+    async function load() {
+      const params = new URLSearchParams({q: search.value});
+      if (favoritesOnly) params.set('favorites', '1');
+      const data = await fetch(`/api/fragments?${params}`).then(response => response.json());
+      fragments = data.fragments;
+      document.querySelector('#sourceName').textContent = data.source_name;
+      document.querySelector('#summary').textContent = `${fragments.length}件のText付きFragment`;
+      render();
+    }
+
+    function select(item) {
+      selectedId = item.id;
+      video.currentTime = item.timestamp_ms / 1000;
+      video.play().catch(() => {});
+      document.querySelector('#nowText').textContent = item.user_text || item.observation;
+      document.querySelector('#nowMeta').textContent = `${timecode(item.timestamp_ms)} · ${item.objects.join(' / ')} · 確信度 ${Math.round(item.confidence * 100)}%`;
+      render();
+    }
+
+    async function save(item, userText, favorite) {
+      await fetch(`/api/fragments/${encodeURIComponent(item.id)}`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({user_text: userText, favorite})
+      });
+      await load();
+    }
+
+    function render() {
+      cards.innerHTML = fragments.length ? fragments.map(item => `
+        <article class="card ${item.id === selectedId ? 'selected' : ''}" data-id="${escapeHtml(item.id)}">
+          <div class="thumb"><img src="/api/thumbnail/${encodeURIComponent(item.id)}" alt=""><span class="time">${timecode(item.timestamp_ms)}</span></div>
+          <div>
+            <div class="card-head"><div class="badges"><span class="badge">Revision ${item.revision}</span>${item.completed_during_stream ? '<span class="badge live">映像中に生成</span>' : ''}</div><button class="star ${item.favorite ? 'on' : ''}" title="お気に入り">★</button></div>
+            <div class="description">${escapeHtml(item.user_text || item.observation)}</div>
+            <div class="objects">${escapeHtml(item.objects.join(' · '))}</div>
+            <div class="edit"><input value="${escapeHtml(item.user_text)}" placeholder="説明を修正・追記"><button class="save">保存</button></div>
+          </div>
+        </article>`).join('') : '<div class="empty">一致するFragmentがありません。</div>';
+      cards.querySelectorAll('.card').forEach(card => {
+        const item = fragments.find(value => value.id === card.dataset.id);
+        card.addEventListener('click', event => { if (!event.target.closest('button,input')) select(item); });
+        card.querySelector('.star').addEventListener('click', () => save(item, card.querySelector('input').value, !item.favorite));
+        card.querySelector('.save').addEventListener('click', () => save(item, card.querySelector('input').value, item.favorite));
+      });
+      const max = Math.max(1, ...fragments.map(item => item.timestamp_ms));
+      const rail = document.querySelector('#rail');
+      rail.innerHTML = fragments.map(item => `<button class="marker ${item.favorite ? 'favorite' : ''}" style="left:${item.timestamp_ms / max * 96 + 2}%" data-id="${escapeHtml(item.id)}" title="${timecode(item.timestamp_ms)}"></button>`).join('');
+      rail.querySelectorAll('.marker').forEach(marker => marker.addEventListener('click', () => select(fragments.find(item => item.id === marker.dataset.id))));
+    }
+
+    let timer;
+    search.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(load, 180); });
+    favoriteButton.addEventListener('click', () => { favoritesOnly = !favoritesOnly; favoriteButton.classList.toggle('active', favoritesOnly); load(); });
+    load();
+  </script>
+</body>
+</html>
