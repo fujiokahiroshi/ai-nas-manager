@@ -1,0 +1,863 @@
+{
+  "algorithm": "online-multisignal-v1",
+  "results": [
+    {
+      "source": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\test_dataset\\pedestrian_area_1080p25.mp4",
+      "analysis_size": [
+        320,
+        180
+      ],
+      "sample_fps": 2.0,
+      "frames": 30,
+      "fragments": 1,
+      "updates": 1,
+      "closes": 1,
+      "reasons": {
+        "stream_start": 1,
+        "continued_change": 1,
+        "end_of_stream": 1
+      },
+      "signal_distribution": {
+        "luma_difference": {
+          "p50": 0.110552,
+          "p90": 0.142229,
+          "p95": 0.153529,
+          "max": 0.162653
+        },
+        "histogram_difference": {
+          "p50": 0.054028,
+          "p90": 0.109861,
+          "p95": 0.142361,
+          "max": 0.167708
+        },
+        "edge_difference": {
+          "p50": 0.047687,
+          "p90": 0.056911,
+          "p95": 0.057659,
+          "max": 0.058738
+        },
+        "changed_pixel_ratio": {
+          "p50": 0.426944,
+          "p90": 0.550208,
+          "p95": 0.595764,
+          "max": 0.611597
+        },
+        "adaptive_novelty": {
+          "p50": 0.0,
+          "p90": 0.247465,
+          "p95": 0.449702,
+          "max": 0.45738
+        },
+        "object_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "audio_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "subtitle_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "composite": {
+          "p50": 0.079523,
+          "p90": 0.123732,
+          "p95": 0.224851,
+          "max": 0.22869
+        }
+      },
+      "events": [
+        {
+          "kind": "open",
+          "fragment_id": "pedestrian_area_1080p25-0000000000000-000001",
+          "revision": 1,
+          "start_ms": 0,
+          "observed_ms": 0,
+          "reason": "stream_start",
+          "subtitle": "",
+          "representative_times_ms": [
+            0
+          ],
+          "signals": {
+            "luma_difference": 0.0,
+            "histogram_difference": 0.0,
+            "edge_difference": 0.0,
+            "changed_pixel_ratio": 0.0,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.0
+          }
+        },
+        {
+          "kind": "update",
+          "fragment_id": "pedestrian_area_1080p25-0000000000000-000001",
+          "revision": 2,
+          "start_ms": 0,
+          "observed_ms": 11000,
+          "reason": "continued_change",
+          "subtitle": "",
+          "representative_times_ms": [
+            1000,
+            1500,
+            11000
+          ],
+          "signals": {
+            "luma_difference": 0.127879,
+            "histogram_difference": 0.097083,
+            "edge_difference": 0.051091,
+            "changed_pixel_ratio": 0.509861,
+            "adaptive_novelty": 0.311524,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.155762
+          }
+        },
+        {
+          "kind": "close",
+          "fragment_id": "pedestrian_area_1080p25-0000000000000-000001",
+          "revision": 3,
+          "start_ms": 0,
+          "observed_ms": 14500,
+          "reason": "end_of_stream",
+          "subtitle": "",
+          "representative_times_ms": [
+            11000,
+            11500,
+            12000
+          ],
+          "signals": {
+            "luma_difference": 0.0,
+            "histogram_difference": 0.0,
+            "edge_difference": 0.0,
+            "changed_pixel_ratio": 0.0,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "source": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\test_dataset\\highway_cif.mp4",
+      "analysis_size": [
+        320,
+        180
+      ],
+      "sample_fps": 2.0,
+      "frames": 133,
+      "fragments": 4,
+      "updates": 4,
+      "closes": 4,
+      "reasons": {
+        "stream_start": 1,
+        "quiet_timeout": 4,
+        "adaptive_change": 3,
+        "continued_change": 4
+      },
+      "signal_distribution": {
+        "luma_difference": {
+          "p50": 0.01341,
+          "p90": 0.026857,
+          "p95": 0.037131,
+          "max": 0.267058
+        },
+        "histogram_difference": {
+          "p50": 0.016181,
+          "p90": 0.029306,
+          "p95": 0.037569,
+          "max": 0.320694
+        },
+        "edge_difference": {
+          "p50": 0.011282,
+          "p90": 0.018735,
+          "p95": 0.021674,
+          "max": 0.05451
+        },
+        "changed_pixel_ratio": {
+          "p50": 0.033264,
+          "p90": 0.084931,
+          "p95": 0.101736,
+          "max": 0.548125
+        },
+        "adaptive_novelty": {
+          "p50": 0.0,
+          "p90": 0.387802,
+          "p95": 0.747519,
+          "max": 1.0
+        },
+        "object_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "audio_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "subtitle_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "composite": {
+          "p50": 0.010331,
+          "p90": 0.193901,
+          "p95": 0.37376,
+          "max": 0.5
+        }
+      },
+      "events": [
+        {
+          "kind": "open",
+          "fragment_id": "highway_cif-0000000000000-000001",
+          "revision": 1,
+          "start_ms": 0,
+          "observed_ms": 0,
+          "reason": "stream_start",
+          "subtitle": "",
+          "representative_times_ms": [
+            0
+          ],
+          "signals": {
+            "luma_difference": 0.0,
+            "histogram_difference": 0.0,
+            "edge_difference": 0.0,
+            "changed_pixel_ratio": 0.0,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.0
+          }
+        },
+        {
+          "kind": "close",
+          "fragment_id": "highway_cif-0000000000000-000001",
+          "revision": 2,
+          "start_ms": 0,
+          "observed_ms": 2000,
+          "reason": "quiet_timeout",
+          "subtitle": "",
+          "representative_times_ms": [
+            0
+          ],
+          "signals": {
+            "luma_difference": 0.007823,
+            "histogram_difference": 0.014722,
+            "edge_difference": 0.0073,
+            "changed_pixel_ratio": 0.014097,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.005691
+          }
+        },
+        {
+          "kind": "open",
+          "fragment_id": "highway_cif-0000000015000-000002",
+          "revision": 1,
+          "start_ms": 15000,
+          "observed_ms": 15000,
+          "reason": "adaptive_change",
+          "subtitle": "",
+          "representative_times_ms": [
+            15000
+          ],
+          "signals": {
+            "luma_difference": 0.018611,
+            "histogram_difference": 0.028542,
+            "edge_difference": 0.014454,
+            "changed_pixel_ratio": 0.046806,
+            "adaptive_novelty": 0.45291,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.226455
+          }
+        },
+        {
+          "kind": "close",
+          "fragment_id": "highway_cif-0000000015000-000002",
+          "revision": 2,
+          "start_ms": 15000,
+          "observed_ms": 18500,
+          "reason": "quiet_timeout",
+          "subtitle": "",
+          "representative_times_ms": [
+            15000,
+            15500,
+            16000
+          ],
+          "signals": {
+            "luma_difference": 0.008934,
+            "histogram_difference": 0.005,
+            "edge_difference": 0.0083,
+            "changed_pixel_ratio": 0.017014,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.004839
+          }
+        },
+        {
+          "kind": "open",
+          "fragment_id": "highway_cif-0000000022000-000003",
+          "revision": 1,
+          "start_ms": 22000,
+          "observed_ms": 22000,
+          "reason": "adaptive_change",
+          "subtitle": "",
+          "representative_times_ms": [
+            22000
+          ],
+          "signals": {
+            "luma_difference": 0.017326,
+            "histogram_difference": 0.034931,
+            "edge_difference": 0.012909,
+            "changed_pixel_ratio": 0.056111,
+            "adaptive_novelty": 0.588759,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.29438
+          }
+        },
+        {
+          "kind": "close",
+          "fragment_id": "highway_cif-0000000022000-000003",
+          "revision": 2,
+          "start_ms": 22000,
+          "observed_ms": 24500,
+          "reason": "quiet_timeout",
+          "subtitle": "",
+          "representative_times_ms": [
+            22000,
+            22500
+          ],
+          "signals": {
+            "luma_difference": 0.009568,
+            "histogram_difference": 0.013472,
+            "edge_difference": 0.008199,
+            "changed_pixel_ratio": 0.020764,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.006666
+          }
+        },
+        {
+          "kind": "open",
+          "fragment_id": "highway_cif-0000000031500-000004",
+          "revision": 1,
+          "start_ms": 31500,
+          "observed_ms": 31500,
+          "reason": "adaptive_change",
+          "subtitle": "",
+          "representative_times_ms": [
+            31500
+          ],
+          "signals": {
+            "luma_difference": 0.020477,
+            "histogram_difference": 0.01625,
+            "edge_difference": 0.017937,
+            "changed_pixel_ratio": 0.058958,
+            "adaptive_novelty": 0.36415,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.182075
+          }
+        },
+        {
+          "kind": "update",
+          "fragment_id": "highway_cif-0000000031500-000004",
+          "revision": 2,
+          "start_ms": 31500,
+          "observed_ms": 34500,
+          "reason": "continued_change",
+          "subtitle": "",
+          "representative_times_ms": [
+            31500,
+            32500,
+            34500
+          ],
+          "signals": {
+            "luma_difference": 0.030434,
+            "histogram_difference": 0.022292,
+            "edge_difference": 0.019137,
+            "changed_pixel_ratio": 0.073542,
+            "adaptive_novelty": 0.65661,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.328305
+          }
+        },
+        {
+          "kind": "update",
+          "fragment_id": "highway_cif-0000000031500-000004",
+          "revision": 3,
+          "start_ms": 31500,
+          "observed_ms": 37500,
+          "reason": "continued_change",
+          "subtitle": "",
+          "representative_times_ms": [
+            34500,
+            35000,
+            35500
+          ],
+          "signals": {
+            "luma_difference": 0.026857,
+            "histogram_difference": 0.024306,
+            "edge_difference": 0.018664,
+            "changed_pixel_ratio": 0.089861,
+            "adaptive_novelty": 0.387802,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.193901
+          }
+        },
+        {
+          "kind": "update",
+          "fragment_id": "highway_cif-0000000031500-000004",
+          "revision": 4,
+          "start_ms": 31500,
+          "observed_ms": 40000,
+          "reason": "continued_change",
+          "subtitle": "",
+          "representative_times_ms": [
+            34500,
+            35000,
+            35500
+          ],
+          "signals": {
+            "luma_difference": 0.029315,
+            "histogram_difference": 0.023472,
+            "edge_difference": 0.020354,
+            "changed_pixel_ratio": 0.093819,
+            "adaptive_novelty": 0.453462,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.226731
+          }
+        },
+        {
+          "kind": "update",
+          "fragment_id": "highway_cif-0000000031500-000004",
+          "revision": 5,
+          "start_ms": 31500,
+          "observed_ms": 41500,
+          "reason": "continued_change",
+          "subtitle": "",
+          "representative_times_ms": [
+            35000,
+            41000,
+            41500
+          ],
+          "signals": {
+            "luma_difference": 0.267058,
+            "histogram_difference": 0.194792,
+            "edge_difference": 0.05451,
+            "changed_pixel_ratio": 0.472014,
+            "adaptive_novelty": 1.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.5
+          }
+        },
+        {
+          "kind": "close",
+          "fragment_id": "highway_cif-0000000031500-000004",
+          "revision": 6,
+          "start_ms": 31500,
+          "observed_ms": 44500,
+          "reason": "quiet_timeout",
+          "subtitle": "",
+          "representative_times_ms": [
+            35000,
+            41000,
+            41500
+          ],
+          "signals": {
+            "luma_difference": 0.014628,
+            "histogram_difference": 0.020139,
+            "edge_difference": 0.013136,
+            "changed_pixel_ratio": 0.034583,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.010523
+          }
+        }
+      ]
+    },
+    {
+      "source": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\test_dataset\\bus_cif.mp4",
+      "analysis_size": [
+        320,
+        180
+      ],
+      "sample_fps": 2.0,
+      "frames": 10,
+      "fragments": 1,
+      "updates": 0,
+      "closes": 1,
+      "reasons": {
+        "stream_start": 1,
+        "end_of_stream": 1
+      },
+      "signal_distribution": {
+        "luma_difference": {
+          "p50": 0.127683,
+          "p90": 0.143536,
+          "p95": 0.151642,
+          "max": 0.151642
+        },
+        "histogram_difference": {
+          "p50": 0.051736,
+          "p90": 0.062014,
+          "p95": 0.086319,
+          "max": 0.086319
+        },
+        "edge_difference": {
+          "p50": 0.060252,
+          "p90": 0.067807,
+          "p95": 0.068463,
+          "max": 0.068463
+        },
+        "changed_pixel_ratio": {
+          "p50": 0.409722,
+          "p90": 0.429792,
+          "p95": 0.442708,
+          "max": 0.442708
+        },
+        "adaptive_novelty": {
+          "p50": 0.0,
+          "p90": 0.172049,
+          "p95": 0.184657,
+          "max": 0.184657
+        },
+        "object_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "audio_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "subtitle_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "composite": {
+          "p50": 0.082417,
+          "p90": 0.086024,
+          "p95": 0.092329,
+          "max": 0.092329
+        }
+      },
+      "events": [
+        {
+          "kind": "open",
+          "fragment_id": "bus_cif-0000000000000-000001",
+          "revision": 1,
+          "start_ms": 0,
+          "observed_ms": 0,
+          "reason": "stream_start",
+          "subtitle": "",
+          "representative_times_ms": [
+            0
+          ],
+          "signals": {
+            "luma_difference": 0.0,
+            "histogram_difference": 0.0,
+            "edge_difference": 0.0,
+            "changed_pixel_ratio": 0.0,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.0
+          }
+        },
+        {
+          "kind": "close",
+          "fragment_id": "bus_cif-0000000000000-000001",
+          "revision": 2,
+          "start_ms": 0,
+          "observed_ms": 4500,
+          "reason": "end_of_stream",
+          "subtitle": "",
+          "representative_times_ms": [
+            500,
+            1000,
+            3000
+          ],
+          "signals": {
+            "luma_difference": 0.0,
+            "histogram_difference": 0.0,
+            "edge_difference": 0.0,
+            "changed_pixel_ratio": 0.0,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "source": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\test_dataset\\carphone_qcif.mp4",
+      "analysis_size": [
+        320,
+        180
+      ],
+      "sample_fps": 2.0,
+      "frames": 25,
+      "fragments": 2,
+      "updates": 2,
+      "closes": 2,
+      "reasons": {
+        "stream_start": 1,
+        "continued_change": 2,
+        "quiet_timeout": 1,
+        "adaptive_change": 1,
+        "end_of_stream": 1
+      },
+      "signal_distribution": {
+        "luma_difference": {
+          "p50": 0.036172,
+          "p90": 0.069344,
+          "p95": 0.076654,
+          "max": 0.080451
+        },
+        "histogram_difference": {
+          "p50": 0.035556,
+          "p90": 0.0625,
+          "p95": 0.077153,
+          "max": 0.106042
+        },
+        "edge_difference": {
+          "p50": 0.023102,
+          "p90": 0.035357,
+          "p95": 0.035745,
+          "max": 0.037712
+        },
+        "changed_pixel_ratio": {
+          "p50": 0.132847,
+          "p90": 0.258542,
+          "p95": 0.266806,
+          "max": 0.275069
+        },
+        "adaptive_novelty": {
+          "p50": 0.051394,
+          "p90": 0.543485,
+          "p95": 0.698148,
+          "max": 1.0
+        },
+        "object_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "audio_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "subtitle_change": {
+          "p50": 0.0,
+          "p90": 0.0,
+          "p95": 0.0,
+          "max": 0.0
+        },
+        "composite": {
+          "p50": 0.028916,
+          "p90": 0.271742,
+          "p95": 0.349074,
+          "max": 0.5
+        }
+      },
+      "events": [
+        {
+          "kind": "open",
+          "fragment_id": "carphone_qcif-0000000000000-000001",
+          "revision": 1,
+          "start_ms": 0,
+          "observed_ms": 0,
+          "reason": "stream_start",
+          "subtitle": "",
+          "representative_times_ms": [
+            0
+          ],
+          "signals": {
+            "luma_difference": 0.0,
+            "histogram_difference": 0.0,
+            "edge_difference": 0.0,
+            "changed_pixel_ratio": 0.0,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.0
+          }
+        },
+        {
+          "kind": "update",
+          "fragment_id": "carphone_qcif-0000000000000-000001",
+          "revision": 2,
+          "start_ms": 0,
+          "observed_ms": 2500,
+          "reason": "continued_change",
+          "subtitle": "",
+          "representative_times_ms": [
+            0,
+            2000,
+            2500
+          ],
+          "signals": {
+            "luma_difference": 0.042857,
+            "histogram_difference": 0.039722,
+            "edge_difference": 0.024292,
+            "changed_pixel_ratio": 0.173403,
+            "adaptive_novelty": 0.328213,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.164106
+          }
+        },
+        {
+          "kind": "close",
+          "fragment_id": "carphone_qcif-0000000000000-000001",
+          "revision": 3,
+          "start_ms": 0,
+          "observed_ms": 4500,
+          "reason": "quiet_timeout",
+          "subtitle": "",
+          "representative_times_ms": [
+            0,
+            2000,
+            2500
+          ],
+          "signals": {
+            "luma_difference": 0.014217,
+            "histogram_difference": 0.012222,
+            "edge_difference": 0.011983,
+            "changed_pixel_ratio": 0.041181,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.010012
+          }
+        },
+        {
+          "kind": "open",
+          "fragment_id": "carphone_qcif-0000000006000-000002",
+          "revision": 1,
+          "start_ms": 6000,
+          "observed_ms": 6000,
+          "reason": "adaptive_change",
+          "subtitle": "",
+          "representative_times_ms": [
+            6000
+          ],
+          "signals": {
+            "luma_difference": 0.080451,
+            "histogram_difference": 0.106042,
+            "edge_difference": 0.035357,
+            "changed_pixel_ratio": 0.252569,
+            "adaptive_novelty": 1.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.5
+          }
+        },
+        {
+          "kind": "update",
+          "fragment_id": "carphone_qcif-0000000006000-000002",
+          "revision": 2,
+          "start_ms": 6000,
+          "observed_ms": 9500,
+          "reason": "continued_change",
+          "subtitle": "",
+          "representative_times_ms": [
+            6000,
+            6500,
+            7000
+          ],
+          "signals": {
+            "luma_difference": 0.068717,
+            "histogram_difference": 0.054167,
+            "edge_difference": 0.032737,
+            "changed_pixel_ratio": 0.266806,
+            "adaptive_novelty": 0.516721,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.258361
+          }
+        },
+        {
+          "kind": "close",
+          "fragment_id": "carphone_qcif-0000000006000-000002",
+          "revision": 3,
+          "start_ms": 6000,
+          "observed_ms": 12000,
+          "reason": "end_of_stream",
+          "subtitle": "",
+          "representative_times_ms": [
+            6000,
+            6500,
+            7000
+          ],
+          "signals": {
+            "luma_difference": 0.0,
+            "histogram_difference": 0.0,
+            "edge_difference": 0.0,
+            "changed_pixel_ratio": 0.0,
+            "adaptive_novelty": 0.0,
+            "object_change": 0.0,
+            "audio_change": 0.0,
+            "subtitle_change": 0.0,
+            "composite": 0.0
+          }
+        }
+      ]
+    }
+  ]
+}
