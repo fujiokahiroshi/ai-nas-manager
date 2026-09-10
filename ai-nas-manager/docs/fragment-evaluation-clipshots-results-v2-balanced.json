@@ -1,0 +1,505 @@
+{
+  "algorithm": "online-multisignal-fused-v2-balanced",
+  "tolerance_ms": 1000,
+  "importance_threshold": null,
+  "importance_fraction": 0.15,
+  "datasets": {
+    "ClipShots": {
+      "items": 20,
+      "boundary": {
+        "true_positive": 87,
+        "false_positive": 311,
+        "false_negative": 115,
+        "precision": 0.218593,
+        "recall": 0.430693,
+        "f1": 0.29
+      },
+      "importance": null,
+      "duration_hours": 1.356755,
+      "false_markers_per_hour": null
+    }
+  },
+  "overall": {
+    "items": 20,
+    "boundary": {
+      "true_positive": 87,
+      "false_positive": 311,
+      "false_negative": 115,
+      "precision": 0.218593,
+      "recall": 0.430693,
+      "f1": 0.29
+    },
+    "importance": null,
+    "duration_hours": 1.356755,
+    "false_markers_per_hour": null
+  },
+  "missing": [
+    "tvsum:XzYM3PfTM4w",
+    "tvsum:0tmA_C6XwfM",
+    "tvsum:37rzWOQsNIw",
+    "tvsum:91IHQYk1IQM",
+    "tvsum:_xMr-HKMfVA"
+  ],
+  "results": [
+    {
+      "id": "clipshots:1t9hqz2sqqc",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\1t9hqz2sqqc.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 142520,
+      "predicted_boundaries": 15,
+      "predicted_markers": 28,
+      "boundary": {
+        "true_positive": 8,
+        "false_positive": 7,
+        "false_negative": 14,
+        "precision": 0.533333,
+        "recall": 0.363636,
+        "f1": 0.432432
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 3.226132,
+      "realtime_factor": 0.022719
+    },
+    {
+      "id": "clipshots:3jZaLtv90lk",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\3jZaLtv90lk.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 281704,
+      "predicted_boundaries": 30,
+      "predicted_markers": 63,
+      "boundary": {
+        "true_positive": 0,
+        "false_positive": 30,
+        "false_negative": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 4.541233,
+      "realtime_factor": 0.016161
+    },
+    {
+      "id": "clipshots:3k2K28A_4qI",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\3k2K28A_4qI.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 169694,
+      "predicted_boundaries": 13,
+      "predicted_markers": 27,
+      "boundary": {
+        "true_positive": 4,
+        "false_positive": 9,
+        "false_negative": 6,
+        "precision": 0.307692,
+        "recall": 0.4,
+        "f1": 0.347826
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 2.778423,
+      "realtime_factor": 0.01644
+    },
+    {
+      "id": "clipshots:4aT37IcW9M0",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\4aT37IcW9M0.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 241054,
+      "predicted_boundaries": 21,
+      "predicted_markers": 25,
+      "boundary": {
+        "true_positive": 10,
+        "false_positive": 11,
+        "false_negative": 10,
+        "precision": 0.47619,
+        "recall": 0.5,
+        "f1": 0.487805
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 4.074159,
+      "realtime_factor": 0.01694
+    },
+    {
+      "id": "clipshots:5NenSU7d3F8",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\5NenSU7d3F8.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 162424,
+      "predicted_boundaries": 12,
+      "predicted_markers": 21,
+      "boundary": {
+        "true_positive": 0,
+        "false_positive": 12,
+        "false_negative": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 2.79809,
+      "realtime_factor": 0.017326
+    },
+    {
+      "id": "clipshots:5p14VILXiJA",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\5p14VILXiJA.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 173128,
+      "predicted_boundaries": 13,
+      "predicted_markers": 33,
+      "boundary": {
+        "true_positive": 1,
+        "false_positive": 12,
+        "false_negative": 0,
+        "precision": 0.076923,
+        "recall": 1.0,
+        "f1": 0.142857
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 2.822614,
+      "realtime_factor": 0.016363
+    },
+    {
+      "id": "clipshots:5T0JY0HjDvQ",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\5T0JY0HjDvQ.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 140458,
+      "predicted_boundaries": 11,
+      "predicted_markers": 19,
+      "boundary": {
+        "true_positive": 1,
+        "false_positive": 10,
+        "false_negative": 3,
+        "precision": 0.090909,
+        "recall": 0.25,
+        "f1": 0.133333
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 2.318416,
+      "realtime_factor": 0.01656
+    },
+    {
+      "id": "clipshots:7gk9tckdaHQ",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\7gk9tckdaHQ.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 448474,
+      "predicted_boundaries": 30,
+      "predicted_markers": 13,
+      "boundary": {
+        "true_positive": 0,
+        "false_positive": 30,
+        "false_negative": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 8.044091,
+      "realtime_factor": 0.017956
+    },
+    {
+      "id": "clipshots:96tC5yBKQwk",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\96tC5yBKQwk.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 344054,
+      "predicted_boundaries": 28,
+      "predicted_markers": 16,
+      "boundary": {
+        "true_positive": 3,
+        "false_positive": 25,
+        "false_negative": 2,
+        "precision": 0.107143,
+        "recall": 0.6,
+        "f1": 0.181818
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 6.650177,
+      "realtime_factor": 0.01936
+    },
+    {
+      "id": "clipshots:9wPVikZQw3Y",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\9wPVikZQw3Y.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 192614,
+      "predicted_boundaries": 21,
+      "predicted_markers": 32,
+      "boundary": {
+        "true_positive": 13,
+        "false_positive": 8,
+        "false_negative": 9,
+        "precision": 0.619048,
+        "recall": 0.590909,
+        "f1": 0.604651
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 3.427625,
+      "realtime_factor": 0.017852
+    },
+    {
+      "id": "clipshots:_eRAEilK_n4",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\_eRAEilK_n4.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 232694,
+      "predicted_boundaries": 30,
+      "predicted_markers": 38,
+      "boundary": {
+        "true_positive": 19,
+        "false_positive": 11,
+        "false_negative": 15,
+        "precision": 0.633333,
+        "recall": 0.558824,
+        "f1": 0.59375
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 4.151074,
+      "realtime_factor": 0.017893
+    },
+    {
+      "id": "clipshots:b2XcwIYAztY",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\b2XcwIYAztY.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 165934,
+      "predicted_boundaries": 18,
+      "predicted_markers": 22,
+      "boundary": {
+        "true_positive": 1,
+        "false_positive": 17,
+        "false_negative": 0,
+        "precision": 0.055556,
+        "recall": 1.0,
+        "f1": 0.105263
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 2.839636,
+      "realtime_factor": 0.017158
+    },
+    {
+      "id": "clipshots:BAgcx7pSWQo",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\BAgcx7pSWQo.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 366968,
+      "predicted_boundaries": 31,
+      "predicted_markers": 59,
+      "boundary": {
+        "true_positive": 9,
+        "false_positive": 22,
+        "false_negative": 5,
+        "precision": 0.290323,
+        "recall": 0.642857,
+        "f1": 0.4
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 5.983281,
+      "realtime_factor": 0.016325
+    },
+    {
+      "id": "clipshots:hUoDOxOxK1I",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\hUoDOxOxK1I.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 299834,
+      "predicted_boundaries": 22,
+      "predicted_markers": 51,
+      "boundary": {
+        "true_positive": 3,
+        "false_positive": 19,
+        "false_negative": 31,
+        "precision": 0.136364,
+        "recall": 0.088235,
+        "f1": 0.107143
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 5.079816,
+      "realtime_factor": 0.016961
+    },
+    {
+      "id": "clipshots:KIS81JBoNNo",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\KIS81JBoNNo.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 154575,
+      "predicted_boundaries": 10,
+      "predicted_markers": 22,
+      "boundary": {
+        "true_positive": 0,
+        "false_positive": 10,
+        "false_negative": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 2.615822,
+      "realtime_factor": 0.016986
+    },
+    {
+      "id": "clipshots:kZzD4YR6Qak",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\kZzD4YR6Qak.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 299932,
+      "predicted_boundaries": 19,
+      "predicted_markers": 47,
+      "boundary": {
+        "true_positive": 0,
+        "false_positive": 19,
+        "false_negative": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 5.011748,
+      "realtime_factor": 0.016734
+    },
+    {
+      "id": "clipshots:M9kQt8K7p0E",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\M9kQt8K7p0E.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 208492,
+      "predicted_boundaries": 13,
+      "predicted_markers": 28,
+      "boundary": {
+        "true_positive": 0,
+        "false_positive": 13,
+        "false_negative": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 3.478535,
+      "realtime_factor": 0.016724
+    },
+    {
+      "id": "clipshots:NDikVpgzFrc",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\NDikVpgzFrc.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 231387,
+      "predicted_boundaries": 19,
+      "predicted_markers": 34,
+      "boundary": {
+        "true_positive": 10,
+        "false_positive": 9,
+        "false_negative": 16,
+        "precision": 0.526316,
+        "recall": 0.384615,
+        "f1": 0.444444
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 4.921208,
+      "realtime_factor": 0.02135
+    },
+    {
+      "id": "clipshots:oexAVKQVsro",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\oexAVKQVsro.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 141781,
+      "predicted_boundaries": 16,
+      "predicted_markers": 22,
+      "boundary": {
+        "true_positive": 5,
+        "false_positive": 11,
+        "false_negative": 4,
+        "precision": 0.3125,
+        "recall": 0.555556,
+        "f1": 0.4
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 2.937133,
+      "realtime_factor": 0.020831
+    },
+    {
+      "id": "clipshots:SpWWfq530wg",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\SpWWfq530wg.mp4",
+      "tasks": [
+        "boundary"
+      ],
+      "duration_ms": 486597,
+      "predicted_boundaries": 26,
+      "predicted_markers": 44,
+      "boundary": {
+        "true_positive": 0,
+        "false_positive": 26,
+        "false_negative": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "importance": null,
+      "false_markers_per_hour": null,
+      "processing_seconds": 9.037628,
+      "realtime_factor": 0.018596
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "algorithm": "online-multisignal-fused-v2-balanced",
+  "tolerance_ms": 1000,
+  "importance_threshold": null,
+  "importance_fraction": 0.15,
+  "datasets": {
+    "TVSum": {
+      "items": 5,
+      "boundary": null,
+      "importance": {
+        "true_positive": 32,
+        "false_positive": 94,
+        "false_negative": 20,
+        "precision": 0.253968,
+        "recall": 0.615385,
+        "f1": 0.359551
+      },
+      "duration_hours": 0.195,
+      "false_markers_per_hour": 482.051
+    }
+  },
+  "overall": {
+    "items": 5,
+    "boundary": null,
+    "importance": {
+      "true_positive": 32,
+      "false_positive": 94,
+      "false_negative": 20,
+      "precision": 0.253968,
+      "recall": 0.615385,
+      "f1": 0.359551
+    },
+    "duration_hours": 0.195,
+    "false_markers_per_hour": 482.051
+  },
+  "missing": [],
+  "results": [
+    {
+      "id": "tvsum:XzYM3PfTM4w",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\XzYM3PfTM4w.mp4",
+      "tasks": [
+        "importance"
+      ],
+      "duration_ms": 111000,
+      "predicted_boundaries": 15,
+      "predicted_markers": 20,
+      "boundary": null,
+      "importance": {
+        "true_positive": 5,
+        "false_positive": 15,
+        "false_negative": 3,
+        "precision": 0.25,
+        "recall": 0.625,
+        "f1": 0.357143
+      },
+      "false_markers_per_hour": 486.486,
+      "processing_seconds": 2.208153,
+      "realtime_factor": 0.019983
+    },
+    {
+      "id": "tvsum:0tmA_C6XwfM",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\0tmA_C6XwfM.mp4",
+      "tasks": [
+        "importance"
+      ],
+      "duration_ms": 141000,
+      "predicted_boundaries": 14,
+      "predicted_markers": 26,
+      "boundary": null,
+      "importance": {
+        "true_positive": 8,
+        "false_positive": 18,
+        "false_negative": 3,
+        "precision": 0.307692,
+        "recall": 0.727273,
+        "f1": 0.432432
+      },
+      "false_markers_per_hour": 459.574,
+      "processing_seconds": 2.388073,
+      "realtime_factor": 0.016937
+    },
+    {
+      "id": "tvsum:37rzWOQsNIw",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\37rzWOQsNIw.mp4",
+      "tasks": [
+        "importance"
+      ],
+      "duration_ms": 191000,
+      "predicted_boundaries": 18,
+      "predicted_markers": 24,
+      "boundary": null,
+      "importance": {
+        "true_positive": 8,
+        "false_positive": 16,
+        "false_negative": 6,
+        "precision": 0.333333,
+        "recall": 0.571429,
+        "f1": 0.421053
+      },
+      "false_markers_per_hour": 301.571,
+      "processing_seconds": 3.292127,
+      "realtime_factor": 0.017236
+    },
+    {
+      "id": "tvsum:91IHQYk1IQM",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\91IHQYk1IQM.mp4",
+      "tasks": [
+        "importance"
+      ],
+      "duration_ms": 110000,
+      "predicted_boundaries": 21,
+      "predicted_markers": 23,
+      "boundary": null,
+      "importance": {
+        "true_positive": 3,
+        "false_positive": 20,
+        "false_negative": 5,
+        "precision": 0.130435,
+        "recall": 0.375,
+        "f1": 0.193548
+      },
+      "false_markers_per_hour": 654.545,
+      "processing_seconds": 1.911664,
+      "realtime_factor": 0.01812
+    },
+    {
+      "id": "tvsum:_xMr-HKMfVA",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\_xMr-HKMfVA.mp4",
+      "tasks": [
+        "importance"
+      ],
+      "duration_ms": 149000,
+      "predicted_boundaries": 19,
+      "predicted_markers": 33,
+      "boundary": null,
+      "importance": {
+        "true_positive": 8,
+        "false_positive": 25,
+        "false_negative": 3,
+        "precision": 0.242424,
+        "recall": 0.727273,
+        "f1": 0.363636
+      },
+      "false_markers_per_hour": 604.027,
+      "processing_seconds": 2.584439,
+      "realtime_factor": 0.017404
+    }
+  ]
+}

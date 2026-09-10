@@ -1,0 +1,857 @@
+{
+  "source": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\demo\\parade-20s.mp4",
+  "sample_fps": 2.0,
+  "sampled_frames": 40,
+  "stream_wall_seconds": 19.565,
+  "total_wall_seconds": 22.762,
+  "queue_replaced": 0,
+  "queue_dropped": 0,
+  "fragment_events": [
+    {
+      "kind": "open",
+      "fragment_id": "parade-20s-0000000000000-000001",
+      "revision": 1,
+      "start_ms": 0,
+      "observed_ms": 0,
+      "reason": "stream_start",
+      "subtitle": "",
+      "representative_times_ms": [
+        0
+      ],
+      "signals": {
+        "luma_difference": 0.0,
+        "histogram_difference": 0.0,
+        "edge_difference": 0.0,
+        "changed_pixel_ratio": 0.0,
+        "adaptive_novelty": 0.0,
+        "object_change": 1.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.25
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.8689,
+          "box": [
+            0.871,
+            0.6642,
+            0.9991,
+            1.0
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.542,
+          "box": [
+            0.1193,
+            0.6146,
+            0.2096,
+            0.9879
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4638,
+          "box": [
+            0.55,
+            0.5822,
+            0.6378,
+            0.7428
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4098,
+          "box": [
+            0.5496,
+            0.655,
+            0.8741,
+            0.998
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.2966,
+          "box": [
+            0.0006,
+            0.5735,
+            0.0587,
+            0.998
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "update",
+      "fragment_id": "parade-20s-0000000000000-000001",
+      "revision": 2,
+      "start_ms": 0,
+      "observed_ms": 1502,
+      "reason": "strong_visual_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        0,
+        500,
+        1001
+      ],
+      "signals": {
+        "luma_difference": 0.228932,
+        "histogram_difference": 0.187431,
+        "edge_difference": 0.081039,
+        "changed_pixel_ratio": 0.742222,
+        "adaptive_novelty": 0.32262,
+        "object_change": 0.321113,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.241588
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.8993,
+          "box": [
+            0.1403,
+            0.0006,
+            0.6759,
+            0.9835
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.8123,
+          "box": [
+            0.0014,
+            0.5365,
+            0.3275,
+            1.0
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.7706,
+          "box": [
+            0.784,
+            0.61,
+            0.9883,
+            0.997
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.2696,
+          "box": [
+            0.9253,
+            0.6566,
+            0.9896,
+            0.8752
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "update",
+      "fragment_id": "parade-20s-0000000000000-000001",
+      "revision": 3,
+      "start_ms": 0,
+      "observed_ms": 4004,
+      "reason": "fused_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        500,
+        1001,
+        4004
+      ],
+      "signals": {
+        "luma_difference": 0.270784,
+        "histogram_difference": 0.296667,
+        "edge_difference": 0.092067,
+        "changed_pixel_ratio": 0.810833,
+        "adaptive_novelty": 0.32639,
+        "object_change": 0.74422,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.379432
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.7573,
+          "box": [
+            0.0,
+            0.0006,
+            0.6757,
+            0.9962
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.724,
+          "box": [
+            0.0582,
+            0.5179,
+            0.1614,
+            1.0
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4839,
+          "box": [
+            0.6185,
+            0.5179,
+            0.7056,
+            0.8053
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3805,
+          "box": [
+            0.0011,
+            0.2894,
+            0.0792,
+            0.8648
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3423,
+          "box": [
+            0.5697,
+            0.4066,
+            0.6454,
+            0.669
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3169,
+          "box": [
+            0.6896,
+            0.2709,
+            0.7618,
+            0.3986
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.2821,
+          "box": [
+            0.1498,
+            0.6364,
+            0.2059,
+            0.994
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.2508,
+          "box": [
+            0.5289,
+            0.0949,
+            0.6011,
+            0.3465
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "close",
+      "fragment_id": "parade-20s-0000000000000-000001",
+      "revision": 4,
+      "start_ms": 0,
+      "observed_ms": 15015,
+      "reason": "maximum_duration",
+      "subtitle": "",
+      "representative_times_ms": [
+        1001,
+        4004,
+        12012
+      ],
+      "signals": {
+        "luma_difference": 0.220014,
+        "histogram_difference": 0.182986,
+        "edge_difference": 0.086217,
+        "changed_pixel_ratio": 0.732153,
+        "adaptive_novelty": 0.180163,
+        "object_change": 0.558046,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.297947
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.8558,
+          "box": [
+            0.0009,
+            0.3006,
+            0.1394,
+            0.623
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.6933,
+          "box": [
+            0.904,
+            0.3449,
+            0.9997,
+            0.6296
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.6879,
+          "box": [
+            0.3663,
+            0.2528,
+            0.5609,
+            0.9859
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.6633,
+          "box": [
+            0.793,
+            0.3651,
+            0.897,
+            0.6553
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.6467,
+          "box": [
+            0.2238,
+            0.3192,
+            0.3144,
+            0.5785
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.5809,
+          "box": [
+            0.6139,
+            0.3263,
+            0.8114,
+            0.6945
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.5379,
+          "box": [
+            0.3561,
+            0.3143,
+            0.4224,
+            0.559
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4754,
+          "box": [
+            0.8645,
+            0.3665,
+            0.9274,
+            0.5459
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4509,
+          "box": [
+            0.7255,
+            0.3348,
+            0.8207,
+            0.6259
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4496,
+          "box": [
+            0.516,
+            0.3357,
+            0.6446,
+            0.9905
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4354,
+          "box": [
+            0.298,
+            0.319,
+            0.3995,
+            0.798
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.2882,
+          "box": [
+            0.0,
+            0.5804,
+            0.3221,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "open",
+      "fragment_id": "parade-20s-0000000015015-000002",
+      "revision": 1,
+      "start_ms": 15015,
+      "observed_ms": 15015,
+      "reason": "continued_stream",
+      "subtitle": "",
+      "representative_times_ms": [
+        15015
+      ],
+      "signals": {
+        "luma_difference": 0.220014,
+        "histogram_difference": 0.182986,
+        "edge_difference": 0.086217,
+        "changed_pixel_ratio": 0.732153,
+        "adaptive_novelty": 0.180163,
+        "object_change": 0.558046,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.297947
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.8558,
+          "box": [
+            0.0009,
+            0.3006,
+            0.1394,
+            0.623
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.6933,
+          "box": [
+            0.904,
+            0.3449,
+            0.9997,
+            0.6296
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.6879,
+          "box": [
+            0.3663,
+            0.2528,
+            0.5609,
+            0.9859
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.6633,
+          "box": [
+            0.793,
+            0.3651,
+            0.897,
+            0.6553
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.6467,
+          "box": [
+            0.2238,
+            0.3192,
+            0.3144,
+            0.5785
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.5809,
+          "box": [
+            0.6139,
+            0.3263,
+            0.8114,
+            0.6945
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.5379,
+          "box": [
+            0.3561,
+            0.3143,
+            0.4224,
+            0.559
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4754,
+          "box": [
+            0.8645,
+            0.3665,
+            0.9274,
+            0.5459
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4509,
+          "box": [
+            0.7255,
+            0.3348,
+            0.8207,
+            0.6259
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4496,
+          "box": [
+            0.516,
+            0.3357,
+            0.6446,
+            0.9905
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4354,
+          "box": [
+            0.298,
+            0.319,
+            0.3995,
+            0.798
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.2882,
+          "box": [
+            0.0,
+            0.5804,
+            0.3221,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "update",
+      "fragment_id": "parade-20s-0000000015015-000002",
+      "revision": 2,
+      "start_ms": 15015,
+      "observed_ms": 19520,
+      "reason": "fused_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        15015,
+        17518,
+        19520
+      ],
+      "signals": {
+        "luma_difference": 0.306235,
+        "histogram_difference": 0.352361,
+        "edge_difference": 0.095173,
+        "changed_pixel_ratio": 0.847708,
+        "adaptive_novelty": 0.84467,
+        "object_change": 0.571429,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.565192
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.5838,
+          "box": [
+            0.1313,
+            0.844,
+            0.2248,
+            0.9982
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.4368,
+          "box": [
+            0.4258,
+            0.8932,
+            0.4892,
+            1.0
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3843,
+          "box": [
+            0.6231,
+            0.8849,
+            0.7082,
+            0.9995
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3364,
+          "box": [
+            0.3857,
+            0.9073,
+            0.431,
+            0.9998
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3313,
+          "box": [
+            0.9085,
+            0.9081,
+            0.9563,
+            0.9976
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3156,
+          "box": [
+            0.3182,
+            0.8292,
+            0.39,
+            0.9983
+          ]
+        },
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.3048,
+          "box": [
+            0.5382,
+            0.9224,
+            0.5858,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "close",
+      "fragment_id": "parade-20s-0000000015015-000002",
+      "revision": 3,
+      "start_ms": 15015,
+      "observed_ms": 19520,
+      "reason": "end_of_stream",
+      "subtitle": "",
+      "representative_times_ms": [
+        15015,
+        17518,
+        19520
+      ],
+      "signals": {
+        "luma_difference": 0.0,
+        "histogram_difference": 0.0,
+        "edge_difference": 0.0,
+        "changed_pixel_ratio": 0.0,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.0
+      }
+    }
+  ],
+  "inferences": [
+    {
+      "observation_ja": "賑やかな都市の通りに、多くの人々が集まっている。",
+      "objects": [
+        "人",
+        "建物",
+        "街灯",
+        "看板"
+      ],
+      "action_ja": "人々が通りに密集している",
+      "change_from_previous_ja": "なし",
+      "confidence": 0.85,
+      "fragment_id": "parade-20s-0000000000000-000001",
+      "revision": 1,
+      "source_timestamp_ms": 0,
+      "lm_stats": {
+        "input_tokens": 810,
+        "total_output_tokens": 69,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 45.098939113779316,
+        "time_to_first_token_seconds": 1.008513
+      },
+      "trigger_reason": "stream_start",
+      "latency_ms": 3169.352,
+      "completed_wall_ms": 3221,
+      "completed_during_stream": true
+    },
+    {
+      "observation_ja": "青いジャケットを着た少女が赤いチケットを手に持ち、前方を注視している。",
+      "objects": [
+        "少女",
+        "チケット",
+        "ジャケット",
+        "通行人",
+        "建物"
+      ],
+      "action_ja": "少女がチケットを手に持っている",
+      "change_from_previous_ja": "人物のアップに切り替わった",
+      "confidence": 0.9,
+      "fragment_id": "parade-20s-0000000000000-000001",
+      "revision": 2,
+      "source_timestamp_ms": 1502,
+      "lm_stats": {
+        "input_tokens": 814,
+        "total_output_tokens": 86,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 44.9688815339785,
+        "time_to_first_token_seconds": 0.734227
+      },
+      "trigger_reason": "strong_visual_change",
+      "latency_ms": 2899.776,
+      "completed_wall_ms": 6120,
+      "completed_during_stream": true
+    },
+    {
+      "observation_ja": "群衆の中に赤い衣装の人物や獅子舞のような装飾が見える。",
+      "objects": [
+        "群衆",
+        "獅子舞",
+        "赤い衣装",
+        "柵"
+      ],
+      "action_ja": "人々が密集して立っている",
+      "change_from_previous_ja": "視点が変わり、群衆と獅子舞が映る",
+      "confidence": 0.85,
+      "fragment_id": "parade-20s-0000000000000-000001",
+      "revision": 3,
+      "source_timestamp_ms": 4004,
+      "lm_stats": {
+        "input_tokens": 1059,
+        "total_output_tokens": 89,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 44.961800352234825,
+        "time_to_first_token_seconds": 0.946253
+      },
+      "trigger_reason": "fused_change",
+      "latency_ms": 3216.828,
+      "completed_wall_ms": 9337,
+      "completed_during_stream": true
+    },
+    {
+      "observation_ja": "複数の人物が密集し、赤い衣装や装飾品を身に着けている。",
+      "objects": [
+        "人物",
+        "赤い衣装",
+        "装飾品",
+        "看板",
+        "横断幕"
+      ],
+      "action_ja": "群衆が密集して移動または立っている",
+      "change_from_previous_ja": "人物の配置と表情が変化",
+      "confidence": 0.9,
+      "fragment_id": "parade-20s-0000000015015-000002",
+      "revision": 1,
+      "source_timestamp_ms": 15015,
+      "lm_stats": {
+        "input_tokens": 1288,
+        "total_output_tokens": 90,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 44.60542492180268,
+        "time_to_first_token_seconds": 1.373281
+      },
+      "trigger_reason": "continued_stream",
+      "latency_ms": 3916.932,
+      "completed_wall_ms": 18969,
+      "completed_during_stream": true
+    },
+    {
+      "observation_ja": "赤い装飾の建物が並ぶ通りで、多くの人々が密集している。",
+      "objects": [
+        "建物",
+        "人々の群れ",
+        "青い風船",
+        "街灯"
+      ],
+      "action_ja": "人々が密集して移動している",
+      "change_from_previous_ja": "変化なし",
+      "confidence": 0.85,
+      "fragment_id": "parade-20s-0000000015015-000002",
+      "revision": 2,
+      "source_timestamp_ms": 19520,
+      "lm_stats": {
+        "input_tokens": 1008,
+        "total_output_tokens": 81,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 44.4353352007283,
+        "time_to_first_token_seconds": 0.875439
+      },
+      "trigger_reason": "fused_change",
+      "latency_ms": 3209.032,
+      "completed_wall_ms": 22762,
+      "completed_during_stream": false
+    }
+  ],
+  "failures": []
+}

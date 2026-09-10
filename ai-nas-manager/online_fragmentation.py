@@ -93,6 +93,19 @@ class OnlineFragmentConfig:
     ewma_alpha: float = 0.08
     representative_limit: int = 3
     open_on_start: bool = True
+    fusion_enabled: bool = False
+    visual_trigger_threshold: float = 0.24
+    visual_strong_threshold: float = 0.38
+    visual_release_threshold: float = 0.10
+    object_trigger_threshold: float = 0.55
+    object_release_threshold: float = 0.20
+    audio_release_threshold: float = 0.30
+    confirming_signals: int = 2
+    visual_cooldown_ms: int = 3_000
+    object_cooldown_ms: int = 2_500
+    audio_cooldown_ms: int = 4_000
+    subtitle_cooldown_ms: int = 1_500
+    fusion_cooldown_ms: int = 2_500
 
     def __post_init__(self) -> None:
         probabilities = (
@@ -101,6 +114,12 @@ class OnlineFragmentConfig:
             self.quiet_threshold,
             self.hard_cut_threshold,
             self.audio_trigger_threshold,
+            self.visual_trigger_threshold,
+            self.visual_strong_threshold,
+            self.visual_release_threshold,
+            self.object_trigger_threshold,
+            self.object_release_threshold,
+            self.audio_release_threshold,
             self.ewma_alpha,
         )
         if any(value < 0.0 or value > 1.0 for value in probabilities):
@@ -111,6 +130,37 @@ class OnlineFragmentConfig:
             raise ValueError("sampling values must be positive")
         if min(self.quiet_ms, self.min_update_ms, self.min_fragment_ms, self.max_fragment_ms) <= 0:
             raise ValueError("timing values must be positive")
+        cooldowns = (
+            self.visual_cooldown_ms,
+            self.object_cooldown_ms,
+            self.audio_cooldown_ms,
+            self.subtitle_cooldown_ms,
+            self.fusion_cooldown_ms,
+        )
+        if any(value < 0 for value in cooldowns) or self.confirming_signals < 2:
+            raise ValueError("cooldowns and confirming_signals are invalid")
+
+
+def fragment_config(profile: str = "fused-v2-balanced") -> OnlineFragmentConfig:
+    """Return a named, reproducible detector profile."""
+
+    if profile in {"fused-v2", "fused-v2-conservative"}:
+        return OnlineFragmentConfig(fusion_enabled=True)
+    if profile == "fused-v2-balanced":
+        return OnlineFragmentConfig(
+            fusion_enabled=True,
+            visual_trigger_threshold=0.18,
+            visual_strong_threshold=0.28,
+            visual_release_threshold=0.14,
+            audio_trigger_threshold=0.78,
+            visual_cooldown_ms=2_000,
+            object_cooldown_ms=2_000,
+            audio_cooldown_ms=3_000,
+            fusion_cooldown_ms=2_000,
+        )
+    if profile == "legacy-v1":
+        return OnlineFragmentConfig()
+    raise ValueError(f"unknown fragment profile: {profile}")
 
 
 def _clip(value: float) -> float:
@@ -208,7 +258,74 @@ class OnlineMultiSignalFragmenter:
         self._baseline = _AdaptiveBaseline(self.config.ewma_alpha)
         self._open: _OpenFragment | None = None
         self._sequence = 0
+        self._signal_armed = {"visual": True, "object": True, "audio": True}
+        self._last_signal_emit_ms: dict[str, int] = {}
         self.last_signals = SignalVector()
+
+    def _fused_reason(
+        self,
+        timestamp_ms: int,
+        *,
+        visual_score: float,
+        object_change: float,
+        audio_change: float,
+        audio_label: str,
+        subtitle_changed: bool,
+    ) -> tuple[str | None, tuple[str, ...]]:
+        """Return a debounced semantic reason and contributing signals."""
+
+        config = self.config
+        releases = {
+            "visual": visual_score < config.visual_release_threshold,
+            "object": object_change < config.object_release_threshold,
+            "audio": audio_change < config.audio_release_threshold,
+        }
+        for name, released in releases.items():
+            if released:
+                self._signal_armed[name] = True
+
+        audio_is_event = audio_label in {"impact_candidate", "transient_candidate"} or not audio_label
+        active = {
+            "visual": visual_score >= config.visual_trigger_threshold,
+            "object": object_change >= config.object_trigger_threshold,
+            "audio": audio_change >= config.audio_trigger_threshold and audio_is_event,
+            "subtitle": subtitle_changed,
+        }
+        cooldowns = {
+            "visual": config.visual_cooldown_ms,
+            "object": config.object_cooldown_ms,
+            "audio": config.audio_cooldown_ms,
+            "subtitle": config.subtitle_cooldown_ms,
+        }
+
+        def eligible(name: str) -> bool:
+            armed = True if name == "subtitle" else self._signal_armed[name]
+            elapsed = timestamp_ms - self._last_signal_emit_ms.get(name, -10**12)
+            return active[name] and armed and elapsed >= cooldowns[name]
+
+        contributors = tuple(name for name, present in active.items() if present)
+        fusion_elapsed = timestamp_ms - self._last_signal_emit_ms.get("fusion", -10**12)
+        if (
+            len(contributors) >= config.confirming_signals
+            and any(eligible(name) for name in contributors)
+            and fusion_elapsed >= config.fusion_cooldown_ms
+        ):
+            return "fused_change", contributors
+        if active["audio"] and eligible("audio"):
+            return "impact_sound", ("audio",)
+        if active["subtitle"] and eligible("subtitle"):
+            return "subtitle", ("subtitle",)
+        if visual_score >= config.visual_strong_threshold and eligible("visual"):
+            return "strong_visual_change", ("visual",)
+        return None, ()
+
+    def _consume_signals(self, timestamp_ms: int, contributors: tuple[str, ...]) -> None:
+        if len(contributors) >= self.config.confirming_signals:
+            self._last_signal_emit_ms["fusion"] = timestamp_ms
+        for name in contributors:
+            self._last_signal_emit_ms[name] = timestamp_ms
+            if name in self._signal_armed:
+                self._signal_armed[name] = False
 
     @property
     def is_open(self) -> bool:
@@ -252,6 +369,7 @@ class OnlineMultiSignalFragmenter:
         *,
         object_change: float = 0.0,
         audio_change: float = 0.0,
+        audio_label: str = "",
         subtitle: str = "",
     ) -> list[FragmentEvent]:
         if self._previous and frame.timestamp_ms < self._previous.timestamp_ms:
@@ -290,12 +408,20 @@ class OnlineMultiSignalFragmenter:
         hard_cut = histogram > self.config.hard_cut_threshold or luma > self.config.hard_cut_threshold
         audio_triggered = audio_change >= self.config.audio_trigger_threshold
         active = composite >= self.config.quiet_threshold
+        fused_reason, fused_contributors = self._fused_reason(
+            frame.timestamp_ms,
+            visual_score=max(visual, novelty),
+            object_change=object_change,
+            audio_change=audio_change,
+            audio_label=audio_label,
+            subtitle_changed=subtitle_changed,
+        ) if self.config.fusion_enabled else (None, ())
         trigger = (
             (first_frame and self.config.open_on_start)
             or hard_cut
-            or composite >= self.config.open_threshold
-            or audio_triggered
-            or subtitle_changed
+            or (fused_reason is not None if self.config.fusion_enabled else (
+                composite >= self.config.open_threshold or audio_triggered or subtitle_changed
+            ))
         )
         events: list[FragmentEvent] = []
 
@@ -310,7 +436,7 @@ class OnlineMultiSignalFragmenter:
                     last_emit_ms=frame.timestamp_ms,
                 )
                 self._remember_representative(frame.timestamp_ms, composite)
-                reason = (
+                reason = fused_reason or (
                     "stream_start" if first_frame
                     else "hard_cut" if hard_cut
                     else "audio_change" if audio_triggered
@@ -318,6 +444,8 @@ class OnlineMultiSignalFragmenter:
                     else "adaptive_change"
                 )
                 events.append(self._event(EventKind.OPEN, frame, signals, reason, subtitle))
+                if fused_reason:
+                    self._consume_signals(frame.timestamp_ms, fused_contributors)
             return events
 
         assert self._open is not None
@@ -364,19 +492,22 @@ class OnlineMultiSignalFragmenter:
             return events
 
         update_due = frame.timestamp_ms - self._open.last_emit_ms >= self.config.min_update_ms
-        if update_due and (
-            composite >= self.config.update_threshold
-            or audio_triggered
-            or subtitle_changed
-        ):
+        update_triggered = (
+            fused_reason is not None
+            if self.config.fusion_enabled
+            else composite >= self.config.update_threshold or audio_triggered or subtitle_changed
+        )
+        if update_due and update_triggered:
             self._open.revision += 1
             self._open.last_emit_ms = frame.timestamp_ms
-            reason = (
+            reason = fused_reason or (
                 "subtitle" if subtitle_changed
                 else "audio_change" if audio_triggered
                 else "continued_change"
             )
             events.append(self._event(EventKind.UPDATE, frame, signals, reason, subtitle))
+            if fused_reason:
+                self._consume_signals(frame.timestamp_ms, fused_contributors)
         return events
 
     def finish(self) -> list[FragmentEvent]:
@@ -406,4 +537,6 @@ class OnlineMultiSignalFragmenter:
         self._previous = None
         self._last_subtitle = ""
         self._baseline = _AdaptiveBaseline(self.config.ewma_alpha)
+        self._signal_armed = {"visual": True, "object": True, "audio": True}
+        self._last_signal_emit_ms.clear()
         return events

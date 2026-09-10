@@ -1,4 +1,4 @@
-# Online multi-signal fragmentation v1
+# Online multi-signal fragmentation v1/v2
 
 ## Purpose
 
@@ -58,6 +58,30 @@ trigger. This allows a sound onset to open a Fragment when the image is static.
 - hard cuts close the prior fragment and open the next one at the same frame;
 - maximum duration rolls directly into a continuation fragment;
 - only the three strongest representative timestamps are retained by default.
+
+## Fused v2 profiles
+
+`run_fragment_experiment.py --profile fused-v2-balanced` enables three controls
+that are intentionally absent from the legacy baseline:
+
+- hysteresis: a visual, object, or audio signal must fall below its release
+  threshold before the same sustained condition can fire again;
+- signal-specific cooldowns: visual, object, audio, subtitle, and fused events
+  have independent minimum intervals;
+- evidence fusion: moderate changes require at least two simultaneous signals.
+  A hard cut, new subtitle, high-confidence impact candidate, or very strong
+  visual change can still fire alone.
+
+Audio classification uses RMS, peak, zero-crossing rate, spectral flux, crest
+factor, and spectral flatness. It distinguishes impact candidates from loud
+steady voice/tonal activity; it is a lightweight candidate classifier, not a
+general sound-recognition model.
+
+Candidate generation and permanent storage are separate. `fragment_admission.py`
+combines Gemma confidence with non-empty structured observations and trusted
+trigger evidence. Manual markers are always confirmed. The PC app stores only
+confirmed results by default; `--include-unconfirmed` is available for detector
+development and review.
 
 This design supplies early text while bounding Gemma calls.  Downstream queues
 should coalesce stale revisions of the same fragment.

@@ -6,13 +6,26 @@ import argparse
 import json
 import subprocess
 import sys
+import time
 from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from audio_detection import AudioChangeConfig, AudioFeatureTimeline, iter_audio_features
-from online_fragmentation import GrayFrame, OnlineFragmentConfig, OnlineMultiSignalFragmenter
+from online_fragmentation import GrayFrame, OnlineMultiSignalFragmenter, fragment_config
+from scene_segmentation import OnlineHybridSceneSegmenter, SceneSample, pelt_boundaries
+
+
+def luma_state_vector(frame: GrayFrame, bins: int = 16) -> tuple[float, ...]:
+    """Return an absolute (not frame-difference) state for offline PELT."""
+
+    histogram = [0] * bins
+    bin_width = 256 // bins
+    for value in frame.pixels[::4]:
+        histogram[min(value // bin_width, bins - 1)] += 1
+    total = max(1, sum(histogram))
+    return tuple(value / total for value in histogram)
 
 
 def iter_frames(source: Path, ffmpeg: str, width: int, height: int, fps: float):
@@ -44,7 +57,12 @@ def iter_frames(source: Path, ffmpeg: str, width: int, height: int, fps: float):
 
 
 def analyze(source: Path, args: argparse.Namespace) -> dict[str, object]:
-    fragmenter = OnlineMultiSignalFragmenter(source.stem, OnlineFragmentConfig())
+    started = time.perf_counter()
+    fragmenter = OnlineMultiSignalFragmenter(
+        source.stem,
+        fragment_config(args.profile),
+    )
+    scene_segmenter = OnlineHybridSceneSegmenter(source.stem)
     audio_features = (
         list(iter_audio_features(
             source,
@@ -58,13 +76,32 @@ def analyze(source: Path, args: argparse.Namespace) -> dict[str, object]:
     samples: dict[str, list[float]] = {}
     frame_count = 0
     maxima = Counter()
+    scene_events = []
+    scene_timestamps_ms: list[int] = []
+    scene_state_vectors: list[tuple[float, ...]] = []
     for frame in iter_frames(source, args.ffmpeg, args.width, args.height, args.fps):
         frame_count += 1
         audio = audio_timeline.at(frame.timestamp_ms)
         produced = fragmenter.process(
             frame,
             audio_change=audio.change_score if audio is not None else 0.0,
+            audio_label=audio.label if audio is not None else "",
         )
+        signals = fragmenter.last_signals
+        visual_change = max(
+            signals.luma_difference,
+            signals.histogram_difference,
+            signals.edge_difference,
+            signals.changed_pixel_ratio,
+            signals.adaptive_novelty,
+        )
+        scene_events.extend(event.as_dict() for event in scene_segmenter.process(SceneSample(
+            frame.timestamp_ms,
+            visual_change=visual_change,
+            audio_change=audio.change_score if audio is not None else 0.0,
+        )))
+        scene_timestamps_ms.append(frame.timestamp_ms)
+        scene_state_vectors.append(luma_state_vector(frame))
         for name, value in fragmenter.last_signals.as_dict().items():
             samples.setdefault(name, []).append(value)
         for event in produced:
@@ -73,6 +110,12 @@ def analyze(source: Path, args: argparse.Namespace) -> dict[str, object]:
     for event in fragmenter.finish():
         events.append(event.as_dict())
         maxima[event.reason] += 1
+    scene_events.extend(event.as_dict() for event in scene_segmenter.finish())
+    pelt_indices = pelt_boundaries(
+        scene_state_vectors,
+        penalty=args.pelt_penalty,
+        min_size=max(2, round(args.fps * args.pelt_min_scene_seconds)),
+    )
     opens = [event for event in events if event["kind"] == "open"]
     updates = [event for event in events if event["kind"] == "update"]
     closes = [event for event in events if event["kind"] == "close"]
@@ -82,11 +125,16 @@ def analyze(source: Path, args: argparse.Namespace) -> dict[str, object]:
             return {"p50": 0.0, "p90": 0.0, "p95": 0.0, "max": 0.0}
         at = lambda fraction: ordered[min(len(ordered) - 1, round((len(ordered) - 1) * fraction))]
         return {"p50": at(0.50), "p90": at(0.90), "p95": at(0.95), "max": ordered[-1]}
+    duration_ms = max((int(event["observed_ms"]) for event in events), default=0)
+    processing_seconds = time.perf_counter() - started
     return {
         "source": str(source.resolve()),
         "analysis_size": [args.width, args.height],
         "sample_fps": args.fps,
         "frames": frame_count,
+        "duration_ms": duration_ms,
+        "processing_seconds": round(processing_seconds, 6),
+        "realtime_factor": round(processing_seconds / (duration_ms / 1000), 6) if duration_ms else None,
         "audio_windows": len(audio_features),
         "audio_events": [
             feature.as_dict() for feature in audio_features
@@ -97,6 +145,13 @@ def analyze(source: Path, args: argparse.Namespace) -> dict[str, object]:
         "closes": len(closes),
         "reasons": dict(maxima),
         "signal_distribution": {name: percentiles(values) for name, values in samples.items()},
+        "scene_segmentation": {
+            "online_algorithm": "cusum-bocpd-semantic-veto-v1",
+            "online_boundaries": scene_events,
+            "offline_algorithm": "pelt-multivariate-luma-histogram-v1",
+            "pelt_penalty": args.pelt_penalty,
+            "pelt_boundaries_ms": [scene_timestamps_ms[index] for index in pelt_indices],
+        },
         "events": events,
     }
 
@@ -110,10 +165,17 @@ def main() -> None:
     parser.add_argument("--fps", type=float, default=2.0)
     parser.add_argument("--audio", action="store_true")
     parser.add_argument("--audio-window-ms", type=int, default=500)
+    parser.add_argument("--pelt-penalty", type=float, default=0.35)
+    parser.add_argument("--pelt-min-scene-seconds", type=float, default=3.0)
+    parser.add_argument(
+        "--profile",
+        choices=("legacy-v1", "fused-v2", "fused-v2-conservative", "fused-v2-balanced"),
+        default="fused-v2-balanced",
+    )
     parser.add_argument("--output", type=Path, default=Path("fragment-experiment.json"))
     args = parser.parse_args()
     results = [analyze(source, args) for source in args.sources]
-    payload = {"algorithm": "online-multisignal-v1", "results": results}
+    payload = {"algorithm": f"online-multisignal-{args.profile}", "results": results}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     for result in results:

@@ -1,0 +1,86 @@
+{
+  "source": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\semantic_samples\\sample05_baseball.mp4",
+  "sample_fps": 2.0,
+  "sampled_frames": 20,
+  "stream_wall_seconds": 9.561,
+  "total_wall_seconds": 9.562,
+  "queue_replaced": 0,
+  "queue_dropped": 0,
+  "fragment_events": [
+    {
+      "kind": "open",
+      "fragment_id": "sample05_baseball-0000000000000-000001",
+      "revision": 1,
+      "start_ms": 0,
+      "observed_ms": 0,
+      "reason": "stream_start",
+      "subtitle": "",
+      "representative_times_ms": [
+        0
+      ],
+      "signals": {
+        "luma_difference": 0.0,
+        "histogram_difference": 0.0,
+        "edge_difference": 0.0,
+        "changed_pixel_ratio": 0.0,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.0
+      },
+      "detected_objects": []
+    },
+    {
+      "kind": "close",
+      "fragment_id": "sample05_baseball-0000000000000-000001",
+      "revision": 2,
+      "start_ms": 0,
+      "observed_ms": 2000,
+      "reason": "quiet_timeout",
+      "subtitle": "",
+      "representative_times_ms": [
+        0
+      ],
+      "signals": {
+        "luma_difference": 0.0,
+        "histogram_difference": 0.0,
+        "edge_difference": 0.0,
+        "changed_pixel_ratio": 0.0,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.0
+      },
+      "detected_objects": []
+    }
+  ],
+  "inferences": [
+    {
+      "observation_ja": "ピンク色の背景に日本語のテキストが表示されている。",
+      "objects": [
+        "背景",
+        "テキスト"
+      ],
+      "action_ja": "テキストの表示",
+      "change_from_previous_ja": "新規の映像",
+      "confidence": 1.0,
+      "fragment_id": "sample05_baseball-0000000000000-000001",
+      "revision": 1,
+      "source_timestamp_ms": 0,
+      "lm_stats": {
+        "input_tokens": 515,
+        "total_output_tokens": 49,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 45.15169558726835,
+        "time_to_first_token_seconds": 0.847967
+      },
+      "trigger_reason": "stream_start",
+      "latency_ms": 2924.197,
+      "completed_wall_ms": 3018,
+      "completed_during_stream": true
+    }
+  ],
+  "failures": []
+}

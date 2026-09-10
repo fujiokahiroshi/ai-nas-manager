@@ -1,0 +1,411 @@
+{
+  "source": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\demo\\tire-change-20s.mp4",
+  "sample_fps": 2.0,
+  "sampled_frames": 40,
+  "stream_wall_seconds": 19.568,
+  "total_wall_seconds": 20.684,
+  "queue_replaced": 0,
+  "queue_dropped": 0,
+  "fragment_events": [
+    {
+      "kind": "open",
+      "fragment_id": "tire-change-20s-0000000000000-000001",
+      "revision": 1,
+      "start_ms": 0,
+      "observed_ms": 0,
+      "reason": "stream_start",
+      "subtitle": "",
+      "representative_times_ms": [
+        0
+      ],
+      "signals": {
+        "luma_difference": 0.0,
+        "histogram_difference": 0.0,
+        "edge_difference": 0.0,
+        "changed_pixel_ratio": 0.0,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.0
+      },
+      "detected_objects": []
+    },
+    {
+      "kind": "close",
+      "fragment_id": "tire-change-20s-0000000000000-000001",
+      "revision": 2,
+      "start_ms": 0,
+      "observed_ms": 3003,
+      "reason": "quiet_timeout",
+      "subtitle": "",
+      "representative_times_ms": [
+        0,
+        500,
+        1001
+      ],
+      "signals": {
+        "luma_difference": 0.031834,
+        "histogram_difference": 0.060625,
+        "edge_difference": 0.00873,
+        "changed_pixel_ratio": 0.122708,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.029862
+      },
+      "detected_objects": []
+    },
+    {
+      "kind": "open",
+      "fragment_id": "tire-change-20s-0000000004504-000002",
+      "revision": 1,
+      "start_ms": 4504,
+      "observed_ms": 4504,
+      "reason": "strong_visual_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        4504
+      ],
+      "signals": {
+        "luma_difference": 0.324775,
+        "histogram_difference": 0.889861,
+        "edge_difference": 0.086841,
+        "changed_pixel_ratio": 0.873403,
+        "adaptive_novelty": 0.222127,
+        "object_change": 0.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.297884
+      },
+      "detected_objects": []
+    },
+    {
+      "kind": "close",
+      "fragment_id": "tire-change-20s-0000000004504-000002",
+      "revision": 2,
+      "start_ms": 4504,
+      "observed_ms": 5506,
+      "reason": "hard_cut",
+      "subtitle": "",
+      "representative_times_ms": [
+        4504,
+        5005,
+        5506
+      ],
+      "signals": {
+        "luma_difference": 0.509159,
+        "histogram_difference": 0.820694,
+        "edge_difference": 0.05875,
+        "changed_pixel_ratio": 0.983958,
+        "adaptive_novelty": 0.288092,
+        "object_change": 0.475011,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.445632
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.9286,
+          "box": [
+            0.0598,
+            0.0411,
+            0.4459,
+            0.9947
+          ]
+        },
+        {
+          "class_id": 7,
+          "label": "truck",
+          "confidence": 0.7975,
+          "box": [
+            0.3724,
+            0.212,
+            0.9908,
+            0.9977
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "open",
+      "fragment_id": "tire-change-20s-0000000005506-000003",
+      "revision": 1,
+      "start_ms": 5506,
+      "observed_ms": 5506,
+      "reason": "hard_cut",
+      "subtitle": "",
+      "representative_times_ms": [
+        5506
+      ],
+      "signals": {
+        "luma_difference": 0.509159,
+        "histogram_difference": 0.820694,
+        "edge_difference": 0.05875,
+        "changed_pixel_ratio": 0.983958,
+        "adaptive_novelty": 0.288092,
+        "object_change": 0.475011,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.445632
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.9286,
+          "box": [
+            0.0598,
+            0.0411,
+            0.4459,
+            0.9947
+          ]
+        },
+        {
+          "class_id": 7,
+          "label": "truck",
+          "confidence": 0.7975,
+          "box": [
+            0.3724,
+            0.212,
+            0.9908,
+            0.9977
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "close",
+      "fragment_id": "tire-change-20s-0000000005506-000003",
+      "revision": 2,
+      "start_ms": 5506,
+      "observed_ms": 8008,
+      "reason": "quiet_timeout",
+      "subtitle": "",
+      "representative_times_ms": [
+        5506,
+        6006
+      ],
+      "signals": {
+        "luma_difference": 0.002511,
+        "histogram_difference": 0.005139,
+        "edge_difference": 0.002729,
+        "changed_pixel_ratio": 0.000278,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.001156,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.001676
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.8868,
+          "box": [
+            0.0703,
+            0.0542,
+            0.4499,
+            0.7818
+          ]
+        },
+        {
+          "class_id": 7,
+          "label": "truck",
+          "confidence": 0.6644,
+          "box": [
+            0.3807,
+            0.2096,
+            0.9974,
+            0.9974
+          ]
+        },
+        {
+          "class_id": 2,
+          "label": "car",
+          "confidence": 0.2936,
+          "box": [
+            0.3793,
+            0.2172,
+            0.9972,
+            0.9972
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "open",
+      "fragment_id": "tire-change-20s-0000000018018-000004",
+      "revision": 1,
+      "start_ms": 18018,
+      "observed_ms": 18018,
+      "reason": "strong_visual_change",
+      "subtitle": "",
+      "representative_times_ms": [
+        18018
+      ],
+      "signals": {
+        "luma_difference": 0.147757,
+        "histogram_difference": 0.522639,
+        "edge_difference": 0.037373,
+        "changed_pixel_ratio": 0.650278,
+        "adaptive_novelty": 0.559323,
+        "object_change": 0.287066,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.351428
+      },
+      "detected_objects": [
+        {
+          "class_id": 0,
+          "label": "person",
+          "confidence": 0.8703,
+          "box": [
+            0.0774,
+            0.042,
+            0.4582,
+            0.9231
+          ]
+        },
+        {
+          "class_id": 2,
+          "label": "car",
+          "confidence": 0.3761,
+          "box": [
+            0.0622,
+            0.0491,
+            0.9645,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "close",
+      "fragment_id": "tire-change-20s-0000000018018-000004",
+      "revision": 2,
+      "start_ms": 18018,
+      "observed_ms": 19520,
+      "reason": "end_of_stream",
+      "subtitle": "",
+      "representative_times_ms": [
+        18018,
+        18518,
+        19019
+      ],
+      "signals": {
+        "luma_difference": 0.0,
+        "histogram_difference": 0.0,
+        "edge_difference": 0.0,
+        "changed_pixel_ratio": 0.0,
+        "adaptive_novelty": 0.0,
+        "object_change": 0.0,
+        "audio_change": 0.0,
+        "subtitle_change": 0.0,
+        "composite": 0.0
+      }
+    }
+  ],
+  "inferences": [
+    {
+      "observation_ja": "画像は完全に黒い画面です。",
+      "objects": [],
+      "action_ja": "なし",
+      "change_from_previous_ja": "なし",
+      "confidence": 1.0,
+      "fragment_id": "tire-change-20s-0000000000000-000001",
+      "revision": 1,
+      "source_timestamp_ms": 0,
+      "lm_stats": {
+        "input_tokens": 517,
+        "total_output_tokens": 47,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 44.77234237215549,
+        "time_to_first_token_seconds": 0.671817
+      },
+      "trigger_reason": "stream_start",
+      "latency_ms": 1942.746,
+      "completed_wall_ms": 1994,
+      "completed_during_stream": true
+    },
+    {
+      "observation_ja": "赤地に白いV字型のロゴが表示されている。",
+      "objects": [
+        "ロゴ",
+        "背景"
+      ],
+      "action_ja": "ロゴの表示",
+      "change_from_previous_ja": "黒い画面からロゴへ変化",
+      "confidence": 0.95,
+      "fragment_id": "tire-change-20s-0000000004504-000002",
+      "revision": 1,
+      "source_timestamp_ms": 4504,
+      "lm_stats": {
+        "input_tokens": 565,
+        "total_output_tokens": 63,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 45.104095888397914,
+        "time_to_first_token_seconds": 0.7290030000000001
+      },
+      "trigger_reason": "strong_visual_change",
+      "latency_ms": 2275.108,
+      "completed_wall_ms": 6826,
+      "completed_during_stream": true
+    },
+    {
+      "observation_ja": "白いシャツの男性が、GMCのロゴが入った黒いトラックの前に立っている。",
+      "objects": [
+        "男性",
+        "トラック",
+        "ロゴ",
+        "シャツ"
+      ],
+      "action_ja": "男性がカメラに向かって立っている",
+      "change_from_previous_ja": "ロゴから人物と車両の映像へ切り替わった",
+      "confidence": 0.95,
+      "fragment_id": "tire-change-20s-0000000005506-000003",
+      "revision": 1,
+      "source_timestamp_ms": 5506,
+      "lm_stats": {
+        "input_tokens": 699,
+        "total_output_tokens": 88,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 45.189828444867366,
+        "time_to_first_token_seconds": 0.700487
+      },
+      "trigger_reason": "hard_cut",
+      "latency_ms": 2798.839,
+      "completed_wall_ms": 9625,
+      "completed_during_stream": true
+    },
+    {
+      "observation_ja": "白いシャツの男性が、GMCロゴ入りの黒いトラックの前に立っている。",
+      "objects": [
+        "男性",
+        "トラック",
+        "ロゴ"
+      ],
+      "action_ja": "男性がトラックの前に立っている",
+      "change_from_previous_ja": "変化なし",
+      "confidence": 0.9,
+      "fragment_id": "tire-change-20s-0000000018018-000004",
+      "revision": 1,
+      "source_timestamp_ms": 18018,
+      "lm_stats": {
+        "input_tokens": 713,
+        "total_output_tokens": 73,
+        "reasoning_output_tokens": 0,
+        "tokens_per_second": 45.43142820004467,
+        "time_to_first_token_seconds": 0.7834
+      },
+      "trigger_reason": "strong_visual_change",
+      "latency_ms": 2618.673,
+      "completed_wall_ms": 20683,
+      "completed_during_stream": false
+    }
+  ],
+  "failures": []
+}

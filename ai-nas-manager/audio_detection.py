@@ -20,6 +20,8 @@ class AudioFeature:
     peak: float
     zero_crossing_rate: float
     spectral_flux: float
+    crest_factor: float
+    spectral_flatness: float
     change_score: float
     active: bool
     onset: bool
@@ -32,6 +34,8 @@ class AudioFeature:
             "peak": round(self.peak, 4),
             "zero_crossing_rate": round(self.zero_crossing_rate, 4),
             "spectral_flux": round(self.spectral_flux, 4),
+            "crest_factor": round(self.crest_factor, 4),
+            "spectral_flatness": round(self.spectral_flatness, 4),
             "change_score": round(self.change_score, 4),
             "active": self.active,
             "onset": self.onset,
@@ -80,12 +84,16 @@ class AudioChangeDetector:
         rms = float(np.sqrt(np.mean(normalized * normalized)))
         rms_dbfs = 20.0 * log10(max(rms, 1e-6))
         peak = float(np.max(np.abs(normalized)))
+        crest_factor = peak / max(rms, 1e-6)
         active = rms_dbfs >= self.config.silence_dbfs
         zero_crossing = float(np.mean(normalized[1:] * normalized[:-1] < 0)) if samples.size > 1 else 0.0
 
         windowed = normalized * np.hanning(samples.size)
         spectrum = np.abs(np.fft.rfft(windowed))
         total = float(spectrum.sum())
+        spectral_flatness = float(
+            np.exp(np.mean(np.log(spectrum + 1e-12))) / max(np.mean(spectrum), 1e-12)
+        )
         spectrum = spectrum / total if total > 1e-9 else spectrum
         spectral_flux = (
             0.0
@@ -117,7 +125,7 @@ class AudioChangeDetector:
         onset = active and (rise_db >= self.config.onset_db or (transition and peak >= 0.08))
         if not active:
             label = "silence"
-        elif onset and peak >= 0.65:
+        elif onset and peak >= 0.45 and (crest_factor >= 2.5 or spectral_flatness >= 0.30):
             label = "impact_candidate"
         elif 0.015 <= zero_crossing <= 0.30:
             label = "voice_or_tonal_activity"
@@ -129,6 +137,7 @@ class AudioChangeDetector:
         self._previous_spectrum = spectrum
         return AudioFeature(
             timestamp_ms, rms_dbfs, peak, zero_crossing, spectral_flux,
+            crest_factor, spectral_flatness,
             _clip(change_score), active, onset, label,
         )
 

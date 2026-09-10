@@ -1,0 +1,3001 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "tvsum:XzYM3PfTM4w",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\XzYM3PfTM4w.mp4",
+      "duration_ms": 111000,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 4000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 4000,
+          "end_ms": 6000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 6000,
+          "end_ms": 8000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 8000,
+          "end_ms": 10000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 12000,
+          "score": 1.2
+        },
+        {
+          "start_ms": 12000,
+          "end_ms": 14000,
+          "score": 1.25
+        },
+        {
+          "start_ms": 14000,
+          "end_ms": 16000,
+          "score": 1.2
+        },
+        {
+          "start_ms": 16000,
+          "end_ms": 18000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 18000,
+          "end_ms": 20000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 20000,
+          "end_ms": 22000,
+          "score": 2.9
+        },
+        {
+          "start_ms": 22000,
+          "end_ms": 24000,
+          "score": 2.9
+        },
+        {
+          "start_ms": 24000,
+          "end_ms": 26000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 26000,
+          "end_ms": 28000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 28000,
+          "end_ms": 30000,
+          "score": 1.15
+        },
+        {
+          "start_ms": 30000,
+          "end_ms": 32000,
+          "score": 1.15
+        },
+        {
+          "start_ms": 32000,
+          "end_ms": 34000,
+          "score": 2.9
+        },
+        {
+          "start_ms": 34000,
+          "end_ms": 36000,
+          "score": 2.55
+        },
+        {
+          "start_ms": 36000,
+          "end_ms": 38000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 38000,
+          "end_ms": 40000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 40000,
+          "end_ms": 42000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 42000,
+          "end_ms": 44000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 44000,
+          "end_ms": 46000,
+          "score": 2.6
+        },
+        {
+          "start_ms": 46000,
+          "end_ms": 48000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 48000,
+          "end_ms": 50000,
+          "score": 2.75
+        },
+        {
+          "start_ms": 50000,
+          "end_ms": 52000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 52000,
+          "end_ms": 54000,
+          "score": 3.2
+        },
+        {
+          "start_ms": 54000,
+          "end_ms": 56000,
+          "score": 3.2
+        },
+        {
+          "start_ms": 56000,
+          "end_ms": 58000,
+          "score": 3.25
+        },
+        {
+          "start_ms": 58000,
+          "end_ms": 60000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 60000,
+          "end_ms": 62000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 62000,
+          "end_ms": 64000,
+          "score": 1.25
+        },
+        {
+          "start_ms": 64000,
+          "end_ms": 66000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 66000,
+          "end_ms": 68000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 68000,
+          "end_ms": 70000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 70000,
+          "end_ms": 72000,
+          "score": 2.25
+        },
+        {
+          "start_ms": 72000,
+          "end_ms": 74000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 74000,
+          "end_ms": 76000,
+          "score": 2.35
+        },
+        {
+          "start_ms": 76000,
+          "end_ms": 78000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 78000,
+          "end_ms": 80000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 80000,
+          "end_ms": 82000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 82000,
+          "end_ms": 84000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 84000,
+          "end_ms": 86000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 86000,
+          "end_ms": 88000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 88000,
+          "end_ms": 90000,
+          "score": 1.15
+        },
+        {
+          "start_ms": 90000,
+          "end_ms": 92000,
+          "score": 1.25
+        },
+        {
+          "start_ms": 92000,
+          "end_ms": 94000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 94000,
+          "end_ms": 96000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 96000,
+          "end_ms": 98000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 98000,
+          "end_ms": 100000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 100000,
+          "end_ms": 102000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 102000,
+          "end_ms": 104000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 104000,
+          "end_ms": 106000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 106000,
+          "end_ms": 108000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 108000,
+          "end_ms": 110000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 110000,
+          "end_ms": 111000,
+          "score": 1.4
+        }
+      ],
+      "metadata": {
+        "category": "VT",
+        "title": "When to Replace Your Tires GMC",
+        "judges": 20,
+        "interval_ms": 2000
+      }
+    },
+    {
+      "id": "tvsum:0tmA_C6XwfM",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\0tmA_C6XwfM.mp4",
+      "duration_ms": 141000,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "score": 1.15
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 4000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 4000,
+          "end_ms": 6000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 6000,
+          "end_ms": 8000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 8000,
+          "end_ms": 10000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 12000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 12000,
+          "end_ms": 14000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 14000,
+          "end_ms": 16000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 16000,
+          "end_ms": 18000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 18000,
+          "end_ms": 20000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 20000,
+          "end_ms": 22000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 22000,
+          "end_ms": 24000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 24000,
+          "end_ms": 26000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 26000,
+          "end_ms": 28000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 28000,
+          "end_ms": 30000,
+          "score": 2.9
+        },
+        {
+          "start_ms": 30000,
+          "end_ms": 32000,
+          "score": 2.35
+        },
+        {
+          "start_ms": 32000,
+          "end_ms": 34000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 34000,
+          "end_ms": 36000,
+          "score": 2.35
+        },
+        {
+          "start_ms": 36000,
+          "end_ms": 38000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 38000,
+          "end_ms": 40000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 40000,
+          "end_ms": 42000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 42000,
+          "end_ms": 44000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 44000,
+          "end_ms": 46000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 46000,
+          "end_ms": 48000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 48000,
+          "end_ms": 50000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 50000,
+          "end_ms": 52000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 52000,
+          "end_ms": 54000,
+          "score": 2.85
+        },
+        {
+          "start_ms": 54000,
+          "end_ms": 56000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 56000,
+          "end_ms": 58000,
+          "score": 3.0
+        },
+        {
+          "start_ms": 58000,
+          "end_ms": 60000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 60000,
+          "end_ms": 62000,
+          "score": 3.55
+        },
+        {
+          "start_ms": 62000,
+          "end_ms": 64000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 64000,
+          "end_ms": 66000,
+          "score": 3.15
+        },
+        {
+          "start_ms": 66000,
+          "end_ms": 68000,
+          "score": 3.0
+        },
+        {
+          "start_ms": 68000,
+          "end_ms": 70000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 70000,
+          "end_ms": 72000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 72000,
+          "end_ms": 74000,
+          "score": 3.0
+        },
+        {
+          "start_ms": 74000,
+          "end_ms": 76000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 76000,
+          "end_ms": 78000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 78000,
+          "end_ms": 80000,
+          "score": 2.5
+        },
+        {
+          "start_ms": 80000,
+          "end_ms": 82000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 82000,
+          "end_ms": 84000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 84000,
+          "end_ms": 86000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 86000,
+          "end_ms": 88000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 88000,
+          "end_ms": 90000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 90000,
+          "end_ms": 92000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 92000,
+          "end_ms": 94000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 94000,
+          "end_ms": 96000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 96000,
+          "end_ms": 98000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 98000,
+          "end_ms": 100000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 100000,
+          "end_ms": 102000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 102000,
+          "end_ms": 104000,
+          "score": 2.6
+        },
+        {
+          "start_ms": 104000,
+          "end_ms": 106000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 106000,
+          "end_ms": 108000,
+          "score": 2.95
+        },
+        {
+          "start_ms": 108000,
+          "end_ms": 110000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 110000,
+          "end_ms": 112000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 112000,
+          "end_ms": 114000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 114000,
+          "end_ms": 116000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 116000,
+          "end_ms": 118000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 118000,
+          "end_ms": 120000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 120000,
+          "end_ms": 122000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 122000,
+          "end_ms": 124000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 124000,
+          "end_ms": 126000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 126000,
+          "end_ms": 128000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 128000,
+          "end_ms": 130000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 130000,
+          "end_ms": 132000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 132000,
+          "end_ms": 134000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 134000,
+          "end_ms": 136000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 136000,
+          "end_ms": 138000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 138000,
+          "end_ms": 140000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 140000,
+          "end_ms": 141000,
+          "score": 1.65
+        }
+      ],
+      "metadata": {
+        "category": "GA",
+        "title": "Nail clipper Gloria Pets professional grooming",
+        "judges": 20,
+        "interval_ms": 2000
+      }
+    },
+    {
+      "id": "tvsum:37rzWOQsNIw",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\37rzWOQsNIw.mp4",
+      "duration_ms": 191000,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "score": 3.25
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 4000,
+          "score": 3.0
+        },
+        {
+          "start_ms": 4000,
+          "end_ms": 6000,
+          "score": 2.9
+        },
+        {
+          "start_ms": 6000,
+          "end_ms": 8000,
+          "score": 2.35
+        },
+        {
+          "start_ms": 8000,
+          "end_ms": 10000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 12000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 12000,
+          "end_ms": 14000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 14000,
+          "end_ms": 16000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 16000,
+          "end_ms": 18000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 18000,
+          "end_ms": 20000,
+          "score": 3.1
+        },
+        {
+          "start_ms": 20000,
+          "end_ms": 22000,
+          "score": 2.95
+        },
+        {
+          "start_ms": 22000,
+          "end_ms": 24000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 24000,
+          "end_ms": 26000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 26000,
+          "end_ms": 28000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 28000,
+          "end_ms": 30000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 30000,
+          "end_ms": 32000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 32000,
+          "end_ms": 34000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 34000,
+          "end_ms": 36000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 36000,
+          "end_ms": 38000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 38000,
+          "end_ms": 40000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 40000,
+          "end_ms": 42000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 42000,
+          "end_ms": 44000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 44000,
+          "end_ms": 46000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 46000,
+          "end_ms": 48000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 48000,
+          "end_ms": 50000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 50000,
+          "end_ms": 52000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 52000,
+          "end_ms": 54000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 54000,
+          "end_ms": 56000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 56000,
+          "end_ms": 58000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 58000,
+          "end_ms": 60000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 60000,
+          "end_ms": 62000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 62000,
+          "end_ms": 64000,
+          "score": 2.55
+        },
+        {
+          "start_ms": 64000,
+          "end_ms": 66000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 66000,
+          "end_ms": 68000,
+          "score": 3.1
+        },
+        {
+          "start_ms": 68000,
+          "end_ms": 70000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 70000,
+          "end_ms": 72000,
+          "score": 2.95
+        },
+        {
+          "start_ms": 72000,
+          "end_ms": 74000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 74000,
+          "end_ms": 76000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 76000,
+          "end_ms": 78000,
+          "score": 2.6
+        },
+        {
+          "start_ms": 78000,
+          "end_ms": 80000,
+          "score": 2.5
+        },
+        {
+          "start_ms": 80000,
+          "end_ms": 82000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 82000,
+          "end_ms": 84000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 84000,
+          "end_ms": 86000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 86000,
+          "end_ms": 88000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 88000,
+          "end_ms": 90000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 90000,
+          "end_ms": 92000,
+          "score": 1.25
+        },
+        {
+          "start_ms": 92000,
+          "end_ms": 94000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 94000,
+          "end_ms": 96000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 96000,
+          "end_ms": 98000,
+          "score": 1.2
+        },
+        {
+          "start_ms": 98000,
+          "end_ms": 100000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 100000,
+          "end_ms": 102000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 102000,
+          "end_ms": 104000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 104000,
+          "end_ms": 106000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 106000,
+          "end_ms": 108000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 108000,
+          "end_ms": 110000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 110000,
+          "end_ms": 112000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 112000,
+          "end_ms": 114000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 114000,
+          "end_ms": 116000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 116000,
+          "end_ms": 118000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 118000,
+          "end_ms": 120000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 120000,
+          "end_ms": 122000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 122000,
+          "end_ms": 124000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 124000,
+          "end_ms": 126000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 126000,
+          "end_ms": 128000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 128000,
+          "end_ms": 130000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 130000,
+          "end_ms": 132000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 132000,
+          "end_ms": 134000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 134000,
+          "end_ms": 136000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 136000,
+          "end_ms": 138000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 138000,
+          "end_ms": 140000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 140000,
+          "end_ms": 142000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 142000,
+          "end_ms": 144000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 144000,
+          "end_ms": 146000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 146000,
+          "end_ms": 148000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 148000,
+          "end_ms": 150000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 150000,
+          "end_ms": 152000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 152000,
+          "end_ms": 154000,
+          "score": 2.35
+        },
+        {
+          "start_ms": 154000,
+          "end_ms": 156000,
+          "score": 2.6
+        },
+        {
+          "start_ms": 156000,
+          "end_ms": 158000,
+          "score": 2.5
+        },
+        {
+          "start_ms": 158000,
+          "end_ms": 160000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 160000,
+          "end_ms": 162000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 162000,
+          "end_ms": 164000,
+          "score": 2.5
+        },
+        {
+          "start_ms": 164000,
+          "end_ms": 166000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 166000,
+          "end_ms": 168000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 168000,
+          "end_ms": 170000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 170000,
+          "end_ms": 172000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 172000,
+          "end_ms": 174000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 174000,
+          "end_ms": 176000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 176000,
+          "end_ms": 178000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 178000,
+          "end_ms": 180000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 180000,
+          "end_ms": 182000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 182000,
+          "end_ms": 184000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 184000,
+          "end_ms": 186000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 186000,
+          "end_ms": 188000,
+          "score": 1.25
+        },
+        {
+          "start_ms": 188000,
+          "end_ms": 190000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 190000,
+          "end_ms": 191000,
+          "score": 1.4
+        }
+      ],
+      "metadata": {
+        "category": "MS",
+        "title": "Saigon Sandwich - Vietnamese Sandwiches in San Francisco CA",
+        "judges": 20,
+        "interval_ms": 2000
+      }
+    },
+    {
+      "id": "tvsum:91IHQYk1IQM",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\91IHQYk1IQM.mp4",
+      "duration_ms": 110000,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 4000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 4000,
+          "end_ms": 6000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 6000,
+          "end_ms": 8000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 8000,
+          "end_ms": 10000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 12000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 12000,
+          "end_ms": 14000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 14000,
+          "end_ms": 16000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 16000,
+          "end_ms": 18000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 18000,
+          "end_ms": 20000,
+          "score": 2.55
+        },
+        {
+          "start_ms": 20000,
+          "end_ms": 22000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 22000,
+          "end_ms": 24000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 24000,
+          "end_ms": 26000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 26000,
+          "end_ms": 28000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 28000,
+          "end_ms": 30000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 30000,
+          "end_ms": 32000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 32000,
+          "end_ms": 34000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 34000,
+          "end_ms": 36000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 36000,
+          "end_ms": 38000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 38000,
+          "end_ms": 40000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 40000,
+          "end_ms": 42000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 42000,
+          "end_ms": 44000,
+          "score": 3.45
+        },
+        {
+          "start_ms": 44000,
+          "end_ms": 46000,
+          "score": 2.85
+        },
+        {
+          "start_ms": 46000,
+          "end_ms": 48000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 48000,
+          "end_ms": 50000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 50000,
+          "end_ms": 52000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 52000,
+          "end_ms": 54000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 54000,
+          "end_ms": 56000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 56000,
+          "end_ms": 58000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 58000,
+          "end_ms": 60000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 60000,
+          "end_ms": 62000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 62000,
+          "end_ms": 64000,
+          "score": 2.5
+        },
+        {
+          "start_ms": 64000,
+          "end_ms": 66000,
+          "score": 2.95
+        },
+        {
+          "start_ms": 66000,
+          "end_ms": 68000,
+          "score": 2.25
+        },
+        {
+          "start_ms": 68000,
+          "end_ms": 70000,
+          "score": 2.25
+        },
+        {
+          "start_ms": 70000,
+          "end_ms": 72000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 72000,
+          "end_ms": 74000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 74000,
+          "end_ms": 76000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 76000,
+          "end_ms": 78000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 78000,
+          "end_ms": 80000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 80000,
+          "end_ms": 82000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 82000,
+          "end_ms": 84000,
+          "score": 3.25
+        },
+        {
+          "start_ms": 84000,
+          "end_ms": 86000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 86000,
+          "end_ms": 88000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 88000,
+          "end_ms": 90000,
+          "score": 2.25
+        },
+        {
+          "start_ms": 90000,
+          "end_ms": 92000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 92000,
+          "end_ms": 94000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 94000,
+          "end_ms": 96000,
+          "score": 1.25
+        },
+        {
+          "start_ms": 96000,
+          "end_ms": 98000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 98000,
+          "end_ms": 100000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 100000,
+          "end_ms": 102000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 102000,
+          "end_ms": 104000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 104000,
+          "end_ms": 106000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 106000,
+          "end_ms": 108000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 108000,
+          "end_ms": 110000,
+          "score": 1.9
+        }
+      ],
+      "metadata": {
+        "category": "PR",
+        "title": "Chinese New Year Parade 2012 New York City Chinatown",
+        "judges": 20,
+        "interval_ms": 2000
+      }
+    },
+    {
+      "id": "tvsum:_xMr-HKMfVA",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\_xMr-HKMfVA.mp4",
+      "duration_ms": 149000,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 4000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 4000,
+          "end_ms": 6000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 6000,
+          "end_ms": 8000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 8000,
+          "end_ms": 10000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 12000,
+          "score": 1.2
+        },
+        {
+          "start_ms": 12000,
+          "end_ms": 14000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 14000,
+          "end_ms": 16000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 16000,
+          "end_ms": 18000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 18000,
+          "end_ms": 20000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 20000,
+          "end_ms": 22000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 22000,
+          "end_ms": 24000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 24000,
+          "end_ms": 26000,
+          "score": 2.25
+        },
+        {
+          "start_ms": 26000,
+          "end_ms": 28000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 28000,
+          "end_ms": 30000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 30000,
+          "end_ms": 32000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 32000,
+          "end_ms": 34000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 34000,
+          "end_ms": 36000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 36000,
+          "end_ms": 38000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 38000,
+          "end_ms": 40000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 40000,
+          "end_ms": 42000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 42000,
+          "end_ms": 44000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 44000,
+          "end_ms": 46000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 46000,
+          "end_ms": 48000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 48000,
+          "end_ms": 50000,
+          "score": 2.25
+        },
+        {
+          "start_ms": 50000,
+          "end_ms": 52000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 52000,
+          "end_ms": 54000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 54000,
+          "end_ms": 56000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 56000,
+          "end_ms": 58000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 58000,
+          "end_ms": 60000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 60000,
+          "end_ms": 62000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 62000,
+          "end_ms": 64000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 64000,
+          "end_ms": 66000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 66000,
+          "end_ms": 68000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 68000,
+          "end_ms": 70000,
+          "score": 2.55
+        },
+        {
+          "start_ms": 70000,
+          "end_ms": 72000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 72000,
+          "end_ms": 74000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 74000,
+          "end_ms": 76000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 76000,
+          "end_ms": 78000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 78000,
+          "end_ms": 80000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 80000,
+          "end_ms": 82000,
+          "score": 3.5
+        },
+        {
+          "start_ms": 82000,
+          "end_ms": 84000,
+          "score": 2.6
+        },
+        {
+          "start_ms": 84000,
+          "end_ms": 86000,
+          "score": 3.7
+        },
+        {
+          "start_ms": 86000,
+          "end_ms": 88000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 88000,
+          "end_ms": 90000,
+          "score": 3.05
+        },
+        {
+          "start_ms": 90000,
+          "end_ms": 92000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 92000,
+          "end_ms": 94000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 94000,
+          "end_ms": 96000,
+          "score": 3.05
+        },
+        {
+          "start_ms": 96000,
+          "end_ms": 98000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 98000,
+          "end_ms": 100000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 100000,
+          "end_ms": 102000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 102000,
+          "end_ms": 104000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 104000,
+          "end_ms": 106000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 106000,
+          "end_ms": 108000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 108000,
+          "end_ms": 110000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 110000,
+          "end_ms": 112000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 112000,
+          "end_ms": 114000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 114000,
+          "end_ms": 116000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 116000,
+          "end_ms": 118000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 118000,
+          "end_ms": 120000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 120000,
+          "end_ms": 122000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 122000,
+          "end_ms": 124000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 124000,
+          "end_ms": 126000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 126000,
+          "end_ms": 128000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 128000,
+          "end_ms": 130000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 130000,
+          "end_ms": 132000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 132000,
+          "end_ms": 134000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 134000,
+          "end_ms": 136000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 136000,
+          "end_ms": 138000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 138000,
+          "end_ms": 140000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 140000,
+          "end_ms": 142000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 142000,
+          "end_ms": 144000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 144000,
+          "end_ms": 146000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 146000,
+          "end_ms": 148000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 148000,
+          "end_ms": 149000,
+          "score": 1.3
+        }
+      ],
+      "metadata": {
+        "category": "FM",
+        "title": "CASACL - Flashmob in Copenhagen underground - Peer Gynt",
+        "judges": 20,
+        "interval_ms": 2000
+      }
+    },
+    {
+      "id": "clipshots:1t9hqz2sqqc",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\1t9hqz2sqqc.mp4",
+      "duration_ms": 142520,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          0,
+          40
+        ],
+        [
+          120,
+          160
+        ],
+        [
+          12440,
+          13360
+        ],
+        [
+          20080,
+          20120
+        ],
+        [
+          25400,
+          25440
+        ],
+        [
+          53400,
+          53560
+        ],
+        [
+          57480,
+          57520
+        ],
+        [
+          61960,
+          62000
+        ],
+        [
+          63720,
+          63760
+        ],
+        [
+          67400,
+          67440
+        ],
+        [
+          70200,
+          70240
+        ],
+        [
+          72160,
+          72200
+        ],
+        [
+          77240,
+          77280
+        ],
+        [
+          81040,
+          81080
+        ],
+        [
+          83960,
+          84960
+        ],
+        [
+          89200,
+          90160
+        ],
+        [
+          93200,
+          93240
+        ],
+        [
+          98240,
+          98280
+        ],
+        [
+          103240,
+          103280
+        ],
+        [
+          107360,
+          107400
+        ],
+        [
+          110520,
+          110560
+        ],
+        [
+          113680,
+          113720
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 25.0,
+        "annotated_frames": 3561,
+        "measured_frames": 3563
+      }
+    },
+    {
+      "id": "clipshots:3jZaLtv90lk",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\3jZaLtv90lk.mp4",
+      "duration_ms": 281704,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [],
+      "importance": [],
+      "metadata": {
+        "fps": 29.970033517014144,
+        "annotated_frames": 8441,
+        "measured_frames": 8441
+      }
+    },
+    {
+      "id": "clipshots:3k2K28A_4qI",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\3k2K28A_4qI.mp4",
+      "duration_ms": 169694,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          1134,
+          2502
+        ],
+        [
+          43310,
+          43343
+        ],
+        [
+          68301,
+          68335
+        ],
+        [
+          85619,
+          85752
+        ],
+        [
+          91157,
+          91191
+        ],
+        [
+          108108,
+          108141
+        ],
+        [
+          114180,
+          114214
+        ],
+        [
+          150717,
+          150817
+        ],
+        [
+          159325,
+          159359
+        ],
+        [
+          164197,
+          164297
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 29.970118289139442,
+        "annotated_frames": 5085,
+        "measured_frames": 5085
+      }
+    },
+    {
+      "id": "clipshots:4aT37IcW9M0",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\4aT37IcW9M0.mp4",
+      "duration_ms": 241054,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          4520,
+          5000
+        ],
+        [
+          10920,
+          10960
+        ],
+        [
+          14880,
+          15240
+        ],
+        [
+          28640,
+          28680
+        ],
+        [
+          35160,
+          35200
+        ],
+        [
+          44560,
+          44600
+        ],
+        [
+          47960,
+          48000
+        ],
+        [
+          57880,
+          58360
+        ],
+        [
+          69720,
+          69760
+        ],
+        [
+          78560,
+          78600
+        ],
+        [
+          101840,
+          102320
+        ],
+        [
+          130680,
+          130720
+        ],
+        [
+          148000,
+          148040
+        ],
+        [
+          152240,
+          152680
+        ],
+        [
+          165960,
+          166000
+        ],
+        [
+          188720,
+          188760
+        ],
+        [
+          195360,
+          195400
+        ],
+        [
+          205560,
+          205600
+        ],
+        [
+          214560,
+          215000
+        ],
+        [
+          225520,
+          225840
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 25.0,
+        "annotated_frames": 6026,
+        "measured_frames": 6026
+      }
+    },
+    {
+      "id": "clipshots:5NenSU7d3F8",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\5NenSU7d3F8.mp4",
+      "duration_ms": 162424,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [],
+      "importance": [],
+      "metadata": {
+        "fps": 30.0,
+        "annotated_frames": 4865,
+        "measured_frames": 4866
+      }
+    },
+    {
+      "id": "clipshots:5p14VILXiJA",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\5p14VILXiJA.mp4",
+      "duration_ms": 173128,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          171440,
+          172640
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 25.0,
+        "annotated_frames": 4327,
+        "measured_frames": 4327
+      }
+    },
+    {
+      "id": "clipshots:5T0JY0HjDvQ",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\5T0JY0HjDvQ.mp4",
+      "duration_ms": 140458,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          11033,
+          11067
+        ],
+        [
+          34833,
+          34867
+        ],
+        [
+          96800,
+          96833
+        ],
+        [
+          108233,
+          108266
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 30.000071259076623,
+        "annotated_frames": 4210,
+        "measured_frames": 4210
+      }
+    },
+    {
+      "id": "clipshots:7gk9tckdaHQ",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\7gk9tckdaHQ.mp4",
+      "duration_ms": 448474,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [],
+      "importance": [],
+      "metadata": {
+        "fps": 29.970096800736766,
+        "annotated_frames": 13440,
+        "measured_frames": 13440
+      }
+    },
+    {
+      "id": "clipshots:96tC5yBKQwk",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\96tC5yBKQwk.mp4",
+      "duration_ms": 344054,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          255040,
+          255920
+        ],
+        [
+          256760,
+          257280
+        ],
+        [
+          310120,
+          310640
+        ],
+        [
+          328440,
+          328480
+        ],
+        [
+          328600,
+          328640
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 25.0,
+        "annotated_frames": 8600,
+        "measured_frames": 8601
+      }
+    },
+    {
+      "id": "clipshots:9wPVikZQw3Y",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\9wPVikZQw3Y.mp4",
+      "duration_ms": 192614,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          567,
+          601
+        ],
+        [
+          25859,
+          26226
+        ],
+        [
+          29529,
+          29563
+        ],
+        [
+          40374,
+          40407
+        ],
+        [
+          43844,
+          43877
+        ],
+        [
+          47147,
+          47180
+        ],
+        [
+          62229,
+          62262
+        ],
+        [
+          65399,
+          65432
+        ],
+        [
+          74741,
+          74775
+        ],
+        [
+          78245,
+          78278
+        ],
+        [
+          95428,
+          95462
+        ],
+        [
+          101201,
+          101234
+        ],
+        [
+          111611,
+          111645
+        ],
+        [
+          118018,
+          118051
+        ],
+        [
+          125692,
+          125725
+        ],
+        [
+          129129,
+          129162
+        ],
+        [
+          134634,
+          134668
+        ],
+        [
+          152419,
+          152452
+        ],
+        [
+          155922,
+          155955
+        ],
+        [
+          161227,
+          161261
+        ],
+        [
+          174574,
+          174607
+        ],
+        [
+          181281,
+          181314
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 29.970092215668355,
+        "annotated_frames": 5772,
+        "measured_frames": 5772
+      }
+    },
+    {
+      "id": "clipshots:_eRAEilK_n4",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\_eRAEilK_n4.mp4",
+      "duration_ms": 232694,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          1251,
+          1460
+        ],
+        [
+          7049,
+          7633
+        ],
+        [
+          35702,
+          36245
+        ],
+        [
+          39039,
+          40624
+        ],
+        [
+          48799,
+          50092
+        ],
+        [
+          53345,
+          53637
+        ],
+        [
+          62229,
+          62938
+        ],
+        [
+          70487,
+          71071
+        ],
+        [
+          77035,
+          77786
+        ],
+        [
+          83750,
+          84084
+        ],
+        [
+          84167,
+          84543
+        ],
+        [
+          87087,
+          88005
+        ],
+        [
+          93552,
+          94386
+        ],
+        [
+          95887,
+          96513
+        ],
+        [
+          98890,
+          99474
+        ],
+        [
+          100600,
+          101310
+        ],
+        [
+          102853,
+          103812
+        ],
+        [
+          115073,
+          115949
+        ],
+        [
+          124249,
+          125000
+        ],
+        [
+          133091,
+          133759
+        ],
+        [
+          138930,
+          139389
+        ],
+        [
+          142434,
+          142893
+        ],
+        [
+          143101,
+          143643
+        ],
+        [
+          148857,
+          149733
+        ],
+        [
+          156406,
+          157324
+        ],
+        [
+          164122,
+          164790
+        ],
+        [
+          165290,
+          165791
+        ],
+        [
+          177094,
+          177511
+        ],
+        [
+          180972,
+          181640
+        ],
+        [
+          190524,
+          191191
+        ],
+        [
+          201284,
+          203120
+        ],
+        [
+          206289,
+          207874
+        ],
+        [
+          210669,
+          211169
+        ],
+        [
+          211670,
+          212045
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 23.976032564077215,
+        "annotated_frames": 5578,
+        "measured_frames": 5578
+      }
+    },
+    {
+      "id": "clipshots:b2XcwIYAztY",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\b2XcwIYAztY.mp4",
+      "duration_ms": 165934,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          165039,
+          165498
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 23.976132356929753,
+        "annotated_frames": 3977,
+        "measured_frames": 3978
+      }
+    },
+    {
+      "id": "clipshots:BAgcx7pSWQo",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\BAgcx7pSWQo.mp4",
+      "duration_ms": 366968,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          35494,
+          35535
+        ],
+        [
+          72614,
+          72656
+        ],
+        [
+          102352,
+          102394
+        ],
+        [
+          108984,
+          109025
+        ],
+        [
+          122539,
+          122580
+        ],
+        [
+          124374,
+          124416
+        ],
+        [
+          128253,
+          128294
+        ],
+        [
+          169002,
+          169043
+        ],
+        [
+          178469,
+          179053
+        ],
+        [
+          179137,
+          179178
+        ],
+        [
+          183016,
+          183057
+        ],
+        [
+          206330,
+          206372
+        ],
+        [
+          301634,
+          301675
+        ],
+        [
+          305638,
+          305679
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 23.976102936166384,
+        "annotated_frames": 8798,
+        "measured_frames": 8797
+      }
+    },
+    {
+      "id": "clipshots:hUoDOxOxK1I",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\hUoDOxOxK1I.mp4",
+      "duration_ms": 299834,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          93680,
+          94560
+        ],
+        [
+          99200,
+          99720
+        ],
+        [
+          101960,
+          102760
+        ],
+        [
+          119800,
+          119840
+        ],
+        [
+          121800,
+          121840
+        ],
+        [
+          136520,
+          136560
+        ],
+        [
+          144720,
+          144760
+        ],
+        [
+          146440,
+          146480
+        ],
+        [
+          158440,
+          158480
+        ],
+        [
+          162280,
+          162320
+        ],
+        [
+          162720,
+          162760
+        ],
+        [
+          166640,
+          166680
+        ],
+        [
+          167240,
+          167280
+        ],
+        [
+          178120,
+          178160
+        ],
+        [
+          178800,
+          178840
+        ],
+        [
+          181880,
+          181920
+        ],
+        [
+          183680,
+          183720
+        ],
+        [
+          185840,
+          185880
+        ],
+        [
+          199760,
+          199800
+        ],
+        [
+          204440,
+          204480
+        ],
+        [
+          211000,
+          211040
+        ],
+        [
+          229840,
+          229880
+        ],
+        [
+          232280,
+          232320
+        ],
+        [
+          244880,
+          244920
+        ],
+        [
+          249120,
+          249160
+        ],
+        [
+          254440,
+          254480
+        ],
+        [
+          260720,
+          260760
+        ],
+        [
+          263400,
+          263440
+        ],
+        [
+          273040,
+          273080
+        ],
+        [
+          274000,
+          274040
+        ],
+        [
+          277480,
+          277520
+        ],
+        [
+          279680,
+          279720
+        ],
+        [
+          281280,
+          281320
+        ],
+        [
+          283400,
+          283440
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 25.0,
+        "annotated_frames": 7494,
+        "measured_frames": 7495
+      }
+    },
+    {
+      "id": "clipshots:KIS81JBoNNo",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\KIS81JBoNNo.mp4",
+      "duration_ms": 154575,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [],
+      "importance": [],
+      "metadata": {
+        "fps": 30.000194176014084,
+        "annotated_frames": 4633,
+        "measured_frames": 4635
+      }
+    },
+    {
+      "id": "clipshots:kZzD4YR6Qak",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\kZzD4YR6Qak.mp4",
+      "duration_ms": 299932,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [],
+      "importance": [],
+      "metadata": {
+        "fps": 30.0,
+        "annotated_frames": 8996,
+        "measured_frames": 8996
+      }
+    },
+    {
+      "id": "clipshots:M9kQt8K7p0E",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\M9kQt8K7p0E.mp4",
+      "duration_ms": 208492,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [],
+      "importance": [],
+      "metadata": {
+        "fps": 25.0,
+        "annotated_frames": 5211,
+        "measured_frames": 5211
+      }
+    },
+    {
+      "id": "clipshots:NDikVpgzFrc",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\NDikVpgzFrc.mp4",
+      "duration_ms": 231387,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          5333,
+          5417
+        ],
+        [
+          11333,
+          11417
+        ],
+        [
+          13667,
+          13750
+        ],
+        [
+          17167,
+          17250
+        ],
+        [
+          19917,
+          20000
+        ],
+        [
+          23083,
+          23167
+        ],
+        [
+          30250,
+          30333
+        ],
+        [
+          44250,
+          44333
+        ],
+        [
+          47666,
+          47750
+        ],
+        [
+          52666,
+          52750
+        ],
+        [
+          58666,
+          58750
+        ],
+        [
+          91750,
+          91833
+        ],
+        [
+          94666,
+          94750
+        ],
+        [
+          101500,
+          101583
+        ],
+        [
+          105833,
+          105916
+        ],
+        [
+          112416,
+          113750
+        ],
+        [
+          114333,
+          116916
+        ],
+        [
+          118499,
+          119249
+        ],
+        [
+          126416,
+          129499
+        ],
+        [
+          142666,
+          142749
+        ],
+        [
+          174499,
+          174583
+        ],
+        [
+          177833,
+          177916
+        ],
+        [
+          186666,
+          186749
+        ],
+        [
+          201666,
+          201749
+        ],
+        [
+          204666,
+          204749
+        ],
+        [
+          209082,
+          209166
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 12.000051892116291,
+        "annotated_frames": 2775,
+        "measured_frames": 2775
+      }
+    },
+    {
+      "id": "clipshots:oexAVKQVsro",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\oexAVKQVsro.mp4",
+      "duration_ms": 141781,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [
+        [
+          5933,
+          6300
+        ],
+        [
+          8633,
+          9000
+        ],
+        [
+          15000,
+          15467
+        ],
+        [
+          16733,
+          17533
+        ],
+        [
+          19767,
+          20633
+        ],
+        [
+          22667,
+          23533
+        ],
+        [
+          38533,
+          39367
+        ],
+        [
+          108000,
+          108033
+        ],
+        [
+          140100,
+          140766
+        ]
+      ],
+      "importance": [],
+      "metadata": {
+        "fps": 30.00007055519886,
+        "annotated_frames": 4252,
+        "measured_frames": 4252
+      }
+    },
+    {
+      "id": "clipshots:SpWWfq530wg",
+      "dataset": "ClipShots",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\clipshots\\SpWWfq530wg.mp4",
+      "duration_ms": 486597,
+      "tasks": [
+        "boundary"
+      ],
+      "boundaries_ms": [],
+      "importance": [],
+      "metadata": {
+        "fps": 30.000020553590403,
+        "annotated_frames": 14595,
+        "measured_frames": 14596
+      }
+    }
+  ]
+}

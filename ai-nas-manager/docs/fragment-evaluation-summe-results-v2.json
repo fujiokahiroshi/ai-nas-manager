@@ -1,0 +1,154 @@
+{
+  "algorithm": "online-multisignal-fused-v2",
+  "tolerance_ms": 1000,
+  "importance_threshold": null,
+  "importance_fraction": 0.15,
+  "datasets": {
+    "SumMe": {
+      "items": 5,
+      "boundary": null,
+      "importance": {
+        "true_positive": 9,
+        "false_positive": 25,
+        "false_negative": 19,
+        "precision": 0.264706,
+        "recall": 0.321429,
+        "f1": 0.290323
+      },
+      "duration_hours": 0.089335,
+      "false_markers_per_hour": 279.846
+    }
+  },
+  "overall": {
+    "items": 5,
+    "boundary": null,
+    "importance": {
+      "true_positive": 9,
+      "false_positive": 25,
+      "false_negative": 19,
+      "precision": 0.264706,
+      "recall": 0.321429,
+      "f1": 0.290323
+    },
+    "duration_hours": 0.089335,
+    "false_markers_per_hour": 279.846
+  },
+  "missing": [],
+  "results": [
+    {
+      "id": "summe:jumps",
+      "dataset": "SumMe",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\summe\\summe\\jumps.mp4",
+      "tasks": [
+        "importance"
+      ],
+      "duration_ms": 38000,
+      "predicted_boundaries": 5,
+      "predicted_markers": 6,
+      "boundary": null,
+      "importance": {
+        "true_positive": 1,
+        "false_positive": 5,
+        "false_negative": 4,
+        "precision": 0.166667,
+        "recall": 0.2,
+        "f1": 0.181818
+      },
+      "false_markers_per_hour": 473.684,
+      "processing_seconds": 0.799648,
+      "realtime_factor": 0.021324
+    },
+    {
+      "id": "summe:fire_domino",
+      "dataset": "SumMe",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\summe\\summe\\fire_domino.mp4",
+      "tasks": [
+        "importance"
+      ],
+      "duration_ms": 53733,
+      "predicted_boundaries": 6,
+      "predicted_markers": 12,
+      "boundary": null,
+      "importance": {
+        "true_positive": 3,
+        "false_positive": 9,
+        "false_negative": 3,
+        "precision": 0.25,
+        "recall": 0.5,
+        "f1": 0.333333
+      },
+      "false_markers_per_hour": 602.981,
+      "processing_seconds": 0.957019,
+      "realtime_factor": 0.017888
+    },
+    {
+      "id": "summe:st_maarten_landing",
+      "dataset": "SumMe",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\summe\\summe\\st_maarten_landing.mp4",
+      "tasks": [
+        "importance"
+      ],
+      "duration_ms": 70040,
+      "predicted_boundaries": 4,
+      "predicted_markers": 5,
+      "boundary": null,
+      "importance": {
+        "true_positive": 2,
+        "false_positive": 3,
+        "false_negative": 0,
+        "precision": 0.4,
+        "recall": 1.0,
+        "f1": 0.571429
+      },
+      "false_markers_per_hour": 154.198,
+      "processing_seconds": 1.234304,
+      "realtime_factor": 0.01776
+    },
+    {
+      "id": "summe:scuba",
+      "dataset": "SumMe",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\summe\\summe\\scuba.mp4",
+      "tasks": [
+        "importance"
+      ],
+      "duration_ms": 74033,
+      "predicted_boundaries": 5,
+      "predicted_markers": 2,
+      "boundary": null,
+      "importance": {
+        "true_positive": 1,
+        "false_positive": 1,
+        "false_negative": 9,
+        "precision": 0.5,
+        "recall": 0.1,
+        "f1": 0.166667
+      },
+      "false_markers_per_hour": 48.627,
+      "processing_seconds": 2.014017,
+      "realtime_factor": 0.027402
+    },
+    {
+      "id": "summe:cooking",
+      "dataset": "SumMe",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\summe\\summe\\cooking.mp4",
+      "tasks": [
+        "importance"
+      ],
+      "duration_ms": 85800,
+      "predicted_boundaries": 7,
+      "predicted_markers": 9,
+      "boundary": null,
+      "importance": {
+        "true_positive": 2,
+        "false_positive": 7,
+        "false_negative": 3,
+        "precision": 0.222222,
+        "recall": 0.4,
+        "f1": 0.285714
+      },
+      "false_markers_per_hour": 293.706,
+      "processing_seconds": 1.467137,
+      "realtime_factor": 0.017159
+    }
+  ]
+}

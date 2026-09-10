@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "status": "awaiting_recordings_and_annotations",
+  "recordings": [
+    {
+      "id": "custom:fixed-10min",
+      "file": "media/evaluation/videos/custom/fixed-10min.mp4",
+      "target_duration_ms": 600000,
+      "capture": "fixed smartphone camera",
+      "annotations": []
+    },
+    {
+      "id": "custom:handheld-10min",
+      "file": "media/evaluation/videos/custom/handheld-10min.mp4",
+      "target_duration_ms": 600000,
+      "capture": "handheld smartphone camera",
+      "annotations": []
+    },
+    {
+      "id": "custom:multisignal-10min",
+      "file": "media/evaluation/videos/custom/multisignal-10min.mp4",
+      "target_duration_ms": 600000,
+      "capture": "conversation, claps, impact sounds, visible subtitles, and manual markers",
+      "annotations": []
+    }
+  ],
+  "annotation_example": {
+    "start_ms": 123000,
+    "end_ms": 127000,
+    "labels": ["clap", "important"],
+    "manual_marker_ms": 124200,
+    "notes": "one event per interval; timestamps use the start of the video"
+  },
+  "required_measurements": [
+    "important-event precision recall and F1",
+    "false semantic markers per hour",
+    "manual-marker acceptance and latency",
+    "fragment-open to Gemma-text latency",
+    "subtitle contribution",
+    "Gemma requests per hour"
+  ]
+}

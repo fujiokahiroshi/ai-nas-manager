@@ -13,7 +13,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from live_semantics import FragmentEvidence, LatestEvidenceQueue, LMStudioVisionClient
 from object_detection import YoloXOnnxDetector, object_change_score
-from online_fragmentation import GrayFrame, EventKind, OnlineFragmentConfig, OnlineMultiSignalFragmenter
+from online_fragmentation import GrayFrame, EventKind, OnlineMultiSignalFragmenter, fragment_config
+from scene_segmentation import OnlineHybridSceneSegmenter, SceneSample, pelt_boundaries
 
 
 def main() -> None:
@@ -25,6 +26,8 @@ def main() -> None:
     parser.add_argument("--fps", type=float, default=2.0)
     parser.add_argument("--model", default="gemma4-12b-qat")
     parser.add_argument("--lm-studio-url", default="http://127.0.0.1:1234")
+    parser.add_argument("--pelt-penalty", type=float, default=0.35)
+    parser.add_argument("--pelt-min-scene-seconds", type=float, default=3.0)
     parser.add_argument("--output", type=Path, default=Path("docs/live-gemma-experiment.json"))
     args = parser.parse_args()
 
@@ -33,13 +36,17 @@ def main() -> None:
     detector = YoloXOnnxDetector(args.detector, class_ids={0, 1, 2, 3, 5, 7})
     fragmenter = OnlineMultiSignalFragmenter(
         args.source.stem,
-        OnlineFragmentConfig(min_update_ms=1_500),
+        fragment_config("fused-v2-balanced"),
     )
+    scene_segmenter = OnlineHybridSceneSegmenter(args.source.stem)
     queue = LatestEvidenceQueue(max_fragments=4)
     client = LMStudioVisionClient(base_url=args.lm_studio_url, model=args.model)
     fragment_events: list[dict[str, object]] = []
     inferences: list[dict[str, object]] = []
     failures: list[dict[str, object]] = []
+    scene_events: list[dict[str, object]] = []
+    scene_timestamps_ms: list[int] = []
+    scene_state_vectors: list[tuple[float, ...]] = []
     previous_scene = ""
     start_wall = time.perf_counter()
     stream_ended_wall: float | None = None
@@ -57,6 +64,7 @@ def main() -> None:
                 previous_scene = str(result.get("observation_ja", previous_scene))
                 record = {
                     **result,
+                    "trigger_reason": str(evidence.metadata.get("event", {}).get("reason", "")),
                     "latency_ms": round((completed - started) * 1000, 3),
                     "completed_wall_ms": round((completed - start_wall) * 1000),
                 }
@@ -99,10 +107,32 @@ def main() -> None:
         object_change = object_change_score(previous_detections, detections)
         previous_detections = detections
         gray = cv2.resize(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), (320, 180))
+        gray_frame = GrayFrame(timestamp_ms, 320, 180, gray.tobytes())
         events = fragmenter.process(
-            GrayFrame(timestamp_ms, 320, 180, gray.tobytes()),
+            gray_frame,
             object_change=object_change,
         )
+        signals = fragmenter.last_signals
+        visual_change = max(
+            signals.luma_difference,
+            signals.histogram_difference,
+            signals.edge_difference,
+            signals.changed_pixel_ratio,
+            signals.adaptive_novelty,
+        )
+        scene_events.extend(event.as_dict() for event in scene_segmenter.process(SceneSample(
+            timestamp_ms,
+            visual_change=visual_change,
+            object_change=object_change,
+        )))
+        histogram = cv2.calcHist([gray], [0], None, [16], [0, 256]).reshape(-1)
+        histogram_total = max(1.0, float(histogram.sum()))
+        object_groups = ("person", "two_wheeler", "road_vehicle")
+        scene_state_vectors.append(tuple(float(value) / histogram_total for value in histogram) + tuple(
+            min(1.0, sum(item.trigger_group == group for item in detections) / 5.0)
+            for group in object_groups
+        ))
+        scene_timestamps_ms.append(timestamp_ms)
         for event in events:
             event_record = event.as_dict()
             event_record["detected_objects"] = [item.as_dict() for item in detections]
@@ -129,6 +159,12 @@ def main() -> None:
         decoded_index += 1
     capture.release()
     fragment_events.extend(event.as_dict() for event in fragmenter.finish())
+    scene_events.extend(event.as_dict() for event in scene_segmenter.finish())
+    pelt_indices = pelt_boundaries(
+        scene_state_vectors,
+        penalty=args.pelt_penalty,
+        min_size=max(2, round(args.fps * args.pelt_min_scene_seconds)),
+    )
     stream_ended_wall = time.perf_counter()
     queue.close()
     worker_thread.join()
@@ -143,6 +179,13 @@ def main() -> None:
         "queue_replaced": queue.replaced,
         "queue_dropped": queue.dropped,
         "fragment_events": fragment_events,
+        "scene_segmentation": {
+            "online_algorithm": "cusum-bocpd-semantic-veto-v1",
+            "online_boundaries": scene_events,
+            "offline_algorithm": "pelt-luma-object-state-v1",
+            "pelt_penalty": args.pelt_penalty,
+            "pelt_boundaries_ms": [scene_timestamps_ms[index] for index in pelt_indices],
+        },
         "inferences": inferences,
         "failures": failures,
     }
@@ -153,6 +196,8 @@ def main() -> None:
         "during_stream": sum(bool(item["completed_during_stream"]) for item in inferences),
         "queue_replaced": queue.replaced,
         "failures": len(failures),
+        "online_scene_boundaries": len(scene_events),
+        "pelt_scene_boundaries": len(pelt_indices),
         "result": str(args.output.resolve()),
     }, ensure_ascii=False), flush=True)
 

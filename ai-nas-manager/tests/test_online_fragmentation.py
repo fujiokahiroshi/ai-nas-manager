@@ -111,3 +111,54 @@ def test_discontinuity_closes_and_next_frame_reopens() -> None:
     assert closed[0].observed_ms == 750
     assert reopened[0].kind is EventKind.OPEN
     assert reopened[0].fragment_id != opened[0].fragment_id
+
+
+def test_fused_profile_does_not_repeat_a_sustained_visual_update() -> None:
+    fragmenter = OnlineMultiSignalFragmenter(
+        "camera",
+        OnlineFragmentConfig(
+            fusion_enabled=True,
+            open_on_start=True,
+            hard_cut_threshold=1.0,
+            visual_trigger_threshold=0.05,
+            visual_strong_threshold=0.05,
+            visual_release_threshold=0.01,
+            min_update_ms=500,
+        ),
+    )
+    events = []
+    events += fragmenter.process(frame(0, 0))
+    events += fragmenter.process(frame(500, 80))
+    events += fragmenter.process(frame(1_000, 160))
+    events += fragmenter.process(frame(1_500, 240))
+    semantic = [event for event in events if event.reason == "strong_visual_change"]
+    assert len(semantic) == 1
+
+
+def test_fused_profile_accepts_two_moderate_signals() -> None:
+    fragmenter = OnlineMultiSignalFragmenter(
+        "camera",
+        OnlineFragmentConfig(
+            fusion_enabled=True,
+            open_on_start=False,
+            hard_cut_threshold=1.0,
+            visual_trigger_threshold=0.10,
+            visual_strong_threshold=0.90,
+            object_trigger_threshold=0.50,
+        ),
+    )
+    assert fragmenter.process(frame(0, 0)) == []
+    events = fragmenter.process(frame(500, 50), object_change=0.7)
+    assert len(events) == 1
+    assert events[0].reason == "fused_change"
+
+
+def test_fused_profile_ignores_loud_tonal_audio_as_impact() -> None:
+    fragmenter = OnlineMultiSignalFragmenter(
+        "audio", OnlineFragmentConfig(fusion_enabled=True, open_on_start=False)
+    )
+    assert fragmenter.process(frame(0, 20)) == []
+    events = fragmenter.process(
+        frame(500, 20), audio_change=0.95, audio_label="voice_or_tonal_activity"
+    )
+    assert events == []

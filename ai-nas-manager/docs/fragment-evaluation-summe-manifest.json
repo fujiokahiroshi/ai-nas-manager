@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "summe:jumps",
+      "dataset": "SumMe",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\summe\\summe\\jumps.mp4",
+      "duration_ms": 38000,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 2069,
+          "end_ms": 3517,
+          "score": 1
+        },
+        {
+          "start_ms": 9062,
+          "end_ms": 9352,
+          "score": 1
+        },
+        {
+          "start_ms": 9683,
+          "end_ms": 10635,
+          "score": 1
+        },
+        {
+          "start_ms": 12083,
+          "end_ms": 15601,
+          "score": 1
+        },
+        {
+          "start_ms": 24456,
+          "end_ms": 24704,
+          "score": 1
+        }
+      ],
+      "importance_selection": "all",
+      "metadata": {
+        "annotation_source": "ETBench evs derived from SumMe",
+        "annotation_index": 16,
+        "annotated_duration_ms": 38333
+      }
+    },
+    {
+      "id": "summe:fire_domino",
+      "dataset": "SumMe",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\summe\\summe\\fire_domino.mp4",
+      "duration_ms": 53733,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 9132,
+          "end_ms": 13206,
+          "score": 1
+        },
+        {
+          "start_ms": 13274,
+          "end_ms": 13375,
+          "score": 1
+        },
+        {
+          "start_ms": 18841,
+          "end_ms": 19860,
+          "score": 1
+        },
+        {
+          "start_ms": 23865,
+          "end_ms": 24612,
+          "score": 1
+        },
+        {
+          "start_ms": 25461,
+          "end_ms": 25733,
+          "score": 1
+        },
+        {
+          "start_ms": 44574,
+          "end_ms": 47357,
+          "score": 1
+        }
+      ],
+      "importance_selection": "all",
+      "metadata": {
+        "annotation_source": "ETBench evs derived from SumMe",
+        "annotation_index": 13,
+        "annotated_duration_ms": 54000
+      }
+    },
+    {
+      "id": "summe:st_maarten_landing",
+      "dataset": "SumMe",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\summe\\summe\\st_maarten_landing.mp4",
+      "duration_ms": 70040,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 25320,
+          "end_ms": 28520,
+          "score": 1
+        },
+        {
+          "start_ms": 48200,
+          "end_ms": 55880,
+          "score": 1
+        }
+      ],
+      "importance_selection": "all",
+      "metadata": {
+        "annotation_source": "ETBench evs derived from SumMe",
+        "annotation_index": 4,
+        "annotated_duration_ms": 70333
+      }
+    },
+    {
+      "id": "summe:scuba",
+      "dataset": "SumMe",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\summe\\summe\\scuba.mp4",
+      "duration_ms": 74033,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 1600,
+          "end_ms": 2333,
+          "score": 1
+        },
+        {
+          "start_ms": 6533,
+          "end_ms": 6900,
+          "score": 1
+        },
+        {
+          "start_ms": 15700,
+          "end_ms": 19167,
+          "score": 1
+        },
+        {
+          "start_ms": 19700,
+          "end_ms": 21567,
+          "score": 1
+        },
+        {
+          "start_ms": 36833,
+          "end_ms": 40400,
+          "score": 1
+        },
+        {
+          "start_ms": 55266,
+          "end_ms": 57833,
+          "score": 1
+        },
+        {
+          "start_ms": 62300,
+          "end_ms": 62633,
+          "score": 1
+        },
+        {
+          "start_ms": 63800,
+          "end_ms": 66100,
+          "score": 1
+        },
+        {
+          "start_ms": 71933,
+          "end_ms": 72200,
+          "score": 1
+        },
+        {
+          "start_ms": 72466,
+          "end_ms": 73866,
+          "score": 1
+        }
+      ],
+      "importance_selection": "all",
+      "metadata": {
+        "annotation_source": "ETBench evs derived from SumMe",
+        "annotation_index": 23,
+        "annotated_duration_ms": 74333
+      }
+    },
+    {
+      "id": "summe:cooking",
+      "dataset": "SumMe",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\summe\\summe\\cooking.mp4",
+      "duration_ms": 85800,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 30968,
+          "end_ms": 31574,
+          "score": 1
+        },
+        {
+          "start_ms": 32920,
+          "end_ms": 39181,
+          "score": 1
+        },
+        {
+          "start_ms": 51838,
+          "end_ms": 54194,
+          "score": 1
+        },
+        {
+          "start_ms": 68130,
+          "end_ms": 69005,
+          "score": 1
+        },
+        {
+          "start_ms": 69072,
+          "end_ms": 74054,
+          "score": 1
+        }
+      ],
+      "importance_selection": "all",
+      "metadata": {
+        "annotation_source": "ETBench evs derived from SumMe",
+        "annotation_index": 24,
+        "annotated_duration_ms": 86167
+      }
+    }
+  ]
+}

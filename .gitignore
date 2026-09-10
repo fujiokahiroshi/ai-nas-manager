@@ -17,3 +17,10 @@ ai-nas-manager/tools/mediamtx/
 ai-nas-manager/tools/*.zip
 ai-nas-manager/docs/.rtsp-runtime/
 ai-nas-manager/media/test_dataset/audio_event_sample.mp4
+ai-nas-manager/media/evaluation/sources/
+ai-nas-manager/media/evaluation/videos/
+ai-nas-manager/media/evaluation/downloads/
+ai-nas-manager/media/evaluation/*.sqlite3
+ai-nas-manager/.pytest_cache/
+ai-nas-manager/.uv-*/
+ai-nas-manager/.testtmp*/

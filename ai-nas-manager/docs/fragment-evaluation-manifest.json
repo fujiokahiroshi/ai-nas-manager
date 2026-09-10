@@ -1,0 +1,1860 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "tvsum:XzYM3PfTM4w",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\XzYM3PfTM4w.mp4",
+      "duration_ms": 111000,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 4000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 4000,
+          "end_ms": 6000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 6000,
+          "end_ms": 8000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 8000,
+          "end_ms": 10000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 12000,
+          "score": 1.2
+        },
+        {
+          "start_ms": 12000,
+          "end_ms": 14000,
+          "score": 1.25
+        },
+        {
+          "start_ms": 14000,
+          "end_ms": 16000,
+          "score": 1.2
+        },
+        {
+          "start_ms": 16000,
+          "end_ms": 18000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 18000,
+          "end_ms": 20000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 20000,
+          "end_ms": 22000,
+          "score": 2.9
+        },
+        {
+          "start_ms": 22000,
+          "end_ms": 24000,
+          "score": 2.9
+        },
+        {
+          "start_ms": 24000,
+          "end_ms": 26000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 26000,
+          "end_ms": 28000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 28000,
+          "end_ms": 30000,
+          "score": 1.15
+        },
+        {
+          "start_ms": 30000,
+          "end_ms": 32000,
+          "score": 1.15
+        },
+        {
+          "start_ms": 32000,
+          "end_ms": 34000,
+          "score": 2.9
+        },
+        {
+          "start_ms": 34000,
+          "end_ms": 36000,
+          "score": 2.55
+        },
+        {
+          "start_ms": 36000,
+          "end_ms": 38000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 38000,
+          "end_ms": 40000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 40000,
+          "end_ms": 42000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 42000,
+          "end_ms": 44000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 44000,
+          "end_ms": 46000,
+          "score": 2.6
+        },
+        {
+          "start_ms": 46000,
+          "end_ms": 48000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 48000,
+          "end_ms": 50000,
+          "score": 2.75
+        },
+        {
+          "start_ms": 50000,
+          "end_ms": 52000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 52000,
+          "end_ms": 54000,
+          "score": 3.2
+        },
+        {
+          "start_ms": 54000,
+          "end_ms": 56000,
+          "score": 3.2
+        },
+        {
+          "start_ms": 56000,
+          "end_ms": 58000,
+          "score": 3.25
+        },
+        {
+          "start_ms": 58000,
+          "end_ms": 60000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 60000,
+          "end_ms": 62000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 62000,
+          "end_ms": 64000,
+          "score": 1.25
+        },
+        {
+          "start_ms": 64000,
+          "end_ms": 66000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 66000,
+          "end_ms": 68000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 68000,
+          "end_ms": 70000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 70000,
+          "end_ms": 72000,
+          "score": 2.25
+        },
+        {
+          "start_ms": 72000,
+          "end_ms": 74000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 74000,
+          "end_ms": 76000,
+          "score": 2.35
+        },
+        {
+          "start_ms": 76000,
+          "end_ms": 78000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 78000,
+          "end_ms": 80000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 80000,
+          "end_ms": 82000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 82000,
+          "end_ms": 84000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 84000,
+          "end_ms": 86000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 86000,
+          "end_ms": 88000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 88000,
+          "end_ms": 90000,
+          "score": 1.15
+        },
+        {
+          "start_ms": 90000,
+          "end_ms": 92000,
+          "score": 1.25
+        },
+        {
+          "start_ms": 92000,
+          "end_ms": 94000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 94000,
+          "end_ms": 96000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 96000,
+          "end_ms": 98000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 98000,
+          "end_ms": 100000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 100000,
+          "end_ms": 102000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 102000,
+          "end_ms": 104000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 104000,
+          "end_ms": 106000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 106000,
+          "end_ms": 108000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 108000,
+          "end_ms": 110000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 110000,
+          "end_ms": 111000,
+          "score": 1.4
+        }
+      ],
+      "metadata": {
+        "category": "VT",
+        "title": "When to Replace Your Tires GMC",
+        "judges": 20,
+        "interval_ms": 2000
+      }
+    },
+    {
+      "id": "tvsum:0tmA_C6XwfM",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\0tmA_C6XwfM.mp4",
+      "duration_ms": 141000,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "score": 1.15
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 4000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 4000,
+          "end_ms": 6000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 6000,
+          "end_ms": 8000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 8000,
+          "end_ms": 10000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 12000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 12000,
+          "end_ms": 14000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 14000,
+          "end_ms": 16000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 16000,
+          "end_ms": 18000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 18000,
+          "end_ms": 20000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 20000,
+          "end_ms": 22000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 22000,
+          "end_ms": 24000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 24000,
+          "end_ms": 26000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 26000,
+          "end_ms": 28000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 28000,
+          "end_ms": 30000,
+          "score": 2.9
+        },
+        {
+          "start_ms": 30000,
+          "end_ms": 32000,
+          "score": 2.35
+        },
+        {
+          "start_ms": 32000,
+          "end_ms": 34000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 34000,
+          "end_ms": 36000,
+          "score": 2.35
+        },
+        {
+          "start_ms": 36000,
+          "end_ms": 38000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 38000,
+          "end_ms": 40000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 40000,
+          "end_ms": 42000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 42000,
+          "end_ms": 44000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 44000,
+          "end_ms": 46000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 46000,
+          "end_ms": 48000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 48000,
+          "end_ms": 50000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 50000,
+          "end_ms": 52000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 52000,
+          "end_ms": 54000,
+          "score": 2.85
+        },
+        {
+          "start_ms": 54000,
+          "end_ms": 56000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 56000,
+          "end_ms": 58000,
+          "score": 3.0
+        },
+        {
+          "start_ms": 58000,
+          "end_ms": 60000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 60000,
+          "end_ms": 62000,
+          "score": 3.55
+        },
+        {
+          "start_ms": 62000,
+          "end_ms": 64000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 64000,
+          "end_ms": 66000,
+          "score": 3.15
+        },
+        {
+          "start_ms": 66000,
+          "end_ms": 68000,
+          "score": 3.0
+        },
+        {
+          "start_ms": 68000,
+          "end_ms": 70000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 70000,
+          "end_ms": 72000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 72000,
+          "end_ms": 74000,
+          "score": 3.0
+        },
+        {
+          "start_ms": 74000,
+          "end_ms": 76000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 76000,
+          "end_ms": 78000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 78000,
+          "end_ms": 80000,
+          "score": 2.5
+        },
+        {
+          "start_ms": 80000,
+          "end_ms": 82000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 82000,
+          "end_ms": 84000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 84000,
+          "end_ms": 86000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 86000,
+          "end_ms": 88000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 88000,
+          "end_ms": 90000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 90000,
+          "end_ms": 92000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 92000,
+          "end_ms": 94000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 94000,
+          "end_ms": 96000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 96000,
+          "end_ms": 98000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 98000,
+          "end_ms": 100000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 100000,
+          "end_ms": 102000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 102000,
+          "end_ms": 104000,
+          "score": 2.6
+        },
+        {
+          "start_ms": 104000,
+          "end_ms": 106000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 106000,
+          "end_ms": 108000,
+          "score": 2.95
+        },
+        {
+          "start_ms": 108000,
+          "end_ms": 110000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 110000,
+          "end_ms": 112000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 112000,
+          "end_ms": 114000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 114000,
+          "end_ms": 116000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 116000,
+          "end_ms": 118000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 118000,
+          "end_ms": 120000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 120000,
+          "end_ms": 122000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 122000,
+          "end_ms": 124000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 124000,
+          "end_ms": 126000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 126000,
+          "end_ms": 128000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 128000,
+          "end_ms": 130000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 130000,
+          "end_ms": 132000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 132000,
+          "end_ms": 134000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 134000,
+          "end_ms": 136000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 136000,
+          "end_ms": 138000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 138000,
+          "end_ms": 140000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 140000,
+          "end_ms": 141000,
+          "score": 1.65
+        }
+      ],
+      "metadata": {
+        "category": "GA",
+        "title": "Nail clipper Gloria Pets professional grooming",
+        "judges": 20,
+        "interval_ms": 2000
+      }
+    },
+    {
+      "id": "tvsum:37rzWOQsNIw",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\37rzWOQsNIw.mp4",
+      "duration_ms": 191000,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "score": 3.25
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 4000,
+          "score": 3.0
+        },
+        {
+          "start_ms": 4000,
+          "end_ms": 6000,
+          "score": 2.9
+        },
+        {
+          "start_ms": 6000,
+          "end_ms": 8000,
+          "score": 2.35
+        },
+        {
+          "start_ms": 8000,
+          "end_ms": 10000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 12000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 12000,
+          "end_ms": 14000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 14000,
+          "end_ms": 16000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 16000,
+          "end_ms": 18000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 18000,
+          "end_ms": 20000,
+          "score": 3.1
+        },
+        {
+          "start_ms": 20000,
+          "end_ms": 22000,
+          "score": 2.95
+        },
+        {
+          "start_ms": 22000,
+          "end_ms": 24000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 24000,
+          "end_ms": 26000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 26000,
+          "end_ms": 28000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 28000,
+          "end_ms": 30000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 30000,
+          "end_ms": 32000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 32000,
+          "end_ms": 34000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 34000,
+          "end_ms": 36000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 36000,
+          "end_ms": 38000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 38000,
+          "end_ms": 40000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 40000,
+          "end_ms": 42000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 42000,
+          "end_ms": 44000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 44000,
+          "end_ms": 46000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 46000,
+          "end_ms": 48000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 48000,
+          "end_ms": 50000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 50000,
+          "end_ms": 52000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 52000,
+          "end_ms": 54000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 54000,
+          "end_ms": 56000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 56000,
+          "end_ms": 58000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 58000,
+          "end_ms": 60000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 60000,
+          "end_ms": 62000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 62000,
+          "end_ms": 64000,
+          "score": 2.55
+        },
+        {
+          "start_ms": 64000,
+          "end_ms": 66000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 66000,
+          "end_ms": 68000,
+          "score": 3.1
+        },
+        {
+          "start_ms": 68000,
+          "end_ms": 70000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 70000,
+          "end_ms": 72000,
+          "score": 2.95
+        },
+        {
+          "start_ms": 72000,
+          "end_ms": 74000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 74000,
+          "end_ms": 76000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 76000,
+          "end_ms": 78000,
+          "score": 2.6
+        },
+        {
+          "start_ms": 78000,
+          "end_ms": 80000,
+          "score": 2.5
+        },
+        {
+          "start_ms": 80000,
+          "end_ms": 82000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 82000,
+          "end_ms": 84000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 84000,
+          "end_ms": 86000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 86000,
+          "end_ms": 88000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 88000,
+          "end_ms": 90000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 90000,
+          "end_ms": 92000,
+          "score": 1.25
+        },
+        {
+          "start_ms": 92000,
+          "end_ms": 94000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 94000,
+          "end_ms": 96000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 96000,
+          "end_ms": 98000,
+          "score": 1.2
+        },
+        {
+          "start_ms": 98000,
+          "end_ms": 100000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 100000,
+          "end_ms": 102000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 102000,
+          "end_ms": 104000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 104000,
+          "end_ms": 106000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 106000,
+          "end_ms": 108000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 108000,
+          "end_ms": 110000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 110000,
+          "end_ms": 112000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 112000,
+          "end_ms": 114000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 114000,
+          "end_ms": 116000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 116000,
+          "end_ms": 118000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 118000,
+          "end_ms": 120000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 120000,
+          "end_ms": 122000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 122000,
+          "end_ms": 124000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 124000,
+          "end_ms": 126000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 126000,
+          "end_ms": 128000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 128000,
+          "end_ms": 130000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 130000,
+          "end_ms": 132000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 132000,
+          "end_ms": 134000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 134000,
+          "end_ms": 136000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 136000,
+          "end_ms": 138000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 138000,
+          "end_ms": 140000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 140000,
+          "end_ms": 142000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 142000,
+          "end_ms": 144000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 144000,
+          "end_ms": 146000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 146000,
+          "end_ms": 148000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 148000,
+          "end_ms": 150000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 150000,
+          "end_ms": 152000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 152000,
+          "end_ms": 154000,
+          "score": 2.35
+        },
+        {
+          "start_ms": 154000,
+          "end_ms": 156000,
+          "score": 2.6
+        },
+        {
+          "start_ms": 156000,
+          "end_ms": 158000,
+          "score": 2.5
+        },
+        {
+          "start_ms": 158000,
+          "end_ms": 160000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 160000,
+          "end_ms": 162000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 162000,
+          "end_ms": 164000,
+          "score": 2.5
+        },
+        {
+          "start_ms": 164000,
+          "end_ms": 166000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 166000,
+          "end_ms": 168000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 168000,
+          "end_ms": 170000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 170000,
+          "end_ms": 172000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 172000,
+          "end_ms": 174000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 174000,
+          "end_ms": 176000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 176000,
+          "end_ms": 178000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 178000,
+          "end_ms": 180000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 180000,
+          "end_ms": 182000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 182000,
+          "end_ms": 184000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 184000,
+          "end_ms": 186000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 186000,
+          "end_ms": 188000,
+          "score": 1.25
+        },
+        {
+          "start_ms": 188000,
+          "end_ms": 190000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 190000,
+          "end_ms": 191000,
+          "score": 1.4
+        }
+      ],
+      "metadata": {
+        "category": "MS",
+        "title": "Saigon Sandwich - Vietnamese Sandwiches in San Francisco CA",
+        "judges": 20,
+        "interval_ms": 2000
+      }
+    },
+    {
+      "id": "tvsum:91IHQYk1IQM",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\91IHQYk1IQM.mp4",
+      "duration_ms": 110000,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 4000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 4000,
+          "end_ms": 6000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 6000,
+          "end_ms": 8000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 8000,
+          "end_ms": 10000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 12000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 12000,
+          "end_ms": 14000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 14000,
+          "end_ms": 16000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 16000,
+          "end_ms": 18000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 18000,
+          "end_ms": 20000,
+          "score": 2.55
+        },
+        {
+          "start_ms": 20000,
+          "end_ms": 22000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 22000,
+          "end_ms": 24000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 24000,
+          "end_ms": 26000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 26000,
+          "end_ms": 28000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 28000,
+          "end_ms": 30000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 30000,
+          "end_ms": 32000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 32000,
+          "end_ms": 34000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 34000,
+          "end_ms": 36000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 36000,
+          "end_ms": 38000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 38000,
+          "end_ms": 40000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 40000,
+          "end_ms": 42000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 42000,
+          "end_ms": 44000,
+          "score": 3.45
+        },
+        {
+          "start_ms": 44000,
+          "end_ms": 46000,
+          "score": 2.85
+        },
+        {
+          "start_ms": 46000,
+          "end_ms": 48000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 48000,
+          "end_ms": 50000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 50000,
+          "end_ms": 52000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 52000,
+          "end_ms": 54000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 54000,
+          "end_ms": 56000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 56000,
+          "end_ms": 58000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 58000,
+          "end_ms": 60000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 60000,
+          "end_ms": 62000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 62000,
+          "end_ms": 64000,
+          "score": 2.5
+        },
+        {
+          "start_ms": 64000,
+          "end_ms": 66000,
+          "score": 2.95
+        },
+        {
+          "start_ms": 66000,
+          "end_ms": 68000,
+          "score": 2.25
+        },
+        {
+          "start_ms": 68000,
+          "end_ms": 70000,
+          "score": 2.25
+        },
+        {
+          "start_ms": 70000,
+          "end_ms": 72000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 72000,
+          "end_ms": 74000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 74000,
+          "end_ms": 76000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 76000,
+          "end_ms": 78000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 78000,
+          "end_ms": 80000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 80000,
+          "end_ms": 82000,
+          "score": 1.55
+        },
+        {
+          "start_ms": 82000,
+          "end_ms": 84000,
+          "score": 3.25
+        },
+        {
+          "start_ms": 84000,
+          "end_ms": 86000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 86000,
+          "end_ms": 88000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 88000,
+          "end_ms": 90000,
+          "score": 2.25
+        },
+        {
+          "start_ms": 90000,
+          "end_ms": 92000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 92000,
+          "end_ms": 94000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 94000,
+          "end_ms": 96000,
+          "score": 1.25
+        },
+        {
+          "start_ms": 96000,
+          "end_ms": 98000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 98000,
+          "end_ms": 100000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 100000,
+          "end_ms": 102000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 102000,
+          "end_ms": 104000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 104000,
+          "end_ms": 106000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 106000,
+          "end_ms": 108000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 108000,
+          "end_ms": 110000,
+          "score": 1.9
+        }
+      ],
+      "metadata": {
+        "category": "PR",
+        "title": "Chinese New Year Parade 2012 New York City Chinatown",
+        "judges": 20,
+        "interval_ms": 2000
+      }
+    },
+    {
+      "id": "tvsum:_xMr-HKMfVA",
+      "dataset": "TVSum",
+      "video": "C:\\Users\\yukik\\gemmmaの研究\\ai-nas-manager\\ai-nas-manager\\media\\evaluation\\videos\\tvsum\\video\\_xMr-HKMfVA.mp4",
+      "duration_ms": 149000,
+      "tasks": [
+        "importance"
+      ],
+      "boundaries_ms": [],
+      "importance": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 4000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 4000,
+          "end_ms": 6000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 6000,
+          "end_ms": 8000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 8000,
+          "end_ms": 10000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 12000,
+          "score": 1.2
+        },
+        {
+          "start_ms": 12000,
+          "end_ms": 14000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 14000,
+          "end_ms": 16000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 16000,
+          "end_ms": 18000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 18000,
+          "end_ms": 20000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 20000,
+          "end_ms": 22000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 22000,
+          "end_ms": 24000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 24000,
+          "end_ms": 26000,
+          "score": 2.25
+        },
+        {
+          "start_ms": 26000,
+          "end_ms": 28000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 28000,
+          "end_ms": 30000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 30000,
+          "end_ms": 32000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 32000,
+          "end_ms": 34000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 34000,
+          "end_ms": 36000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 36000,
+          "end_ms": 38000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 38000,
+          "end_ms": 40000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 40000,
+          "end_ms": 42000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 42000,
+          "end_ms": 44000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 44000,
+          "end_ms": 46000,
+          "score": 1.7
+        },
+        {
+          "start_ms": 46000,
+          "end_ms": 48000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 48000,
+          "end_ms": 50000,
+          "score": 2.25
+        },
+        {
+          "start_ms": 50000,
+          "end_ms": 52000,
+          "score": 1.85
+        },
+        {
+          "start_ms": 52000,
+          "end_ms": 54000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 54000,
+          "end_ms": 56000,
+          "score": 1.9
+        },
+        {
+          "start_ms": 56000,
+          "end_ms": 58000,
+          "score": 2.1
+        },
+        {
+          "start_ms": 58000,
+          "end_ms": 60000,
+          "score": 2.05
+        },
+        {
+          "start_ms": 60000,
+          "end_ms": 62000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 62000,
+          "end_ms": 64000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 64000,
+          "end_ms": 66000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 66000,
+          "end_ms": 68000,
+          "score": 1.95
+        },
+        {
+          "start_ms": 68000,
+          "end_ms": 70000,
+          "score": 2.55
+        },
+        {
+          "start_ms": 70000,
+          "end_ms": 72000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 72000,
+          "end_ms": 74000,
+          "score": 2.45
+        },
+        {
+          "start_ms": 74000,
+          "end_ms": 76000,
+          "score": 2.3
+        },
+        {
+          "start_ms": 76000,
+          "end_ms": 78000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 78000,
+          "end_ms": 80000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 80000,
+          "end_ms": 82000,
+          "score": 3.5
+        },
+        {
+          "start_ms": 82000,
+          "end_ms": 84000,
+          "score": 2.6
+        },
+        {
+          "start_ms": 84000,
+          "end_ms": 86000,
+          "score": 3.7
+        },
+        {
+          "start_ms": 86000,
+          "end_ms": 88000,
+          "score": 2.8
+        },
+        {
+          "start_ms": 88000,
+          "end_ms": 90000,
+          "score": 3.05
+        },
+        {
+          "start_ms": 90000,
+          "end_ms": 92000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 92000,
+          "end_ms": 94000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 94000,
+          "end_ms": 96000,
+          "score": 3.05
+        },
+        {
+          "start_ms": 96000,
+          "end_ms": 98000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 98000,
+          "end_ms": 100000,
+          "score": 2.7
+        },
+        {
+          "start_ms": 100000,
+          "end_ms": 102000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 102000,
+          "end_ms": 104000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 104000,
+          "end_ms": 106000,
+          "score": 2.15
+        },
+        {
+          "start_ms": 106000,
+          "end_ms": 108000,
+          "score": 2.0
+        },
+        {
+          "start_ms": 108000,
+          "end_ms": 110000,
+          "score": 1.8
+        },
+        {
+          "start_ms": 110000,
+          "end_ms": 112000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 112000,
+          "end_ms": 114000,
+          "score": 2.4
+        },
+        {
+          "start_ms": 114000,
+          "end_ms": 116000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 116000,
+          "end_ms": 118000,
+          "score": 2.2
+        },
+        {
+          "start_ms": 118000,
+          "end_ms": 120000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 120000,
+          "end_ms": 122000,
+          "score": 2.65
+        },
+        {
+          "start_ms": 122000,
+          "end_ms": 124000,
+          "score": 1.75
+        },
+        {
+          "start_ms": 124000,
+          "end_ms": 126000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 126000,
+          "end_ms": 128000,
+          "score": 1.4
+        },
+        {
+          "start_ms": 128000,
+          "end_ms": 130000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 130000,
+          "end_ms": 132000,
+          "score": 1.65
+        },
+        {
+          "start_ms": 132000,
+          "end_ms": 134000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 134000,
+          "end_ms": 136000,
+          "score": 1.5
+        },
+        {
+          "start_ms": 136000,
+          "end_ms": 138000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 138000,
+          "end_ms": 140000,
+          "score": 1.35
+        },
+        {
+          "start_ms": 140000,
+          "end_ms": 142000,
+          "score": 1.45
+        },
+        {
+          "start_ms": 142000,
+          "end_ms": 144000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 144000,
+          "end_ms": 146000,
+          "score": 1.6
+        },
+        {
+          "start_ms": 146000,
+          "end_ms": 148000,
+          "score": 1.3
+        },
+        {
+          "start_ms": 148000,
+          "end_ms": 149000,
+          "score": 1.3
+        }
+      ],
+      "metadata": {
+        "category": "FM",
+        "title": "CASACL - Flashmob in Copenhagen underground - Peer Gynt",
+        "judges": 20,
+        "interval_ms": 2000
+      }
+    }
+  ]
+}

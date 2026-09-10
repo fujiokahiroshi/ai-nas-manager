@@ -17,7 +17,18 @@ def test_silence_to_tone_is_an_audio_onset() -> None:
     assert onset.active is True
     assert onset.onset is True
     assert onset.change_score >= 0.8
-    assert onset.label == "impact_candidate"
+    assert onset.label == "voice_or_tonal_activity"
+
+
+def test_impulse_is_classified_as_impact_candidate() -> None:
+    detector = AudioChangeDetector()
+    detector.analyze(0, np.zeros(8_000, dtype=np.int16))
+    impulse = np.zeros(8_000, dtype=np.int16)
+    impulse[100:110] = 30_000
+    feature = detector.analyze(500, impulse)
+    assert feature.onset is True
+    assert feature.crest_factor > 2.5
+    assert feature.label == "impact_candidate"
 
 
 def test_steady_tone_does_not_keep_retriggering() -> None:
