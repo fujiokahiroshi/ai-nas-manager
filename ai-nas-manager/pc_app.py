@@ -40,6 +40,40 @@ def imported_video_path(directory: Path, filename: str) -> Path:
     return directory / f"{uuid.uuid4().hex[:10]}-{stem[:100]}{suffix}"
 
 
+def browse_local_video(initial_directory: Path) -> Path | None:
+    """Open the Windows file dialog without passing through the browser picker."""
+
+    import tkinter as tk
+    from tkinter import filedialog
+
+    root: tk.Tk | None = None
+    try:
+        root = tk.Tk()
+        root.withdraw()
+        root.attributes("-topmost", True)
+        root.update()
+        selected = filedialog.askopenfilename(
+            parent=root,
+            title="解析する映像を選択",
+            initialdir=str(initial_directory),
+            filetypes=[
+                ("映像ファイル", "*.mp4 *.mov *.mkv *.avi *.webm *.m4v *.ts *.m2ts"),
+                ("すべてのファイル", "*.*"),
+            ],
+        )
+    except tk.TclError as exc:
+        raise RuntimeError("Windowsファイル選択画面を開けません") from exc
+    finally:
+        if root is not None:
+            root.destroy()
+    if not selected:
+        return None
+    source = Path(selected).resolve()
+    if not source.is_file() or source.suffix.casefold() not in VIDEO_EXTENSIONS:
+        raise ValueError("対応していない映像ファイルです")
+    return source
+
+
 def fragment_records(payload: dict) -> list[dict]:
     source = str(payload["source"])
     records = []
@@ -312,6 +346,7 @@ class AppState:
     boundary_markers: dict[str, list[int]]
     import_dir: Path = DEFAULT_IMPORT_DIR
     lock: threading.RLock = field(default_factory=threading.RLock, repr=False)
+    browse_lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
     def select_source(self, source: Path) -> None:
         """Switch playback to an unanalysed source without mixing old results."""
@@ -422,6 +457,9 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
+        if parsed.path == "/api/media/browse":
+            self._browse_media()
+            return
         if parsed.path == "/api/media/select":
             self._select_media()
             return
@@ -444,6 +482,27 @@ class AppHandler(BaseHTTPRequestHandler):
             self.send_error(HTTPStatus.NOT_FOUND)
             return
         self._json(updated)
+
+    def _browse_media(self) -> None:
+        if self.headers.get("X-AI-NAS-Action") != "browse-local-video":
+            self.send_error(HTTPStatus.FORBIDDEN)
+            return
+        try:
+            with self.state.browse_lock:
+                source = browse_local_video(self.state.source.parent)
+            if source is None:
+                self.send_response(HTTPStatus.NO_CONTENT)
+                self.end_headers()
+                return
+            self.state.select_source(source)
+        except (OSError, RuntimeError, ValueError) as exc:
+            self.send_error(HTTPStatus.BAD_REQUEST, str(exc))
+            return
+        self._json({
+            "source_name": source.name,
+            "analysis_state": "not_analyzed",
+            "video_url": "/media/video",
+        })
 
     def _select_media(self) -> None:
         temporary: Path | None = None
