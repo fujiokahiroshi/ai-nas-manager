@@ -7,6 +7,8 @@ import json
 import mimetypes
 import re
 import sqlite3
+import subprocess
+import sys
 import threading
 import uuid
 import webbrowser
@@ -24,6 +26,7 @@ DEFAULT_RESULT = ROOT / "docs" / "live-gemma-pedestrian-2026-09-10.json"
 DEFAULT_UI = ROOT / "pc-app" / "index.html"
 DEFAULT_DB = ROOT / "pc_app.sqlite3"
 DEFAULT_IMPORT_DIR = ROOT / "media" / "pc-app-imports"
+DEFAULT_ANALYSIS_DIR = ROOT / "media" / "pc-app-analysis"
 VIDEO_EXTENSIONS = {".mp4", ".mov", ".mkv", ".avi", ".webm", ".m4v", ".ts", ".m2ts"}
 
 
@@ -288,6 +291,10 @@ class FragmentStore:
                 int(item["completed_during_stream"]), item["source_path"],
             ) for item in records])
 
+    def delete_source(self, source_path: str) -> None:
+        with self._lock, self._connect() as db:
+            db.execute("DELETE FROM fragments WHERE source_path = ?", (source_path,))
+
     def list(
         self,
         query: str = "",
@@ -347,12 +354,23 @@ class AppState:
     import_dir: Path = DEFAULT_IMPORT_DIR
     lock: threading.RLock = field(default_factory=threading.RLock, repr=False)
     browse_lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
+    analysis_state: str = "ready"
+    analysis_mode: str = ""
+    analysis_phase: str = ""
+    analysis_message: str = ""
+    analysis_progress: float = 1.0
+    analysis_fragment_count: int = 0
+    analysis_error: str = ""
+    analysis_thread: threading.Thread | None = field(default=None, repr=False)
 
     def select_source(self, source: Path) -> None:
         """Switch playback to an unanalysed source without mixing old results."""
 
         with self.lock:
+            if self.analysis_state == "running":
+                raise RuntimeError("解析中は別の映像を選択できません")
             self.source = source.resolve()
+            self.store.delete_source(str(self.source))
             self.thumbnails = {}
             self.boundaries_ms = []
             self.boundary_method = "not analyzed"
@@ -363,6 +381,48 @@ class AppState:
                 "adaptive": [],
                 "tuned": [],
                 "ground_truth": [],
+            }
+            self.analysis_state = "not_analyzed"
+            self.analysis_mode = ""
+            self.analysis_phase = ""
+            self.analysis_message = "解析方法を選択してください"
+            self.analysis_progress = 0.0
+            self.analysis_fragment_count = 0
+            self.analysis_error = ""
+
+    def begin_analysis(self, mode: str) -> Path | None:
+        if mode not in {"static", "realtime"}:
+            raise ValueError("unknown analysis mode")
+        with self.lock:
+            if self.analysis_state == "running":
+                return None
+            source = self.source
+            self.store.delete_source(str(source.resolve()))
+            self.thumbnails = {}
+            self.boundaries_ms = []
+            self.boundary_method = "analyzing"
+            self.scene_summaries = []
+            self.shadow_boundaries = []
+            self.boundary_markers = {key: [] for key in ("current", "adaptive", "tuned", "ground_truth")}
+            self.analysis_state = "running"
+            self.analysis_mode = mode
+            self.analysis_phase = "fragment"
+            self.analysis_message = "Fragmentを検出しています"
+            self.analysis_progress = 0.0
+            self.analysis_fragment_count = 0
+            self.analysis_error = ""
+            return source
+
+    def analysis_snapshot(self) -> dict[str, object]:
+        with self.lock:
+            return {
+                "state": self.analysis_state,
+                "mode": self.analysis_mode,
+                "phase": self.analysis_phase,
+                "message": self.analysis_message,
+                "progress": round(self.analysis_progress, 4),
+                "fragment_count": self.analysis_fragment_count,
+                "error": self.analysis_error,
             }
 
 
@@ -386,6 +446,138 @@ def build_thumbnails(source: Path, records: list[dict]) -> dict[str, bytes]:
     return images
 
 
+def video_duration_ms(source: Path) -> int:
+    import cv2
+
+    capture = cv2.VideoCapture(str(source))
+    try:
+        fps = float(capture.get(cv2.CAP_PROP_FPS))
+        frames = float(capture.get(cv2.CAP_PROP_FRAME_COUNT))
+        return max(1, round(frames * 1000 / fps)) if fps > 0 else 1
+    finally:
+        capture.release()
+
+
+def apply_analysis_payload(state: AppState, payload: dict) -> None:
+    records = fragment_records(payload)
+    state.store.import_records(records)
+    boundaries_ms, boundary_method = scene_boundaries(payload)
+    shadow_boundaries = list(
+        payload.get("scene_segmentation", {})
+        .get("shadow_algorithms", {})
+        .get("adaptive_memory_v1", {})
+        .get("boundaries", [])
+    )
+    thumbnails = build_thumbnails(Path(payload["source"]), records)
+    with state.lock:
+        state.thumbnails = thumbnails
+        state.boundaries_ms = boundaries_ms
+        state.boundary_method = boundary_method
+        state.scene_summaries = list(payload.get("scene_summaries", []))
+        state.shadow_boundaries = shadow_boundaries
+        state.boundary_markers = scene_boundary_markers(payload)
+        state.analysis_fragment_count = len(records)
+
+
+def run_pc_analysis(state: AppState, source: Path, mode: str) -> None:
+    """Run the existing Fragment/Gemma/Scene pipeline and publish live progress."""
+
+    DEFAULT_ANALYSIS_DIR.mkdir(parents=True, exist_ok=True)
+    run_id = uuid.uuid4().hex[:12]
+    fragment_output = DEFAULT_ANALYSIS_DIR / f"{run_id}-{source.stem}-{mode}.json"
+    scene_output = DEFAULT_ANALYSIS_DIR / f"{run_id}-{source.stem}-{mode}-scenes.json"
+    duration_ms = video_duration_ms(source)
+    command = [
+        sys.executable,
+        str(ROOT / "scripts" / "run_live_gemma_experiment.py"),
+        str(source),
+        "--processing-mode",
+        mode,
+        "--emit-events",
+        "--output",
+        str(fragment_output),
+    ]
+    log_tail: list[str] = []
+    try:
+        process = subprocess.Popen(
+            command,
+            cwd=ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            bufsize=1,
+        )
+        assert process.stdout is not None
+        for raw_line in process.stdout:
+            line = raw_line.strip()
+            if line:
+                log_tail.append(line)
+                log_tail = log_tail[-12:]
+            if not line.startswith("AINAS_EVENT "):
+                continue
+            inference = json.loads(line[len("AINAS_EVENT "):])
+            record = fragment_records({"source": str(source.resolve()), "inferences": [inference]})[0]
+            state.store.import_records([record])
+            thumbnail = build_thumbnails(source, [record]).get(record["id"], b"")
+            with state.lock:
+                state.thumbnails[record["id"]] = thumbnail
+                state.analysis_fragment_count += 1
+                state.analysis_progress = min(0.9, int(record["timestamp_ms"]) / duration_ms * 0.9)
+                state.analysis_message = f"Fragment {state.analysis_fragment_count}件を解析しました"
+        return_code = process.wait()
+        if return_code != 0 or not fragment_output.is_file():
+            raise RuntimeError(log_tail[-1] if log_tail else f"解析処理が終了しました ({return_code})")
+        payload = json.loads(fragment_output.read_text(encoding="utf-8"))
+        if not payload.get("inferences"):
+            failures = payload.get("failures", [])
+            detail = str(failures[0].get("error", "Gemmaの解析結果がありません")) if failures else "Gemmaの解析結果がありません"
+            raise RuntimeError(detail)
+        with state.lock:
+            state.analysis_phase = "scene"
+            state.analysis_message = "Scene全体をGemmaで要約しています"
+            state.analysis_progress = 0.92
+        summary = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "scripts" / "summarize_gemma_scenes.py"),
+                str(fragment_output),
+                "--output",
+                str(scene_output),
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        if summary.returncode != 0 or not scene_output.is_file():
+            raise RuntimeError((summary.stderr or summary.stdout or "Scene要約に失敗しました").strip().splitlines()[-1])
+        payload = json.loads(scene_output.read_text(encoding="utf-8"))
+        apply_analysis_payload(state, payload)
+        with state.lock:
+            state.analysis_state = "ready"
+            state.analysis_phase = "complete"
+            state.analysis_message = "解析が完了しました"
+            state.analysis_progress = 1.0
+            state.analysis_error = ""
+    except Exception as exc:
+        if fragment_output.is_file():
+            try:
+                apply_analysis_payload(state, json.loads(fragment_output.read_text(encoding="utf-8")))
+            except Exception:
+                pass
+        with state.lock:
+            state.analysis_state = "failed"
+            state.analysis_phase = "failed"
+            state.analysis_message = "解析に失敗しました"
+            state.analysis_error = f"{type(exc).__name__}: {exc}"
+    finally:
+        with state.lock:
+            state.analysis_thread = None
+
+
 class AppHandler(BaseHTTPRequestHandler):
     server_version = "AINASPC/0.1"
 
@@ -397,12 +589,13 @@ class AppHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         if parsed.path == "/":
             self._bytes(self.state.ui, "text/html; charset=utf-8")
+        elif parsed.path == "/api/analysis/status":
+            self._json(self.state.analysis_snapshot())
         elif parsed.path == "/api/fragments":
             values = parse_qs(parsed.query)
             query = values.get("q", [""])[0]
             favorites = values.get("favorites", ["0"])[0] == "1"
             source_path = str(self.state.source.resolve())
-            has_analysis = bool(self.state.store.list(source_path=source_path))
             fragments = self.state.store.list(
                 query,
                 favorites,
@@ -412,7 +605,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 "source_name": self.state.source.name,
                 "shadow_boundaries": self.state.shadow_boundaries,
                 "boundary_markers": self.state.boundary_markers,
-                "analysis_state": "ready" if has_analysis else "not_analyzed",
+                "analysis": self.state.analysis_snapshot(),
                 "fragments": fragments,
             })
         elif parsed.path == "/api/scenes":
@@ -438,7 +631,7 @@ class AppHandler(BaseHTTPRequestHandler):
             self._json({
                 "source_name": self.state.source.name,
                 "scenes": scenes,
-                "analysis_state": "ready" if source_records else "not_analyzed",
+                "analysis": self.state.analysis_snapshot(),
                 "shadow_boundaries": self.state.shadow_boundaries,
                 "boundary_markers": self.state.boundary_markers,
             })
@@ -457,6 +650,9 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
+        if parsed.path == "/api/analysis/start":
+            self._start_analysis()
+            return
         if parsed.path == "/api/media/browse":
             self._browse_media()
             return
@@ -482,6 +678,32 @@ class AppHandler(BaseHTTPRequestHandler):
             self.send_error(HTTPStatus.NOT_FOUND)
             return
         self._json(updated)
+
+    def _start_analysis(self) -> None:
+        if self.headers.get("X-AI-NAS-Action") != "start-analysis":
+            self.send_error(HTTPStatus.FORBIDDEN)
+            return
+        try:
+            size = int(self.headers.get("Content-Length", "0"))
+            payload = json.loads(self.rfile.read(size))
+            mode = str(payload.get("mode", ""))
+            source = self.state.begin_analysis(mode)
+        except (ValueError, json.JSONDecodeError):
+            self.send_error(HTTPStatus.BAD_REQUEST)
+            return
+        if source is None:
+            self.send_error(HTTPStatus.CONFLICT, "analysis already running")
+            return
+        thread = threading.Thread(
+            target=run_pc_analysis,
+            args=(self.state, source, mode),
+            name=f"pc-analysis-{mode}",
+            daemon=True,
+        )
+        with self.state.lock:
+            self.state.analysis_thread = thread
+        thread.start()
+        self._json(self.state.analysis_snapshot())
 
     def _browse_media(self) -> None:
         if self.headers.get("X-AI-NAS-Action") != "browse-local-video":
@@ -525,7 +747,7 @@ class AppHandler(BaseHTTPRequestHandler):
             temporary.replace(target)
             temporary = None
             self.state.select_source(target)
-        except (OSError, ValueError) as exc:
+        except (OSError, RuntimeError, ValueError) as exc:
             if temporary is not None:
                 temporary.unlink(missing_ok=True)
             self.send_error(HTTPStatus.BAD_REQUEST, str(exc))

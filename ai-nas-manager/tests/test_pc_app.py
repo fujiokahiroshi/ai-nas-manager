@@ -149,8 +149,12 @@ def test_imported_video_path_is_unique_and_stays_in_directory(tmp_path) -> None:
 def test_select_source_clears_previous_analysis(tmp_path) -> None:
     source = tmp_path / "new.mp4"
     source.write_bytes(b"video")
+    store = FragmentStore(tmp_path / "pc.sqlite3")
+    payload = sample_payload()
+    payload["source"] = str(source.resolve())
+    store.import_records(fragment_records(payload))
     state = AppState(
-        FragmentStore(tmp_path / "pc.sqlite3"),
+        store,
         Path("old.mp4"),
         b"ui",
         {"old": b"image"},
@@ -167,3 +171,30 @@ def test_select_source_clears_previous_analysis(tmp_path) -> None:
     assert state.boundaries_ms == []
     assert state.scene_summaries == []
     assert state.boundary_markers["current"] == []
+    assert state.analysis_snapshot()["state"] == "not_analyzed"
+    assert store.list(source_path=str(source.resolve())) == []
+
+
+def test_begin_analysis_sets_mode_and_rejects_parallel_run(tmp_path) -> None:
+    source = tmp_path / "new.mp4"
+    source.write_bytes(b"video")
+    state = AppState(
+        FragmentStore(tmp_path / "pc.sqlite3"),
+        source,
+        b"ui",
+        {},
+        [],
+        "not analyzed",
+        [],
+        [],
+        {},
+    )
+    assert state.begin_analysis("static") == source
+    status = state.analysis_snapshot()
+    assert status["state"] == "running"
+    assert status["mode"] == "static"
+    assert status["phase"] == "fragment"
+    assert state.begin_analysis("realtime") is None
+    with pytest.raises(ValueError):
+        state.analysis_state = "not_analyzed"
+        state.begin_analysis("unknown")

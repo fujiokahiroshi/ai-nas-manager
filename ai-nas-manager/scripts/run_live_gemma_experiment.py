@@ -33,6 +33,17 @@ def main() -> None:
     parser.add_argument("--lm-studio-url", default="http://127.0.0.1:1234")
     parser.add_argument("--pelt-penalty", type=float, default=0.35)
     parser.add_argument("--pelt-min-scene-seconds", type=float, default=3.0)
+    parser.add_argument(
+        "--processing-mode",
+        choices=("realtime", "static"),
+        default="realtime",
+        help="realtime follows source timestamps; static processes as fast as possible",
+    )
+    parser.add_argument(
+        "--emit-events",
+        action="store_true",
+        help="emit machine-readable inference events for the PC App",
+    )
     parser.add_argument("--output", type=Path, default=Path("docs/live-gemma-experiment.json"))
     args = parser.parse_args()
 
@@ -45,7 +56,7 @@ def main() -> None:
     )
     scene_segmenter = OnlineHybridSceneSegmenter(args.source.stem)
     adaptive_shadow = AdaptiveMemoryShadowDetector()
-    queue = LatestEvidenceQueue(max_fragments=4)
+    queue = LatestEvidenceQueue(max_fragments=4 if args.processing_mode == "realtime" else 128)
     client = LMStudioVisionClient(base_url=args.lm_studio_url, model=args.model)
     fragment_events: list[dict[str, object]] = []
     inferences: list[dict[str, object]] = []
@@ -84,6 +95,11 @@ def main() -> None:
                     f"r{evidence.revision}: {result.get('observation_ja', '')}",
                     flush=True,
                 )
+                if args.emit_events:
+                    print(
+                        "AINAS_EVENT " + json.dumps(record, ensure_ascii=False, separators=(",", ":")),
+                        flush=True,
+                    )
             except Exception as exc:  # keep the live stream running
                 failures.append({
                     "fragment_id": evidence.fragment_id,
@@ -109,9 +125,10 @@ def main() -> None:
             decoded_index += 1
             continue
         timestamp_ms = round(decoded_index * 1000 / source_fps)
-        delay = start_wall + timestamp_ms / 1000 - time.perf_counter()
-        if delay > 0:
-            time.sleep(delay)
+        if args.processing_mode == "realtime":
+            delay = start_wall + timestamp_ms / 1000 - time.perf_counter()
+            if delay > 0:
+                time.sleep(delay)
         detections = detector.detect(image)
         object_change = object_change_score(previous_detections, detections)
         previous_detections = detections
@@ -191,6 +208,7 @@ def main() -> None:
         record["completed_during_stream"] = record["completed_wall_ms"] <= round((stream_ended_wall - start_wall) * 1000)
     payload = {
         "source": str(args.source.resolve()),
+        "processing_mode": args.processing_mode,
         "sample_fps": args.fps,
         "sampled_frames": sampled_frames,
         "stream_wall_seconds": round(stream_ended_wall - start_wall, 3),
