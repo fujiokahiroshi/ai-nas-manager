@@ -387,7 +387,7 @@ class FragmentStore:
 @dataclass
 class AppState:
     store: FragmentStore
-    source: Path
+    source: Path | None
     ui: bytes
     thumbnails: dict[str, bytes]
     boundaries_ms: list[int]
@@ -413,7 +413,7 @@ class AppState:
 
         with self.lock:
             if self.analysis_state == "running":
-                raise RuntimeError("解析中は別の映像を選択できません")
+                raise RuntimeError("解析中は別のメディアを選択できません")
             self.source = source.resolve()
             self.media_kind = media_kind or media_kind_for_path(self.source)
             self.store.delete_source(str(self.source))
@@ -442,6 +442,8 @@ class AppState:
         with self.lock:
             if self.analysis_state == "running":
                 return None
+            if self.source is None:
+                raise ValueError("先に画像または映像を選択してください")
             if self.media_kind == "image" and mode != "static":
                 raise ValueError("画像は静的解析を使用してください")
             source = self.source
@@ -701,14 +703,11 @@ class AppHandler(BaseHTTPRequestHandler):
             values = parse_qs(parsed.query)
             query = values.get("q", [""])[0]
             favorites = values.get("favorites", ["0"])[0] == "1"
-            source_path = str(self.state.source.resolve())
-            fragments = self.state.store.list(
-                query,
-                favorites,
-                source_path,
-            )
+            source = self.state.source
+            source_path = str(source.resolve()) if source is not None else None
+            fragments = self.state.store.list(query, favorites, source_path) if source_path else []
             self._json({
-                "source_name": self.state.source.name,
+                "source_name": source.name if source is not None else "",
                 "media_kind": self.state.media_kind,
                 "shadow_boundaries": self.state.shadow_boundaries,
                 "boundary_markers": self.state.boundary_markers,
@@ -719,7 +718,8 @@ class AppHandler(BaseHTTPRequestHandler):
             values = parse_qs(parsed.query)
             query = values.get("q", [""])[0].casefold()
             favorites = values.get("favorites", ["0"])[0] == "1"
-            source_records = self.state.store.list(source_path=str(self.state.source.resolve()))
+            source = self.state.source
+            source_records = self.state.store.list(source_path=str(source.resolve())) if source is not None else []
             scenes = scene_records(
                 source_records,
                 self.state.boundaries_ms,
@@ -736,7 +736,7 @@ class AppHandler(BaseHTTPRequestHandler):
             if favorites:
                 scenes = [scene for scene in scenes if scene["favorite"]]
             self._json({
-                "source_name": self.state.source.name,
+                "source_name": source.name if source is not None else "",
                 "media_kind": self.state.media_kind,
                 "scenes": scenes,
                 "analysis": self.state.analysis_snapshot(),
@@ -826,10 +826,11 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         try:
             with self.state.browse_lock:
+                initial_directory = self.state.source.parent if self.state.source is not None else ROOT
                 source = (
-                    browse_local_image(self.state.source.parent)
+                    browse_local_image(initial_directory)
                     if media_kind == "image"
-                    else browse_local_video(self.state.source.parent)
+                    else browse_local_video(initial_directory)
                 )
             if source is None:
                 self.send_response(HTTPStatus.NO_CONTENT)
@@ -883,7 +884,7 @@ class AppHandler(BaseHTTPRequestHandler):
         with self.state.lock:
             source = self.state.source
             media_kind = self.state.media_kind
-        if media_kind != "video" or not source.is_file():
+        if media_kind != "video" or source is None or not source.is_file():
             self.send_error(HTTPStatus.NOT_FOUND)
             return
         size = source.stat().st_size
@@ -924,7 +925,7 @@ class AppHandler(BaseHTTPRequestHandler):
         with self.state.lock:
             source = self.state.source
             media_kind = self.state.media_kind
-        if media_kind != "image" or not source.is_file():
+        if media_kind != "image" or source is None or not source.is_file():
             self.send_error(HTTPStatus.NOT_FOUND)
             return
         self._bytes(
@@ -956,7 +957,7 @@ def create_server(host: str, port: int, state: AppState) -> ThreadingHTTPServer:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="AI NAS Manager PC prototype")
-    parser.add_argument("--result", type=Path, default=DEFAULT_RESULT)
+    parser.add_argument("--result", type=Path)
     parser.add_argument("--database", type=Path, default=DEFAULT_DB)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8788)
@@ -968,32 +969,48 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    payload = json.loads(args.result.read_text(encoding="utf-8"))
-    records = fragment_records(payload)
-    records_to_store = records if args.include_unconfirmed else confirmed_records(records)
-    source = Path(payload["source"])
-    if not source.is_file():
-        raise FileNotFoundError(source)
     store = FragmentStore(args.database)
-    store.import_records(records_to_store)
-    boundaries_ms, boundary_method = scene_boundaries(payload)
-    shadow_boundaries = list(
-        payload.get("scene_segmentation", {})
-        .get("shadow_algorithms", {})
-        .get("adaptive_memory_v1", {})
-        .get("boundaries", [])
-    )
+    source: Path | None = None
+    thumbnails: dict[str, bytes] = {}
+    boundaries_ms: list[int] = []
+    boundary_method = "not analyzed"
+    scene_summaries: list[dict] = []
+    shadow_boundaries: list[dict] = []
+    boundary_markers = {key: [] for key in ("current", "adaptive", "tuned", "ground_truth")}
+    media_kind = "none"
+    if args.result is not None:
+        payload = json.loads(args.result.read_text(encoding="utf-8"))
+        candidate = Path(payload["source"])
+        if candidate.is_file():
+            source = candidate
+            records = fragment_records(payload)
+            records_to_store = records if args.include_unconfirmed else confirmed_records(records)
+            store.import_records(records_to_store)
+            boundaries_ms, boundary_method = scene_boundaries(payload)
+            scene_summaries = list(payload.get("scene_summaries", []))
+            shadow_boundaries = list(
+                payload.get("scene_segmentation", {})
+                .get("shadow_algorithms", {})
+                .get("adaptive_memory_v1", {})
+                .get("boundaries", [])
+            )
+            boundary_markers = scene_boundary_markers(payload)
+            media_kind = media_kind_for_path(source)
+            if media_kind == "video":
+                thumbnails = build_thumbnails(source, records_to_store)
+        else:
+            print(f"Initial media is unavailable; starting with an empty library: {candidate}")
     state = AppState(
         store,
         source,
         DEFAULT_UI.read_bytes(),
-        build_thumbnails(source, records_to_store),
+        thumbnails,
         boundaries_ms,
         boundary_method,
-        list(payload.get("scene_summaries", [])),
+        scene_summaries,
         shadow_boundaries,
-        scene_boundary_markers(payload),
-        media_kind=media_kind_for_path(source),
+        boundary_markers,
+        media_kind=media_kind,
     )
     server = create_server(args.host, args.port, state)
     url = f"http://{args.host}:{args.port}"

@@ -183,6 +183,24 @@ def test_image_source_uses_static_analysis_only(tmp_path) -> None:
     assert state.begin_analysis("static") == source.resolve()
 
 
+def test_empty_app_starts_before_media_selection(tmp_path) -> None:
+    state = AppState(
+        FragmentStore(tmp_path / "pc.sqlite3"),
+        None,
+        b"ui",
+        {},
+        [],
+        "not analyzed",
+        [],
+        [],
+        {},
+        media_kind="none",
+    )
+    assert state.media_kind == "none"
+    with pytest.raises(ValueError, match="画像または映像"):
+        state.begin_analysis("static")
+
+
 def test_select_source_clears_previous_analysis(tmp_path) -> None:
     source = tmp_path / "new.mp4"
     source.write_bytes(b"video")

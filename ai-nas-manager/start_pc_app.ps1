@@ -1,6 +1,6 @@
 param(
     [int]$Port = 8788,
-    [string]$Result = "docs/live-gemma-pedestrian-2026-09-10.json",
+    [string]$Result = "",
     [switch]$KeepExisting
 )
 
@@ -53,6 +53,13 @@ if ($listeners.Count -gt 0) {
     }
 }
 
-uv run --with-requirements requirements-vision-experiment.txt python pc_app.py `
-    --result $Result `
-    --port $Port
+$arguments = @(
+    'run',
+    '--with-requirements', 'requirements-vision-experiment.txt',
+    'python', 'pc_app.py',
+    '--port', $Port
+)
+if ($Result) {
+    $arguments += @('--result', $Result)
+}
+& uv @arguments
