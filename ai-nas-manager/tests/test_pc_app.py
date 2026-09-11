@@ -4,6 +4,7 @@ import pytest
 
 from pc_app import (
     AppState,
+    DEFAULT_UI,
     FragmentStore,
     fragment_records,
     imported_video_path,
@@ -152,6 +153,13 @@ def test_media_kind_for_video_and_image() -> None:
     assert media_kind_for_path(Path("photo.PNG")) == "image"
     with pytest.raises(ValueError):
         media_kind_for_path(Path("notes.txt"))
+
+
+def test_fragment_list_auto_scrolls_when_live_count_increases() -> None:
+    html = DEFAULT_UI.read_text(encoding="utf-8")
+    assert "fragmentAdded" in html
+    assert "scrollToLatest" in html
+    assert "cards.scrollTo({top:cards.scrollHeight" in html
 
 
 def test_image_source_uses_static_analysis_only(tmp_path) -> None:
