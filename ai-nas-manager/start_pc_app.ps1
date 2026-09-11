@@ -1,7 +1,8 @@
 param(
     [int]$Port = 8788,
     [string]$Result = "",
-    [switch]$KeepExisting
+    [switch]$KeepExisting,
+    [switch]$NoBrowser
 )
 
 $projectDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -61,5 +62,8 @@ $arguments = @(
 )
 if ($Result) {
     $arguments += @('--result', $Result)
+}
+if ($NoBrowser) {
+    $arguments += '--no-browser'
 }
 & uv @arguments
