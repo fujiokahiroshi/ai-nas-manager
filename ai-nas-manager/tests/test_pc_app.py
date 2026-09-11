@@ -7,6 +7,7 @@ from pc_app import (
     FragmentStore,
     fragment_records,
     imported_video_path,
+    media_kind_for_path,
     scene_boundaries,
     scene_boundary_markers,
     scene_records,
@@ -144,6 +145,34 @@ def test_imported_video_path_is_unique_and_stays_in_directory(tmp_path) -> None:
     assert first != second
     with pytest.raises(ValueError):
         imported_video_path(tmp_path, "notes.txt")
+
+
+def test_media_kind_for_video_and_image() -> None:
+    assert media_kind_for_path(Path("clip.mp4")) == "video"
+    assert media_kind_for_path(Path("photo.PNG")) == "image"
+    with pytest.raises(ValueError):
+        media_kind_for_path(Path("notes.txt"))
+
+
+def test_image_source_uses_static_analysis_only(tmp_path) -> None:
+    source = tmp_path / "photo.jpg"
+    source.write_bytes(b"image")
+    state = AppState(
+        FragmentStore(tmp_path / "pc.sqlite3"),
+        source,
+        b"ui",
+        {},
+        [],
+        "not analyzed",
+        [],
+        [],
+        {},
+    )
+    state.select_source(source)
+    assert state.media_kind == "image"
+    with pytest.raises(ValueError, match="静的解析"):
+        state.begin_analysis("realtime")
+    assert state.begin_analysis("static") == source.resolve()
 
 
 def test_select_source_clears_previous_analysis(tmp_path) -> None:

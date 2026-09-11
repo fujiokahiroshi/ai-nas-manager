@@ -28,6 +28,7 @@ DEFAULT_DB = ROOT / "pc_app.sqlite3"
 DEFAULT_IMPORT_DIR = ROOT / "media" / "pc-app-imports"
 DEFAULT_ANALYSIS_DIR = ROOT / "media" / "pc-app-analysis"
 VIDEO_EXTENSIONS = {".mp4", ".mov", ".mkv", ".avi", ".webm", ".m4v", ".ts", ".m2ts"}
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
 
 
 def imported_video_path(directory: Path, filename: str) -> Path:
@@ -75,6 +76,49 @@ def browse_local_video(initial_directory: Path) -> Path | None:
     if not source.is_file() or source.suffix.casefold() not in VIDEO_EXTENSIONS:
         raise ValueError("対応していない映像ファイルです")
     return source
+
+
+def browse_local_image(initial_directory: Path) -> Path | None:
+    """Open the Windows file dialog for a still image."""
+
+    import tkinter as tk
+    from tkinter import filedialog
+
+    root: tk.Tk | None = None
+    try:
+        root = tk.Tk()
+        root.withdraw()
+        root.attributes("-topmost", True)
+        root.update()
+        selected = filedialog.askopenfilename(
+            parent=root,
+            title="解析する画像を選択",
+            initialdir=str(initial_directory),
+            filetypes=[
+                ("画像ファイル", "*.jpg *.jpeg *.png *.webp *.bmp"),
+                ("すべてのファイル", "*.*"),
+            ],
+        )
+    except tk.TclError as exc:
+        raise RuntimeError("Windowsファイル選択画面を開けません") from exc
+    finally:
+        if root is not None:
+            root.destroy()
+    if not selected:
+        return None
+    source = Path(selected).resolve()
+    if not source.is_file() or source.suffix.casefold() not in IMAGE_EXTENSIONS:
+        raise ValueError("対応していない画像ファイルです")
+    return source
+
+
+def media_kind_for_path(source: Path) -> str:
+    suffix = source.suffix.casefold()
+    if suffix in VIDEO_EXTENSIONS:
+        return "video"
+    if suffix in IMAGE_EXTENSIONS:
+        return "image"
+    raise ValueError("対応していないメディアファイルです")
 
 
 def fragment_records(payload: dict) -> list[dict]:
@@ -352,6 +396,7 @@ class AppState:
     shadow_boundaries: list[dict]
     boundary_markers: dict[str, list[int]]
     import_dir: Path = DEFAULT_IMPORT_DIR
+    media_kind: str = "video"
     lock: threading.RLock = field(default_factory=threading.RLock, repr=False)
     browse_lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
     analysis_state: str = "ready"
@@ -363,13 +408,14 @@ class AppState:
     analysis_error: str = ""
     analysis_thread: threading.Thread | None = field(default=None, repr=False)
 
-    def select_source(self, source: Path) -> None:
+    def select_source(self, source: Path, media_kind: str | None = None) -> None:
         """Switch playback to an unanalysed source without mixing old results."""
 
         with self.lock:
             if self.analysis_state == "running":
                 raise RuntimeError("解析中は別の映像を選択できません")
             self.source = source.resolve()
+            self.media_kind = media_kind or media_kind_for_path(self.source)
             self.store.delete_source(str(self.source))
             self.thumbnails = {}
             self.boundaries_ms = []
@@ -385,7 +431,7 @@ class AppState:
             self.analysis_state = "not_analyzed"
             self.analysis_mode = ""
             self.analysis_phase = ""
-            self.analysis_message = "解析方法を選択してください"
+            self.analysis_message = "画像解析を開始してください" if self.media_kind == "image" else "解析方法を選択してください"
             self.analysis_progress = 0.0
             self.analysis_fragment_count = 0
             self.analysis_error = ""
@@ -396,6 +442,8 @@ class AppState:
         with self.lock:
             if self.analysis_state == "running":
                 return None
+            if self.media_kind == "image" and mode != "static":
+                raise ValueError("画像は静的解析を使用してください")
             source = self.source
             self.store.delete_source(str(source.resolve()))
             self.thumbnails = {}
@@ -407,7 +455,7 @@ class AppState:
             self.analysis_state = "running"
             self.analysis_mode = mode
             self.analysis_phase = "fragment"
-            self.analysis_message = "Fragmentを検出しています"
+            self.analysis_message = "画像をGemmaで解析しています" if self.media_kind == "image" else "Fragmentを検出しています"
             self.analysis_progress = 0.0
             self.analysis_fragment_count = 0
             self.analysis_error = ""
@@ -578,6 +626,64 @@ def run_pc_analysis(state: AppState, source: Path, mode: str) -> None:
             state.analysis_thread = None
 
 
+def run_image_analysis(state: AppState, source: Path) -> None:
+    """Analyze one still image with Gemma and store it as one Fragment/Scene."""
+
+    try:
+        import cv2
+        import numpy as np
+
+        from live_semantics import FragmentEvidence, LMStudioVisionClient
+
+        image = cv2.imdecode(np.frombuffer(source.read_bytes(), dtype=np.uint8), cv2.IMREAD_COLOR)
+        if image is None:
+            raise RuntimeError(f"画像を開けません: {source}")
+        height, width = image.shape[:2]
+        scale = min(1.0, 1280 / max(width, height))
+        if scale < 1.0:
+            image = cv2.resize(image, (round(width * scale), round(height * scale)))
+        encoded_ok, encoded = cv2.imencode(".jpg", image, [cv2.IMWRITE_JPEG_QUALITY, 85])
+        if not encoded_ok:
+            raise RuntimeError("JPEG encoding failed")
+        evidence = FragmentEvidence(
+            fragment_id=f"image-{uuid.uuid4().hex[:10]}",
+            revision=1,
+            source_timestamp_ms=0,
+            jpeg=encoded.tobytes(),
+            metadata={"source_type": "still_image", "filename": source.name},
+        )
+        result = LMStudioVisionClient().analyze(evidence)
+        result["completed_during_stream"] = False
+        result["trigger_reason"] = "still_image"
+        result["manual_marker"] = True
+        record = fragment_records({"source": str(source.resolve()), "inferences": [result]})[0]
+        thumb = cv2.resize(image, (480, max(1, round(image.shape[0] * 480 / image.shape[1]))))
+        thumb_ok, thumb_encoded = cv2.imencode(".jpg", thumb, [cv2.IMWRITE_JPEG_QUALITY, 80])
+        state.store.import_records([record])
+        with state.lock:
+            state.thumbnails = {record["id"]: thumb_encoded.tobytes() if thumb_ok else encoded.tobytes()}
+            state.boundaries_ms = []
+            state.boundary_method = "single image"
+            state.scene_summaries = []
+            state.shadow_boundaries = []
+            state.boundary_markers = {key: [] for key in ("current", "adaptive", "tuned", "ground_truth")}
+            state.analysis_fragment_count = 1
+            state.analysis_state = "ready"
+            state.analysis_phase = "complete"
+            state.analysis_message = "画像解析が完了しました"
+            state.analysis_progress = 1.0
+            state.analysis_error = ""
+    except Exception as exc:
+        with state.lock:
+            state.analysis_state = "failed"
+            state.analysis_phase = "failed"
+            state.analysis_message = "画像解析に失敗しました"
+            state.analysis_error = f"{type(exc).__name__}: {exc}"
+    finally:
+        with state.lock:
+            state.analysis_thread = None
+
+
 class AppHandler(BaseHTTPRequestHandler):
     server_version = "AINASPC/0.1"
 
@@ -603,6 +709,7 @@ class AppHandler(BaseHTTPRequestHandler):
             )
             self._json({
                 "source_name": self.state.source.name,
+                "media_kind": self.state.media_kind,
                 "shadow_boundaries": self.state.shadow_boundaries,
                 "boundary_markers": self.state.boundary_markers,
                 "analysis": self.state.analysis_snapshot(),
@@ -630,6 +737,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 scenes = [scene for scene in scenes if scene["favorite"]]
             self._json({
                 "source_name": self.state.source.name,
+                "media_kind": self.state.media_kind,
                 "scenes": scenes,
                 "analysis": self.state.analysis_snapshot(),
                 "shadow_boundaries": self.state.shadow_boundaries,
@@ -645,6 +753,8 @@ class AppHandler(BaseHTTPRequestHandler):
             self._bytes(image, "image/jpeg", cache="public, max-age=3600")
         elif parsed.path == "/media/video":
             self._video()
+        elif parsed.path == "/media/image":
+            self._image()
         else:
             self.send_error(HTTPStatus.NOT_FOUND)
 
@@ -654,7 +764,10 @@ class AppHandler(BaseHTTPRequestHandler):
             self._start_analysis()
             return
         if parsed.path == "/api/media/browse":
-            self._browse_media()
+            self._browse_media("video")
+            return
+        if parsed.path == "/api/media/browse-image":
+            self._browse_media("image")
             return
         if parsed.path == "/api/media/select":
             self._select_media()
@@ -694,10 +807,11 @@ class AppHandler(BaseHTTPRequestHandler):
         if source is None:
             self.send_error(HTTPStatus.CONFLICT, "analysis already running")
             return
+        is_image = self.state.media_kind == "image"
         thread = threading.Thread(
-            target=run_pc_analysis,
-            args=(self.state, source, mode),
-            name=f"pc-analysis-{mode}",
+            target=run_image_analysis if is_image else run_pc_analysis,
+            args=(self.state, source) if is_image else (self.state, source, mode),
+            name="pc-analysis-image" if is_image else f"pc-analysis-{mode}",
             daemon=True,
         )
         with self.state.lock:
@@ -705,25 +819,31 @@ class AppHandler(BaseHTTPRequestHandler):
         thread.start()
         self._json(self.state.analysis_snapshot())
 
-    def _browse_media(self) -> None:
-        if self.headers.get("X-AI-NAS-Action") != "browse-local-video":
+    def _browse_media(self, media_kind: str) -> None:
+        expected_action = "browse-local-image" if media_kind == "image" else "browse-local-video"
+        if self.headers.get("X-AI-NAS-Action") != expected_action:
             self.send_error(HTTPStatus.FORBIDDEN)
             return
         try:
             with self.state.browse_lock:
-                source = browse_local_video(self.state.source.parent)
+                source = (
+                    browse_local_image(self.state.source.parent)
+                    if media_kind == "image"
+                    else browse_local_video(self.state.source.parent)
+                )
             if source is None:
                 self.send_response(HTTPStatus.NO_CONTENT)
                 self.end_headers()
                 return
-            self.state.select_source(source)
+            self.state.select_source(source, media_kind)
         except (OSError, RuntimeError, ValueError) as exc:
             self.send_error(HTTPStatus.BAD_REQUEST, str(exc))
             return
         self._json({
             "source_name": source.name,
+            "media_kind": media_kind,
             "analysis_state": "not_analyzed",
-            "video_url": "/media/video",
+            "media_url": "/media/image" if media_kind == "image" else "/media/video",
         })
 
     def _select_media(self) -> None:
@@ -762,6 +882,10 @@ class AppHandler(BaseHTTPRequestHandler):
     def _video(self) -> None:
         with self.state.lock:
             source = self.state.source
+            media_kind = self.state.media_kind
+        if media_kind != "video" or not source.is_file():
+            self.send_error(HTTPStatus.NOT_FOUND)
+            return
         size = source.stat().st_size
         start, end = 0, size - 1
         status = HTTPStatus.OK
@@ -795,6 +919,19 @@ class AppHandler(BaseHTTPRequestHandler):
                     # Browsers cancel an old byte-range request after seeking.
                     break
                 remaining -= len(chunk)
+
+    def _image(self) -> None:
+        with self.state.lock:
+            source = self.state.source
+            media_kind = self.state.media_kind
+        if media_kind != "image" or not source.is_file():
+            self.send_error(HTTPStatus.NOT_FOUND)
+            return
+        self._bytes(
+            source.read_bytes(),
+            mimetypes.guess_type(source.name)[0] or "image/jpeg",
+            cache="no-cache",
+        )
 
     def _json(self, value: object) -> None:
         self._bytes(json.dumps(value, ensure_ascii=False).encode("utf-8"), "application/json; charset=utf-8")
@@ -856,6 +993,7 @@ def main() -> None:
         list(payload.get("scene_summaries", [])),
         shadow_boundaries,
         scene_boundary_markers(payload),
+        media_kind=media_kind_for_path(source),
     )
     server = create_server(args.host, args.port, state)
     url = f"http://{args.host}:{args.port}"
