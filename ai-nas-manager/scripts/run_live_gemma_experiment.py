@@ -22,6 +22,17 @@ from scene_segmentation import (
 )
 
 
+def read_control_state(path: Path | None) -> str:
+    """Read the optional PC App playback state without failing standalone runs."""
+
+    if path is None:
+        return "running"
+    try:
+        return path.read_text(encoding="ascii").strip().casefold()
+    except OSError:
+        return "running"
+
+
 def main() -> None:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -45,6 +56,11 @@ def main() -> None:
         help="emit machine-readable inference events for the PC App",
     )
     parser.add_argument("--output", type=Path, default=Path("docs/live-gemma-experiment.json"))
+    parser.add_argument(
+        "--control-file",
+        type=Path,
+        help="optional file containing 'running' or 'paused' for PC App playback sync",
+    )
     args = parser.parse_args()
 
     import cv2
@@ -71,12 +87,27 @@ def main() -> None:
     start_wall = time.perf_counter()
     stream_ended_wall: float | None = None
 
+    def wait_for_worker_resume() -> None:
+        while read_control_state(args.control_file) == "paused":
+            time.sleep(0.1)
+
+    def wait_for_playback_resume() -> None:
+        nonlocal start_wall
+        paused_at: float | None = None
+        while read_control_state(args.control_file) == "paused":
+            if paused_at is None:
+                paused_at = time.perf_counter()
+            time.sleep(0.1)
+        if paused_at is not None:
+            start_wall += time.perf_counter() - paused_at
+
     def worker() -> None:
         nonlocal previous_scene
         while True:
             evidence = queue.get()
             if evidence is None:
                 return
+            wait_for_worker_resume()
             started = time.perf_counter()
             try:
                 result = client.analyze(evidence, previous_scene)
@@ -118,6 +149,8 @@ def main() -> None:
     previous_detections = []
     sampled_frames = 0
     while True:
+        if args.processing_mode == "realtime":
+            wait_for_playback_resume()
         ok, image = capture.read()
         if not ok:
             break
@@ -126,9 +159,12 @@ def main() -> None:
             continue
         timestamp_ms = round(decoded_index * 1000 / source_fps)
         if args.processing_mode == "realtime":
-            delay = start_wall + timestamp_ms / 1000 - time.perf_counter()
-            if delay > 0:
-                time.sleep(delay)
+            while True:
+                wait_for_playback_resume()
+                delay = start_wall + timestamp_ms / 1000 - time.perf_counter()
+                if delay <= 0:
+                    break
+                time.sleep(min(delay, 0.1))
         detections = detector.detect(image)
         object_change = object_change_score(previous_detections, detections)
         previous_detections = detections

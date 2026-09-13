@@ -162,6 +162,11 @@ def test_fragment_list_auto_scrolls_when_live_count_increases() -> None:
     assert "cards.scrollTo({top:cards.scrollHeight" in html
 
 
+def test_inactive_media_element_is_hidden() -> None:
+    html = DEFAULT_UI.read_text(encoding="utf-8")
+    assert "video[hidden],.still-image[hidden] { display:none; }" in html
+
+
 def test_image_source_uses_static_analysis_only(tmp_path) -> None:
     source = tmp_path / "photo.jpg"
     source.write_bytes(b"image")
@@ -253,3 +258,127 @@ def test_begin_analysis_sets_mode_and_rejects_parallel_run(tmp_path) -> None:
     with pytest.raises(ValueError):
         state.analysis_state = "not_analyzed"
         state.begin_analysis("unknown")
+
+
+def test_realtime_analysis_pause_writes_worker_control(tmp_path) -> None:
+    source = tmp_path / "new.mp4"
+    source.write_bytes(b"video")
+    state = AppState(
+        FragmentStore(tmp_path / "pc.sqlite3"),
+        source,
+        b"ui",
+        {},
+        [],
+        "not analyzed",
+        [],
+        [],
+        {},
+    )
+    control = tmp_path / "analysis.control"
+
+    assert state.begin_analysis("realtime") == source
+    state.bind_analysis_control(control)
+    assert control.read_text(encoding="ascii") == "running"
+
+    state.set_analysis_paused(True)
+    assert control.read_text(encoding="ascii") == "paused"
+    assert state.analysis_snapshot()["paused"] is True
+
+    state.set_analysis_paused(False)
+    assert control.read_text(encoding="ascii") == "running"
+    assert state.analysis_snapshot()["paused"] is False
+
+
+def test_video_playback_events_control_realtime_analysis() -> None:
+    html = DEFAULT_UI.read_text(encoding="utf-8")
+    assert "/api/analysis/playback" in html
+    assert "video.addEventListener('pause'" in html
+    assert "video.addEventListener('play'" in html
+    assert "video.addEventListener('playing'" in html
+    assert "lastAnalysisState=data.analysis?.state||''" in html
+
+
+def test_media_picker_recovers_server_side_selection_after_fetch_error() -> None:
+    html = DEFAULT_UI.read_text(encoding="utf-8")
+    assert "async function recoverSelectedMedia(kind,previousRevision)" in html
+    assert "Number(data.media_revision)<=previousRevision" in html
+    assert "recoverSelectedMedia('video',previousRevision)" in html
+    assert "recoverSelectedMedia('image',previousRevision)" in html
+
+
+def test_mobile_menu_uses_a_separate_non_overlapping_surface() -> None:
+    html = DEFAULT_UI.read_text(encoding="utf-8")
+    assert "header { position:relative; z-index:100;" in html
+    assert ".app-menu { position:absolute; z-index:101; isolation:isolate;" in html
+    assert "body.menu-open main { visibility:hidden; }" in html
+    assert ".app-menu { position:fixed; inset:70px 0 0;" in html
+    assert "document.body.classList.toggle('menu-open',opening)" in html
+    assert "document.body.classList.remove('menu-open')" in html
+
+
+def test_select_source_increments_media_revision(tmp_path) -> None:
+    first = tmp_path / "first.mp4"
+    second = tmp_path / "second.mp4"
+    first.write_bytes(b"first")
+    second.write_bytes(b"second")
+    state = AppState(
+        FragmentStore(tmp_path / "pc.sqlite3"),
+        None,
+        b"ui",
+        {},
+        [],
+        "not analyzed",
+        [],
+        [],
+        {},
+        media_kind="none",
+    )
+
+    state.select_source(first)
+    first_revision = state.media_revision
+    state.select_source(second)
+
+    assert first_revision == 1
+    assert state.media_revision == 2
+
+
+def test_select_source_cancels_running_video_analysis(tmp_path) -> None:
+    first = tmp_path / "first.mp4"
+    second = tmp_path / "second.mp4"
+    first.write_bytes(b"first")
+    second.write_bytes(b"second")
+    state = AppState(
+        FragmentStore(tmp_path / "pc.sqlite3"),
+        first,
+        b"ui",
+        {},
+        [],
+        "analyzing",
+        [],
+        [],
+        {},
+    )
+
+    class RunningProcess:
+        terminated = False
+
+        def poll(self):
+            return None
+
+        def terminate(self):
+            self.terminated = True
+
+        def wait(self, timeout=None):
+            return 0
+
+    process = RunningProcess()
+    state.analysis_state = "running"
+    state.analysis_mode = "realtime"
+    state.analysis_process = process  # type: ignore[assignment]
+
+    state.select_source(second)
+
+    assert process.terminated is True
+    assert state.source == second.resolve()
+    assert state.analysis_state == "not_analyzed"
+    assert state.analysis_cancel_requested is False

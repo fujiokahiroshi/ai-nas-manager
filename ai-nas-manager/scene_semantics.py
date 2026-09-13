@@ -75,7 +75,8 @@ class LMStudioSceneSummaryClient:
     base_url: str = "http://127.0.0.1:1234"
     model: str = "gemma4-12b-qat"
     timeout_seconds: float = 45.0
-    max_output_tokens: int = 180
+    max_output_tokens: int = 320
+    max_attempts: int = 2
 
     def summarize(self, evidence: SceneTextEvidence) -> dict[str, object]:
         observations = [{
@@ -111,18 +112,30 @@ class LMStudioSceneSummaryClient:
             "reasoning": "off",
             "store": False,
         }
-        request = urllib.request.Request(
-            f"{self.base_url.rstrip('/')}/api/v1/chat",
-            data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-        with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
-            body = json.loads(response.read().decode("utf-8"))
-        messages = [item.get("content", "") for item in body.get("output", []) if item.get("type") == "message"]
-        if not messages:
-            raise ValueError("LM Studio response did not contain a Scene summary")
-        return parse_json_message(messages[-1])
+        last_error: ValueError | None = None
+        for attempt in range(max(1, self.max_attempts)):
+            payload["max_output_tokens"] = self.max_output_tokens * (attempt + 1)
+            request = urllib.request.Request(
+                f"{self.base_url.rstrip('/')}/api/v1/chat",
+                data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
+                body = json.loads(response.read().decode("utf-8"))
+            messages = [
+                item.get("content", "")
+                for item in body.get("output", [])
+                if item.get("type") == "message"
+            ]
+            try:
+                if not messages:
+                    raise ValueError("LM Studio response did not contain a Scene summary")
+                return parse_json_message(messages[-1])
+            except ValueError as exc:
+                last_error = exc
+        assert last_error is not None
+        raise last_error
 
 
 def summarize_payload(payload: dict[str, object], summarizer: SceneSummarizer) -> list[dict[str, object]]:

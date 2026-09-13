@@ -397,6 +397,7 @@ class AppState:
     boundary_markers: dict[str, list[int]]
     import_dir: Path = DEFAULT_IMPORT_DIR
     media_kind: str = "video"
+    media_revision: int = 0
     lock: threading.RLock = field(default_factory=threading.RLock, repr=False)
     browse_lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
     analysis_state: str = "ready"
@@ -406,16 +407,20 @@ class AppState:
     analysis_progress: float = 1.0
     analysis_fragment_count: int = 0
     analysis_error: str = ""
+    analysis_paused: bool = False
+    analysis_control_path: Path | None = field(default=None, repr=False)
     analysis_thread: threading.Thread | None = field(default=None, repr=False)
+    analysis_process: subprocess.Popen[str] | None = field(default=None, repr=False)
+    analysis_cancel_requested: bool = False
 
     def select_source(self, source: Path, media_kind: str | None = None) -> None:
         """Switch playback to an unanalysed source without mixing old results."""
 
+        self.cancel_running_analysis()
         with self.lock:
-            if self.analysis_state == "running":
-                raise RuntimeError("解析中は別のメディアを選択できません")
             self.source = source.resolve()
             self.media_kind = media_kind or media_kind_for_path(self.source)
+            self.media_revision += 1
             self.store.delete_source(str(self.source))
             self.thumbnails = {}
             self.boundaries_ms = []
@@ -435,6 +440,45 @@ class AppState:
             self.analysis_progress = 0.0
             self.analysis_fragment_count = 0
             self.analysis_error = ""
+            self.analysis_paused = False
+            self.analysis_control_path = None
+            self.analysis_cancel_requested = False
+
+    def cancel_running_analysis(self) -> None:
+        """Stop the current subprocess before switching to another source."""
+
+        with self.lock:
+            if self.analysis_state != "running":
+                return
+            self.analysis_cancel_requested = True
+            process = self.analysis_process
+            thread = self.analysis_thread
+            if self.analysis_control_path is not None:
+                self.analysis_control_path.write_text("cancelled", encoding="ascii")
+
+        if process is not None and process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=5)
+
+        if thread is not None and thread is not threading.current_thread():
+            thread.join(timeout=10)
+            if thread.is_alive():
+                raise RuntimeError("実行中の解析を停止できませんでした")
+
+        with self.lock:
+            if self.analysis_state == "running":
+                self.analysis_state = "ready"
+                self.analysis_phase = "cancelled"
+                self.analysis_message = "別のメディア選択のため解析を中止しました"
+                self.analysis_error = ""
+            self.analysis_process = None
+            self.analysis_thread = None
+            self.analysis_paused = False
+            self.analysis_control_path = None
 
     def begin_analysis(self, mode: str) -> Path | None:
         if mode not in {"static", "realtime"}:
@@ -461,7 +505,36 @@ class AppState:
             self.analysis_progress = 0.0
             self.analysis_fragment_count = 0
             self.analysis_error = ""
+            self.analysis_paused = False
+            self.analysis_control_path = None
+            self.analysis_process = None
+            self.analysis_cancel_requested = False
             return source
+
+    def bind_analysis_control(self, path: Path) -> None:
+        """Attach the realtime worker control file to the current analysis."""
+
+        with self.lock:
+            self.analysis_control_path = path
+            path.write_text("paused" if self.analysis_paused else "running", encoding="ascii")
+
+    def set_analysis_paused(self, paused: bool) -> None:
+        """Pause or resume a running realtime analysis."""
+
+        with self.lock:
+            if self.analysis_state != "running" or self.analysis_mode != "realtime":
+                raise RuntimeError("realtime analysis is not running")
+            self.analysis_paused = paused
+            if self.analysis_control_path is not None:
+                self.analysis_control_path.write_text(
+                    "paused" if paused else "running",
+                    encoding="ascii",
+                )
+            self.analysis_message = (
+                "映像の一時停止に合わせて解析を一時停止しています"
+                if paused
+                else f"Fragment {self.analysis_fragment_count}件を解析しました"
+            )
 
     def analysis_snapshot(self) -> dict[str, object]:
         with self.lock:
@@ -473,6 +546,7 @@ class AppState:
                 "progress": round(self.analysis_progress, 4),
                 "fragment_count": self.analysis_fragment_count,
                 "error": self.analysis_error,
+                "paused": self.analysis_paused,
             }
 
 
@@ -536,6 +610,7 @@ def run_pc_analysis(state: AppState, source: Path, mode: str) -> None:
     run_id = uuid.uuid4().hex[:12]
     fragment_output = DEFAULT_ANALYSIS_DIR / f"{run_id}-{source.stem}-{mode}.json"
     scene_output = DEFAULT_ANALYSIS_DIR / f"{run_id}-{source.stem}-{mode}-scenes.json"
+    control_path = DEFAULT_ANALYSIS_DIR / f"{run_id}-{source.stem}-{mode}.control"
     duration_ms = video_duration_ms(source)
     command = [
         sys.executable,
@@ -549,6 +624,9 @@ def run_pc_analysis(state: AppState, source: Path, mode: str) -> None:
     ]
     log_tail: list[str] = []
     try:
+        if mode == "realtime":
+            state.bind_analysis_control(control_path)
+            command.extend(["--control-file", str(control_path)])
         process = subprocess.Popen(
             command,
             cwd=ROOT,
@@ -559,6 +637,11 @@ def run_pc_analysis(state: AppState, source: Path, mode: str) -> None:
             errors="replace",
             bufsize=1,
         )
+        with state.lock:
+            state.analysis_process = process
+            cancel_requested = state.analysis_cancel_requested
+        if cancel_requested:
+            process.terminate()
         assert process.stdout is not None
         for raw_line in process.stdout:
             line = raw_line.strip()
@@ -575,7 +658,11 @@ def run_pc_analysis(state: AppState, source: Path, mode: str) -> None:
                 state.thumbnails[record["id"]] = thumbnail
                 state.analysis_fragment_count += 1
                 state.analysis_progress = min(0.9, int(record["timestamp_ms"]) / duration_ms * 0.9)
-                state.analysis_message = f"Fragment {state.analysis_fragment_count}件を解析しました"
+                state.analysis_message = (
+                    "映像の一時停止に合わせて解析を一時停止しています"
+                    if state.analysis_paused
+                    else f"Fragment {state.analysis_fragment_count}件を解析しました"
+                )
         return_code = process.wait()
         if return_code != 0 or not fragment_output.is_file():
             raise RuntimeError(log_tail[-1] if log_tail else f"解析処理が終了しました ({return_code})")
@@ -613,18 +700,34 @@ def run_pc_analysis(state: AppState, source: Path, mode: str) -> None:
             state.analysis_progress = 1.0
             state.analysis_error = ""
     except Exception as exc:
-        if fragment_output.is_file():
+        with state.lock:
+            cancelled = state.analysis_cancel_requested
+        if not cancelled and fragment_output.is_file():
             try:
                 apply_analysis_payload(state, json.loads(fragment_output.read_text(encoding="utf-8")))
             except Exception:
                 pass
         with state.lock:
-            state.analysis_state = "failed"
-            state.analysis_phase = "failed"
-            state.analysis_message = "解析に失敗しました"
-            state.analysis_error = f"{type(exc).__name__}: {exc}"
+            if cancelled:
+                state.analysis_state = "ready"
+                state.analysis_phase = "cancelled"
+                state.analysis_message = "別のメディア選択のため解析を中止しました"
+                state.analysis_error = ""
+            else:
+                state.analysis_state = "failed"
+                state.analysis_phase = "failed"
+                state.analysis_message = "解析に失敗しました"
+                state.analysis_error = f"{type(exc).__name__}: {exc}"
     finally:
+        if mode == "realtime":
+            try:
+                control_path.unlink(missing_ok=True)
+            except OSError:
+                pass
         with state.lock:
+            state.analysis_process = None
+            state.analysis_paused = False
+            state.analysis_control_path = None
             state.analysis_thread = None
 
 
@@ -709,6 +812,7 @@ class AppHandler(BaseHTTPRequestHandler):
             self._json({
                 "source_name": source.name if source is not None else "",
                 "media_kind": self.state.media_kind,
+                "media_revision": self.state.media_revision,
                 "shadow_boundaries": self.state.shadow_boundaries,
                 "boundary_markers": self.state.boundary_markers,
                 "analysis": self.state.analysis_snapshot(),
@@ -738,6 +842,7 @@ class AppHandler(BaseHTTPRequestHandler):
             self._json({
                 "source_name": source.name if source is not None else "",
                 "media_kind": self.state.media_kind,
+                "media_revision": self.state.media_revision,
                 "scenes": scenes,
                 "analysis": self.state.analysis_snapshot(),
                 "shadow_boundaries": self.state.shadow_boundaries,
@@ -762,6 +867,9 @@ class AppHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         if parsed.path == "/api/analysis/start":
             self._start_analysis()
+            return
+        if parsed.path == "/api/analysis/playback":
+            self._set_analysis_playback()
             return
         if parsed.path == "/api/media/browse":
             self._browse_media("video")
@@ -819,6 +927,25 @@ class AppHandler(BaseHTTPRequestHandler):
         thread.start()
         self._json(self.state.analysis_snapshot())
 
+    def _set_analysis_playback(self) -> None:
+        if self.headers.get("X-AI-NAS-Action") != "control-analysis-playback":
+            self.send_error(HTTPStatus.FORBIDDEN)
+            return
+        try:
+            size = int(self.headers.get("Content-Length", "0"))
+            payload = json.loads(self.rfile.read(size))
+            paused = payload.get("paused")
+            if not isinstance(paused, bool):
+                raise ValueError("paused must be a boolean")
+            self.state.set_analysis_paused(paused)
+        except (ValueError, json.JSONDecodeError):
+            self.send_error(HTTPStatus.BAD_REQUEST)
+            return
+        except RuntimeError as exc:
+            self.send_error(HTTPStatus.CONFLICT, str(exc))
+            return
+        self._json(self.state.analysis_snapshot())
+
     def _browse_media(self, media_kind: str) -> None:
         expected_action = "browse-local-image" if media_kind == "image" else "browse-local-video"
         if self.headers.get("X-AI-NAS-Action") != expected_action:
@@ -843,6 +970,7 @@ class AppHandler(BaseHTTPRequestHandler):
         self._json({
             "source_name": source.name,
             "media_kind": media_kind,
+            "media_revision": self.state.media_revision,
             "analysis_state": "not_analyzed",
             "media_url": "/media/image" if media_kind == "image" else "/media/video",
         })
@@ -876,6 +1004,7 @@ class AppHandler(BaseHTTPRequestHandler):
         self._json({
             "source_name": target.name,
             "size_bytes": target.stat().st_size,
+            "media_revision": self.state.media_revision,
             "analysis_state": "not_analyzed",
             "video_url": "/media/video",
         })

@@ -1,6 +1,13 @@
 from __future__ import annotations
 
-from scene_semantics import build_scene_evidence, summarize_payload
+import json
+
+from scene_semantics import (
+    LMStudioSceneSummaryClient,
+    SceneTextEvidence,
+    build_scene_evidence,
+    summarize_payload,
+)
 
 
 def payload() -> dict[str, object]:
@@ -51,3 +58,42 @@ def test_multiple_fragments_are_summarized_once() -> None:
     assert client.evidence_count == 3
     assert summaries[0]["method"] == "gemma_multi_fragment"
     assert summaries[0]["summary_ja"].startswith("人物が野菜を切り")
+
+
+def test_lm_studio_scene_summary_retries_incomplete_json(monkeypatch) -> None:
+    contents = iter([
+        '{"summary_ja":"incomplete"',
+        '{"summary_ja":"complete","activities":[],"objects":[],"important_change_ja":"","confidence":0.8}',
+    ])
+    output_token_limits = []
+
+    class FakeResponse:
+        def __init__(self, content: str) -> None:
+            self.content = content
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def read(self) -> bytes:
+            return json.dumps({
+                "output": [{"type": "message", "content": self.content}],
+            }).encode("utf-8")
+
+    def fake_urlopen(request, timeout):
+        del timeout
+        payload = json.loads(request.data.decode("utf-8"))
+        output_token_limits.append(payload["max_output_tokens"])
+        return FakeResponse(next(contents))
+
+    monkeypatch.setattr("scene_semantics.urllib.request.urlopen", fake_urlopen)
+    evidence = SceneTextEvidence("scene-1", 0, 1_000, ({
+        "timestamp_ms": 0,
+        "observation": "sample",
+    },))
+    result = LMStudioSceneSummaryClient(max_output_tokens=320).summarize(evidence)
+
+    assert result["summary_ja"] == "complete"
+    assert output_token_limits == [320, 640]
